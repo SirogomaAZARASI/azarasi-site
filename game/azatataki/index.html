@@ -14,6 +14,7 @@ gtag('js',new Date());
 gtag('config','G-DK3VQGQTWC');
 </script>
 
+
 <style>
 body{
   background:#0f1115;
@@ -25,7 +26,6 @@ body{
 .grid{
   display:grid;
   gap:8px;
-  width:90vmin;
   margin:auto;
 }
 
@@ -93,20 +93,19 @@ body{
 }
 .pop{ transform:scale(1.4); }
 
-.footer{
+/* フルコンボ */
+#fullCombo{
   position:fixed;
-  bottom:10px;
-  left:50%;
-  transform:translateX(-50%);
-  width:90%;
-  background:rgba(0,0,0,0.8);
-  border-radius:12px;
-  padding:10px;
-  text-align:center;
-  font-size:13px;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:#000;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  font-size:60px;
+  color:orange;
+  z-index:20000;
 }
-
-body{padding-bottom:80px;}
 </style>
 </head>
 
@@ -139,21 +138,10 @@ body{padding-bottom:80px;}
   <div id="finalScore"></div>
   <div id="finalCombo"></div>
   <div id="finalNowCombo"></div>
-  <button onclick="restartGame()">リスタート</button>
+  <button onclick="location.reload()">リスタート</button>
 </div>
 
-<!-- 使い方 -->
-<div id="ruleModal" style="
-position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,0.8);
-display:none;justify-content:center;align-items:center;
-z-index:10000;">
-  <div style="background:#171a21;padding:20px;border-radius:10px;width:80%;max-width:400px;">
-    <h2>使い方</h2>
-    <div id="ruleText"></div>
-    <button onclick="closeRule()">OK</button>
-  </div>
-</div>
+<div id="fullCombo">🔥 FULL COMBO!! 🔥</div>
 
 <script>
 const IMG={
@@ -173,15 +161,17 @@ const sizeSelect=document.getElementById("size");
 const timerEl=document.getElementById("timer");
 const comboPopup=document.getElementById("comboPopup");
 const resultScreen=document.getElementById("resultScreen");
+const fullComboEl=document.getElementById("fullCombo");
+
 const finalScore=document.getElementById("finalScore");
 const finalCombo=document.getElementById("finalCombo");
 const finalNowCombo=document.getElementById("finalNowCombo");
 
 let holes=[],states=[],elements=[];
 let score=0,combo=0,maxCombo=0,timeLeft=30;
+let totalHits=0;
 let moleInterval,timerInterval;
 
-/* グリッド */
 function createGrid(){
  grid.innerHTML="";
  const size=+sizeSelect.value;
@@ -199,7 +189,6 @@ function createGrid(){
  }
 }
 
-/* 出現 */
 function spawn(){
  const level=levelSelect.value;
  const empty=states.map((s,i)=>s===null?i:null).filter(i=>i!==null);
@@ -242,7 +231,8 @@ function spawn(){
  setTimeout(()=>{
   if(states[i]!==null){
     if((level==1 && type==="seal")||(level==2 && type==="glasses")){
-      combo=0; updateCombo();
+      combo=0;
+      updateCombo();
     }
     holes[i].innerHTML="";
     states[i]=null;
@@ -272,11 +262,11 @@ function hit(i){
 
  if(level==1){
   if(type==="bad"){score-=2;combo=0;}
-  else{score++;combo++;maxCombo=Math.max(maxCombo,combo);}
+  else{score++;combo++;maxCombo=Math.max(maxCombo,combo);totalHits++;}
  }
 
  if(level==2){
-  if(type==="glasses"){score++;combo++;maxCombo=Math.max(maxCombo,combo);}
+  if(type==="glasses"){score++;combo++;maxCombo=Math.max(maxCombo,combo);totalHits++;}
   else{score-=2;combo=0;}
  }
 
@@ -295,43 +285,64 @@ function hit(i){
  showCombo();
 }
 
-/* 結果 */
-function showResult(){
- resultScreen.style.display="flex";
- finalScore.innerHTML='スコア:'+score;
- finalCombo.innerHTML='最大コンボ:'+maxCombo;
- finalNowCombo.innerHTML='コンボ:'+combo;
-}
-
-/* リスタート */
-function restartGame(){
- location.reload();
-}
-
-/* ===== 使い方 ===== */
-const ruleModal=document.getElementById("ruleModal");
-const ruleText=document.getElementById("ruleText");
-
-function showRule(){
- if(levelSelect.value==1){
-  ruleText.innerHTML="あざらしOK / 🔴はダメ";
- }else{
-  ruleText.innerHTML="サングラスだけ叩く";
+function countUp(el,target){
+ const t0=performance.now();
+ function loop(now){
+  let p=Math.min((now-t0)/800,1);
+  el.textContent=Math.floor(p*target);
+  if(p<1){requestAnimationFrame(loop);}
+  else{
+    el.textContent=target;
+    el.classList.add("pop");
+    setTimeout(()=>el.classList.remove("pop"),200);
+  }
  }
- ruleModal.style.display="flex";
+ requestAnimationFrame(loop);
 }
 
-function closeRule(){
- ruleModal.style.display="none";
- startMainGame();
+function showResult(){
+
+ const isFullCombo = (maxCombo === totalHits && totalHits>0);
+
+ if(isFullCombo){
+  fullComboEl.style.display="flex";
+
+  setTimeout(()=>{
+    fullComboEl.style.display="none";
+    showResultMain(true);
+  },1500);
+ }else{
+  showResultMain(false);
+ }
 }
 
-/* ===== 修正済み開始 ===== */
+function showResultMain(full){
+ resultScreen.style.display="flex";
+
+ finalScore.innerHTML='スコア: <span class="result-number">0</span>';
+
+ if(full){
+  finalCombo.innerHTML='最大コンボ: フルコンボ';
+ }else{
+  finalCombo.innerHTML='最大コンボ: <span class="result-number">0</span>';
+ }
+
+ finalNowCombo.innerHTML='コンボ: <span class="result-number">0</span>';
+
+ setTimeout(()=>countUp(finalScore.querySelector("span"),score),300);
+
+ if(!full){
+  setTimeout(()=>countUp(finalCombo.querySelector("span"),maxCombo),900);
+ }
+
+ setTimeout(()=>countUp(finalNowCombo.querySelector("span"),combo),1500);
+}
+
 function startGame(){
  clearInterval(moleInterval);
  clearInterval(timerInterval);
 
- score=0;combo=0;maxCombo=0;timeLeft=30;
+ score=0;combo=0;maxCombo=0;timeLeft=30;totalHits=0;
 
  document.getElementById("score").textContent="スコア:0";
  updateCombo();
@@ -339,10 +350,6 @@ function startGame(){
 
  createGrid();
 
- showRule(); // ←ここだけ
-}
-
-function startMainGame(){
  moleInterval=setInterval(spawn,1000);
 
  timerInterval=setInterval(()=>{
