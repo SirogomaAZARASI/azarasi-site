@@ -37,7 +37,6 @@ body{
   overflow:hidden;
 }
 
-/* 中央配置 */
 .mole{
   width:80%;
   height:80%;
@@ -48,7 +47,6 @@ body{
   transform:translate(-50%,-50%);
 }
 
-/* 赤丸 */
 .bad{
   width:60%;
   height:60%;
@@ -60,16 +58,12 @@ body{
   transform:translate(-50%,-50%);
 }
 
-/* 落下 */
 @keyframes fall{
   0%{ transform:translate(-50%,-50%); opacity:1;}
   100%{ transform:translate(-50%,150%); opacity:0;}
 }
-.fall{
-  animation:fall 1s ease forwards;
-}
+.fall{ animation:fall 1s ease forwards; }
 
-/* コンボ */
 #comboPopup{
   position:fixed;
   top:20%;
@@ -81,7 +75,6 @@ body{
   z-index:99999;
 }
 
-/* 結果 */
 #resultScreen{
   position:fixed;
   top:0;left:0;
@@ -106,41 +99,14 @@ body{
   left:50%;
   transform:translateX(-50%);
   width:90%;
-  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
-  backdrop-filter:blur(10px);
+  background:rgba(0,0,0,0.8);
   border-radius:12px;
   padding:10px;
   text-align:center;
   font-size:13px;
-  border:1px solid rgba(255,255,255,0.15);
-  box-shadow:0 5px 20px rgba(0,0,0,0.3);
-  z-index:999;
-}
-
-.footer a{
-  color:#66ccff;
-  text-decoration:none;
-  font-weight:600;
-}
-
-.footer a:hover{
-  text-decoration:underline;
-}
-
-.footer .copyright{
-  font-size:13px;
-  font-weight:500;
-  background:linear-gradient(90deg,#ffffff,#bbbbbb);
-  background-clip:text;
-  -webkit-background-clip:text;
-  color:transparent;
-  -webkit-text-fill-color:transparent;
-  letter-spacing:0.3px;
-  text-shadow:0 1px 2px rgba(0,0,0,0.6);
 }
 
 body{padding-bottom:80px;}
-
 </style>
 </head>
 
@@ -176,55 +142,40 @@ body{padding-bottom:80px;}
   <button onclick="restartGame()">リスタート</button>
 </div>
 
-<div class="footer">
-  <a href="../">← ゲーム一覧に戻る</a><br>
-  <div class="copyright">
-    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
-  </div>
-</div>
-
-<!-- 使い方モーダル -->
+<!-- 使い方 -->
 <div id="ruleModal" style="
 position:fixed;top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.8);
 display:none;justify-content:center;align-items:center;
-z-index:10000;
-">
+z-index:10000;">
   <div style="background:#171a21;padding:20px;border-radius:10px;width:80%;max-width:400px;">
     <h2>使い方</h2>
     <div id="ruleText"></div>
-    <button onclick="closeRule()" style="margin-top:15px;">OK</button>
+    <button onclick="closeRule()">OK</button>
   </div>
 </div>
 
 <script>
-/* =========================
-   ここだけ変えればOK
-========================= */
-const IMG = {
-  seal: { prefix:"", count:5 },     // 1.png ～ 5.png
-  sun:  { prefix:"sun", count:2 },  // sun1.png ～ sun2.png
-  out:  { prefix:"out", count:1 }   // out1.png ～ out2.png
+const IMG={
+  seal:{prefix:"",count:5},
+  sun:{prefix:"sun",count:2},
+  out:{prefix:"out",count:1}
 };
 
-/* 共通取得 */
 function getImg(type){
-  const t = IMG[type];
-  const n = Math.floor(Math.random()*t.count)+1;
-  return "images/" + t.prefix + n + ".png";
+  const t=IMG[type];
+  return "images/"+t.prefix+(Math.floor(Math.random()*t.count)+1)+".png";
 }
 
-/* ========================= */
-
-const grid = document.getElementById("grid");
-const levelSelect = document.getElementById("level");
-const sizeSelect = document.getElementById("size");
-const timerEl = document.getElementById("timer");
-const comboPopup = document.getElementById("comboPopup");
-const resultScreen = document.getElementById("resultScreen");
-const finalScore = document.getElementById("finalScore");
-const finalCombo = document.getElementById("finalCombo");
-const finalNowCombo = document.getElementById("finalNowCombo");
+const grid=document.getElementById("grid");
+const levelSelect=document.getElementById("level");
+const sizeSelect=document.getElementById("size");
+const timerEl=document.getElementById("timer");
+const comboPopup=document.getElementById("comboPopup");
+const resultScreen=document.getElementById("resultScreen");
+const finalScore=document.getElementById("finalScore");
+const finalCombo=document.getElementById("finalCombo");
+const finalNowCombo=document.getElementById("finalNowCombo");
 
 let holes=[],states=[],elements=[];
 let score=0,combo=0,maxCombo=0,timeLeft=30;
@@ -261,7 +212,7 @@ function spawn(){
   if(Math.random()<0.7){
     type="seal";
     el=document.createElement("img");
-    el.src=Math.random()<0.3 ? getImg("sun") : getImg("seal");
+    el.src=Math.random()<0.3?getImg("sun"):getImg("seal");
     el.className="mole";
   }else{
     type="bad";
@@ -290,23 +241,15 @@ function spawn(){
 
  setTimeout(()=>{
   if(states[i]!==null){
-    let breakCombo=false;
-
-    if(level==1 && type==="seal") breakCombo=true;
-    if(level==2 && type==="glasses") breakCombo=true;
-
-    if(breakCombo){
-      combo=0;
-      updateCombo();
+    if((level==1 && type==="seal")||(level==2 && type==="glasses")){
+      combo=0; updateCombo();
     }
-
     holes[i].innerHTML="";
     states[i]=null;
   }
  },1500);
 }
 
-/* コンボ */
 function updateCombo(){
  document.getElementById("combo").textContent="コンボ:"+combo;
 }
@@ -320,7 +263,6 @@ function showCombo(){
  }
 }
 
-/* 叩く */
 function hit(i){
  if(states[i]===null) return;
 
@@ -329,16 +271,13 @@ function hit(i){
  const level=levelSelect.value;
 
  if(level==1){
-  if(type==="bad"){ score-=2; combo=0; }
-  else{ score++; combo++; maxCombo=Math.max(maxCombo,combo); }
+  if(type==="bad"){score-=2;combo=0;}
+  else{score++;combo++;maxCombo=Math.max(maxCombo,combo);}
  }
 
  if(level==2){
-  if(type==="glasses"){
-    score++; combo++; maxCombo=Math.max(maxCombo,combo);
-  }else{
-    score-=2; combo=0;
-  }
+  if(type==="glasses"){score++;combo++;maxCombo=Math.max(maxCombo,combo);}
+  else{score-=2;combo=0;}
  }
 
  document.getElementById("score").textContent="スコア:"+score;
@@ -356,50 +295,38 @@ function hit(i){
  showCombo();
 }
 
-/* カウントアップ */
-function countUp(el,target){
- const t0=performance.now();
- function loop(now){
-  let p=Math.min((now-t0)/800,1);
-  el.textContent=Math.floor(p*target);
-  if(p<1) requestAnimationFrame(loop);
-  else{
-    el.textContent=target;
-    el.classList.add("pop");
-    setTimeout(()=>el.classList.remove("pop"),200);
-  }
- }
- requestAnimationFrame(loop);
-}
-
 /* 結果 */
 function showResult(){
  resultScreen.style.display="flex";
-
- finalScore.innerHTML='スコア: <span class="result-number">0</span>';
- finalCombo.innerHTML='最大コンボ: <span class="result-number">0</span>';
- finalNowCombo.innerHTML='コンボ: <span class="result-number">0</span>';
-
- setTimeout(()=>countUp(finalScore.querySelector("span"),score),300);
- setTimeout(()=>countUp(finalCombo.querySelector("span"),maxCombo),900);
- setTimeout(()=>countUp(finalNowCombo.querySelector("span"),combo),1500);
+ finalScore.innerHTML='スコア:'+score;
+ finalCombo.innerHTML='最大コンボ:'+maxCombo;
+ finalNowCombo.innerHTML='コンボ:'+combo;
 }
 
 /* リスタート */
 function restartGame(){
- clearInterval(moleInterval);
- clearInterval(timerInterval);
-
- resultScreen.style.display="none";
- grid.innerHTML="";
-
- score=0;combo=0;timeLeft=30;
- document.getElementById("score").textContent="スコア:0";
- document.getElementById("combo").textContent="コンボ:0";
- timerEl.textContent="時間:30";
+ location.reload();
 }
 
-/* 開始 */
+/* ===== 使い方 ===== */
+const ruleModal=document.getElementById("ruleModal");
+const ruleText=document.getElementById("ruleText");
+
+function showRule(){
+ if(levelSelect.value==1){
+  ruleText.innerHTML="あざらしOK / 🔴はダメ";
+ }else{
+  ruleText.innerHTML="サングラスだけ叩く";
+ }
+ ruleModal.style.display="flex";
+}
+
+function closeRule(){
+ ruleModal.style.display="none";
+ startMainGame();
+}
+
+/* ===== 修正済み開始 ===== */
 function startGame(){
  clearInterval(moleInterval);
  clearInterval(timerInterval);
@@ -411,52 +338,8 @@ function startGame(){
  timerEl.textContent="時間:30";
 
  createGrid();
- showRule(); 
 
- moleInterval=setInterval(spawn,1000);
-
- timerInterval=setInterval(()=>{
-  timeLeft--;
-  timerEl.textContent="時間:"+timeLeft;
-
-  if(timeLeft<=0){
-    clearInterval(moleInterval);
-    clearInterval(timerInterval);
-    showResult();
-  }
- },1000);
-}
-
-const ruleModal = document.getElementById("ruleModal");
-const ruleText = document.getElementById("ruleText");
-
-/* 使い方表示 */
-function showRule(){
-  const level = levelSelect.value;
-
-  if(level == 1){
-    ruleText.innerHTML = `
-    ・あざらしは全部叩いてOK<br>
-    ・赤丸は叩くと-2<br>
-    ・逃すとコンボ切れ
-    `;
-  }
-
-  if(level == 2){
-    ruleText.innerHTML = `
-    ・サングラスだけ叩く<br>
-    ・普通のあざらしは-2<br>
-    ・逃すとコンボ切れ
-    `;
-  }
-
-  ruleModal.style.display = "flex";
-}
-
-/* 閉じる */
-function closeRule(){
-  ruleModal.style.display = "none";
-  startMainGame();
+ showRule(); // ←ここだけ
 }
 
 function startMainGame(){
@@ -473,7 +356,6 @@ function startMainGame(){
   }
  },1000);
 }
-
 </script>
 
 </body>
