@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>リバーシ | AZAgame</title>
+
+<style>
+body {
+  background:#1e1e1e;
+  color:white;
+  font-family:sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin:0;
+}
+
+.board{
+  display:grid;
+  grid-template-columns:repeat(8,50px);
+  grid-template-rows:repeat(8,50px);
+  gap:2px;
+  background:#006400;
+  margin:20px 0;
+}
+
+.cell{
+  width:50px;height:50px;
+  background:#228B22;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+}
+
+.black,.white{
+  width:40px;height:40px;border-radius:50%;
+}
+.black{background:black;}
+.white{background:white;}
+
+button{
+  padding:10px 20px;
+  background:#444;
+  color:white;
+  border:none;
+  border-radius:6px;
+  margin-top:10px;
+}
+
+#menu{margin-top:30px;}
+#gameUI{display:none;}
+
+#overlay{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:999;
+}
+
+.result{
+  font-size:2em;
+  margin-bottom:10px;
+}
+
+.score{
+  font-size:1.2em;
+  margin-bottom:20px;
+}
+
+/* 簡易アニメ */
+.win{color:gold;animation:pop 0.6s ease;}
+.lose{color:#aaa;}
+.draw{color:white;}
+
+@keyframes pop{
+  0%{transform:scale(0.5);}
+  100%{transform:scale(1);}
+}
+
+.footer{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+  backdrop-filter:blur(10px);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  z-index:999;
+}
+
+.footer a{
+  color:#66ccff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.footer a:hover{
+  text-decoration:underline;
+}
+
+.footer .copyright{
+  font-size:13px;
+  font-weight:500;
+  background:linear-gradient(90deg,#ffffff,#bbbbbb);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:0.3px;
+  text-shadow:0 1px 2px rgba(0,0,0,0.6);
+}
+
+body{padding-bottom:80px;}
+
+</style>
+</head>
+
+<body>
+
+<h1>リバーシ</h1>
+
+<div id="menu">
+  <label><input type="checkbox" id="modeToggle" checked> CPU対戦</label><br>
+  <button id="startBtn">スタート</button>
+</div>
+
+<div id="gameUI">
+  <p id="turn"></p>
+  <div id="board" class="board"></div>
+  <button id="restart">タイトルへ戻る</button>
+</div>
+
+<!-- 結果画面 -->
+<div id="overlay">
+  <div id="resultText" class="result"></div>
+  <div id="scoreText" class="score"></div>
+  <button onclick="backToMenu()">もう一度遊ぶ</button>
+</div>
+
+<div class="footer">
+  <a href="../">← ゲーム一覧に戻る</a><br>
+  <div class="copyright">
+    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+  </div>
+</div>
+
+<script>
+const SIZE=8;
+const EMPTY=0,BLACK=1,WHITE=2;
+
+let board,currentPlayer,vsCPU;
+
+const boardElem=document.getElementById("board");
+const turnDisplay=document.getElementById("turn");
+const menu=document.getElementById("menu");
+const gameUI=document.getElementById("gameUI");
+const toggle=document.getElementById("modeToggle");
+
+const overlay=document.getElementById("overlay");
+const resultText=document.getElementById("resultText");
+const scoreText=document.getElementById("scoreText");
+
+document.getElementById("startBtn").onclick=()=>{
+  vsCPU=toggle.checked;
+  menu.style.display="none";
+  gameUI.style.display="block";
+  initGame();
+};
+
+document.getElementById("restart").onclick=backToMenu;
+
+function backToMenu(){
+  overlay.style.display="none";
+  gameUI.style.display="none";
+  menu.style.display="block";
+}
+
+const dirs=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+
+function initGame(){
+  board=Array.from({length:SIZE},()=>Array(SIZE).fill(EMPTY));
+  board[3][3]=WHITE;board[3][4]=BLACK;
+  board[4][3]=BLACK;board[4][4]=WHITE;
+  currentPlayer=BLACK;
+  updateTurn();
+  render();
+}
+
+function updateTurn(){
+  turnDisplay.textContent = vsCPU
+    ? `ターン: ${currentPlayer===BLACK?"●あなた":"○CPU"}`
+    : `ターン: ${currentPlayer===BLACK?"●黒":"○白"}`;
+}
+
+function isValid(x,y,p){
+  if(board[y][x])return false;
+  let o=p===BLACK?WHITE:BLACK;
+
+  for(let[dX,dY]of dirs){
+    let nx=x+dX,ny=y+dY,found=false;
+    while(nx>=0&&nx<8&&ny>=0&&ny<8){
+      if(board[ny][nx]===o)found=true;
+      else if(board[ny][nx]===p){if(found)return true;break;}
+      else break;
+      nx+=dX;ny+=dY;
+    }
+  }
+  return false;
+}
+
+function apply(x,y,p){
+  board[y][x]=p;
+  let o=p===BLACK?WHITE:BLACK;
+
+  for(let[dX,dY]of dirs){
+    let nx=x+dX,ny=y+dY,path=[];
+    while(nx>=0&&nx<8&&ny>=0&&ny<8){
+      if(board[ny][nx]===o)path.push([nx,ny]);
+      else if(board[ny][nx]===p){path.forEach(([px,py])=>board[py][px]=p);break;}
+      else break;
+      nx+=dX;ny+=dY;
+    }
+  }
+}
+
+function moves(p){
+  let m=[];
+  for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(isValid(x,y,p))m.push([x,y]);
+  return m;
+}
+
+function render(){
+  boardElem.innerHTML="";
+  for(let y=0;y<8;y++){
+    for(let x=0;x<8;x++){
+      let c=document.createElement("div");
+      c.className="cell";
+
+      if(board[y][x]===BLACK){let d=document.createElement("div");d.className="black";c.appendChild(d);}
+      if(board[y][x]===WHITE){let d=document.createElement("div");d.className="white";c.appendChild(d);}
+
+      if(isValid(x,y,currentPlayer)){
+        c.style.boxShadow="inset 0 0 0 2px yellow";
+        c.onclick=()=>{apply(x,y,currentPlayer);next();};
+      }
+
+      boardElem.appendChild(c);
+    }
+  }
+}
+
+function next(){
+  currentPlayer=currentPlayer===BLACK?WHITE:BLACK;
+  if(!moves(currentPlayer).length){
+    currentPlayer=currentPlayer===BLACK?WHITE:BLACK;
+    if(!moves(currentPlayer).length)return end();
+  }
+  updateTurn();
+  render();
+  if(vsCPU&&currentPlayer===WHITE)setTimeout(cpu,400);
+}
+
+function cpu(){
+  let m=moves(WHITE);
+  if(m.length){
+    let [x,y]=m[Math.floor(Math.random()*m.length)];
+    apply(x,y,WHITE);
+    next();
+  }
+}
+
+function end(){
+  let b=0,w=0;
+  board.flat().forEach(v=>{if(v===BLACK)b++;if(v===WHITE)w++;});
+
+  let text,cls;
+
+  if(vsCPU){
+    if(b>w){text="あなたの勝ち！🎉";cls="win";}
+    else if(w>b){text="CPUの勝ち…";cls="lose";}
+    else{text="引き分け";cls="draw";}
+  }else{
+    if(b>w){text="黒の勝ち！";cls="win";}
+    else if(w>b){text="白の勝ち！";cls="win";}
+    else{text="引き分け";cls="draw";}
+  }
+
+  resultText.textContent=text;
+  resultText.className="result "+cls;
+  scoreText.textContent=`●${b}  ○${w}`;
+
+  overlay.style.display="flex";
+}
+</script>
+
+</body>
+</html>
