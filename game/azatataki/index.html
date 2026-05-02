@@ -6,6 +6,7 @@
 
 <meta name="description" content="あざらし叩きゲームブラウザでプレイできます。">
 
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
 <script>
 window.dataLayer=window.dataLayer||[];
@@ -14,18 +15,40 @@ gtag('js',new Date());
 gtag('config','G-DK3VQGQTWC');
 </script>
 
-
 <style>
 body{
   background:#0f1115;
   color:#fff;
   text-align:center;
   font-family:sans-serif;
+  margin:0;
+  padding-bottom:80px;
 }
 
+/* タイトル */
+h1{
+  font-size:6vw;
+  margin:10px 0;
+}
+
+/* UI */
+select,button{
+  font-size:4.5vw;
+  padding:10px;
+  margin:5px;
+  border-radius:8px;
+}
+
+/* スコア */
+#score,#timer,#combo{
+  font-size:5vw;
+}
+
+/* グリッド */
 .grid{
   display:grid;
   gap:8px;
+  width:90vmin;
   margin:auto;
 }
 
@@ -58,23 +81,26 @@ body{
   transform:translate(-50%,-50%);
 }
 
+/* 落下 */
 @keyframes fall{
-  0%{ transform:translate(-50%,-50%); opacity:1;}
-  100%{ transform:translate(-50%,150%); opacity:0;}
+  0%{transform:translate(-50%,-50%);opacity:1;}
+  100%{transform:translate(-50%,150%);opacity:0;}
 }
-.fall{ animation:fall 1s ease forwards; }
+.fall{animation:fall 1s ease forwards;}
 
+/* コンボ */
 #comboPopup{
   position:fixed;
   top:20%;
   left:50%;
   transform:translateX(-50%);
-  font-size:60px;
+  font-size:10vw;
   color:yellow;
   display:none;
-  z-index:99999;
+  z-index:9999;
 }
 
+/* 結果 */
 #resultScreen{
   position:fixed;
   top:0;left:0;
@@ -86,12 +112,15 @@ body{
   flex-direction:column;
 }
 
-.result-number{
-  font-size:52px;
-  font-weight:bold;
-  transition:transform 0.2s;
+#resultScreen h2{
+  font-size:7vw;
 }
-.pop{ transform:scale(1.4); }
+
+.result-number{
+  font-size:10vw;
+}
+
+.pop{transform:scale(1.3);}
 
 /* フルコンボ */
 #fullCombo{
@@ -102,11 +131,12 @@ body{
   display:none;
   justify-content:center;
   align-items:center;
-  font-size:60px;
+  font-size:12vw;
   color:orange;
-  z-index:20000;
+  z-index:10000;
 }
 
+/* フッター */
 .footer{
   position:fixed;
   bottom:10px;
@@ -118,7 +148,7 @@ body{
   border-radius:12px;
   padding:10px;
   text-align:center;
-  font-size:13px;
+  font-size:3.5vw;
   border:1px solid rgba(255,255,255,0.15);
   box-shadow:0 5px 20px rgba(0,0,0,0.3);
   z-index:999;
@@ -127,26 +157,12 @@ body{
 .footer a{
   color:#66ccff;
   text-decoration:none;
-  font-weight:600;
-}
-
-.footer a:hover{
-  text-decoration:underline;
 }
 
 .footer .copyright{
-  font-size:13px;
-  font-weight:500;
-  background:linear-gradient(90deg,#ffffff,#bbbbbb);
-  background-clip:text;
-  -webkit-background-clip:text;
-  color:transparent;
-  -webkit-text-fill-color:transparent;
-  letter-spacing:0.3px;
-  text-shadow:0 1px 2px rgba(0,0,0,0.6);
-
-body{padding-bottom:80px;}
-
+  font-size:3.2vw;
+  color:#ccc;
+}
 </style>
 </head>
 
@@ -184,10 +200,11 @@ body{padding-bottom:80px;}
 
 <div id="fullCombo">🔥 FULL COMBO!! 🔥</div>
 
+<!-- フッター -->
 <div class="footer">
   <a href="../">← ゲーム一覧に戻る</a><br>
   <div class="copyright">
-    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+    Copyright © 2026 SirogomaAZARASI
   </div>
 </div>
 
@@ -216,8 +233,7 @@ const finalCombo=document.getElementById("finalCombo");
 const finalNowCombo=document.getElementById("finalNowCombo");
 
 let holes=[],states=[],elements=[];
-let score=0,combo=0,maxCombo=0,timeLeft=30;
-let totalHits=0;
+let score=0,combo=0,maxCombo=0,timeLeft=30,totalHits=0;
 let moleInterval,timerInterval;
 
 function createGrid(){
@@ -338,23 +354,17 @@ function countUp(el,target){
  function loop(now){
   let p=Math.min((now-t0)/800,1);
   el.textContent=Math.floor(p*target);
-  if(p<1){requestAnimationFrame(loop);}
-  else{
-    el.textContent=target;
-    el.classList.add("pop");
-    setTimeout(()=>el.classList.remove("pop"),200);
-  }
+  if(p<1) requestAnimationFrame(loop);
+  else el.textContent=target;
  }
  requestAnimationFrame(loop);
 }
 
 function showResult(){
+ const full=(maxCombo===totalHits && totalHits>0);
 
- const isFullCombo = (maxCombo === totalHits && totalHits>0);
-
- if(isFullCombo){
+ if(full){
   fullComboEl.style.display="flex";
-
   setTimeout(()=>{
     fullComboEl.style.display="none";
     showResultMain(true);
