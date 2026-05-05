@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>顔文字一覧</title>
+<title>顔文字一覧 | AZAtool</title>
 
 <style>
 body {
@@ -21,6 +21,34 @@ header {
   font-size: 18px;
 }
 
+/* 目次 */
+#toc {
+  background: white;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.toc-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.toc-item {
+  font-size: 12px;
+  background: #eee;
+  padding: 5px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toc-item:active {
+  background: #ccc;
+}
+
 /* コンテナ */
 #container {
   padding: 10px;
@@ -28,10 +56,10 @@ header {
 
 /* カテゴリ */
 .category {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
-/* カテゴリタイトル */
+/* タイトル */
 .category-title {
   font-size: 16px;
   font-weight: bold;
@@ -45,29 +73,24 @@ header {
   margin-bottom: 8px;
 }
 
-/* 顔文字リスト（縦） */
+/* 顔文字リスト */
 .list {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-/* 各顔文字 */
+/* 顔文字 */
 .item {
   background: white;
   padding: 10px;
   border-radius: 6px;
   cursor: pointer;
-
-  /* 長文対応 */
   word-break: break-all;
   overflow-wrap: anywhere;
-
-  /* 見た目 */
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* 押したとき */
 .item:active {
   background: #ddd;
 }
@@ -78,6 +101,11 @@ header {
 
 <header>顔文字一覧</header>
 
+<!-- 目次 -->
+<div id="toc">
+  <div class="toc-list" id="tocList"></div>
+</div>
+
 <div id="container"></div>
 
 <script>
@@ -85,10 +113,26 @@ fetch("data.json")
   .then(res => res.json())
   .then(data => {
     const container = document.getElementById("container");
+    const tocList = document.getElementById("tocList");
 
-    data.forEach(cat => {
+    data.forEach((cat, index) => {
+      const id = "cat-" + index;
+
+      /* ===== 目次 ===== */
+      const tocItem = document.createElement("div");
+      tocItem.className = "toc-item";
+      tocItem.textContent = cat.category;
+      tocItem.onclick = () => {
+        document.getElementById(id).scrollIntoView({
+          behavior: "smooth"
+        });
+      };
+      tocList.appendChild(tocItem);
+
+      /* ===== 本体 ===== */
       const wrap = document.createElement("div");
       wrap.className = "category";
+      wrap.id = id;
 
       const title = document.createElement("div");
       title.className = "category-title";
@@ -106,7 +150,6 @@ fetch("data.json")
         item.className = "item";
         item.textContent = text;
 
-        // クリックでコピー
         item.onclick = () => {
           navigator.clipboard.writeText(text);
           item.style.background = "#c8f7c5";
@@ -121,10 +164,6 @@ fetch("data.json")
       wrap.appendChild(list);
       container.appendChild(wrap);
     });
-  })
-  .catch(err => {
-    document.body.innerHTML = "JSON読み込み失敗";
-    console.error(err);
   });
 </script>
 
