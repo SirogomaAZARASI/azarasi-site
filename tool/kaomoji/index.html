@@ -2,97 +2,130 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>顔文字一覧</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
-header { padding: 10px; background: #333; color: white; text-align: center; }
-#search { width: 95%; padding: 10px; margin: 10px auto; display: block; }
-
-.category { margin: 15px; background: white; border-radius: 10px; padding: 10px; }
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 8px;
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f5f5f5;
 }
 
-.item {
-  background: #eee;
-  padding: 8px;
+/* ヘッダー */
+header {
+  background: #222;
+  color: white;
+  padding: 12px;
   text-align: center;
+  font-size: 18px;
+}
+
+/* コンテナ */
+#container {
+  padding: 10px;
+}
+
+/* カテゴリ */
+.category {
+  margin-bottom: 20px;
+}
+
+/* カテゴリタイトル */
+.category-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* 説明 */
+.category-desc {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* 顔文字リスト（縦） */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 各顔文字 */
+.item {
+  background: white;
+  padding: 10px;
   border-radius: 6px;
   cursor: pointer;
+
+  /* 長文対応 */
+  word-break: break-all;
+  overflow-wrap: anywhere;
+
+  /* 見た目 */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* 押したとき */
+.item:active {
+  background: #ddd;
 }
 </style>
 </head>
 
 <body>
 
-<header><h1>顔文字一覧</h1></header>
+<header>顔文字一覧</header>
 
-<input id="search" placeholder="検索">
-
-<div id="app">読み込み中...</div>
+<div id="container"></div>
 
 <script>
-let data = [];
+fetch("data.json")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("container");
 
-async function loadData() {
-  try {
-    const res = await fetch("./data.json"); // ←これ重要
-    if (!res.ok) throw new Error("404 or fetch error");
+    data.forEach(cat => {
+      const wrap = document.createElement("div");
+      wrap.className = "category";
 
-    data = await res.json();
-    render();
+      const title = document.createElement("div");
+      title.className = "category-title";
+      title.textContent = cat.category;
 
-  } catch (e) {
-    document.getElementById("app").innerHTML =
-      "❌ データ読み込み失敗<br>data.jsonの場所を確認";
-    console.error(e);
-  }
-}
+      const desc = document.createElement("div");
+      desc.className = "category-desc";
+      desc.textContent = cat.description;
 
-function render(filter="") {
-  const app = document.getElementById("app");
-  app.innerHTML = "";
+      const list = document.createElement("div");
+      list.className = "list";
 
-  data.forEach(cat => {
-    const items = cat.items.filter(i =>
-      i.includes(filter) || cat.category.includes(filter)
-    );
+      cat.items.forEach(text => {
+        const item = document.createElement("div");
+        item.className = "item";
+        item.textContent = text;
 
-    if (!items.length) return;
+        // クリックでコピー
+        item.onclick = () => {
+          navigator.clipboard.writeText(text);
+          item.style.background = "#c8f7c5";
+          setTimeout(() => item.style.background = "white", 300);
+        };
 
-    const div = document.createElement("div");
-    div.className = "category";
+        list.appendChild(item);
+      });
 
-    div.innerHTML = `
-      <h2>${cat.category}</h2>
-      <small>${cat.description}</small>
-      <div class="grid">
-        ${items.map(i => `<div class="item">${i}</div>`).join("")}
-      </div>
-    `;
-
-    app.appendChild(div);
+      wrap.appendChild(title);
+      wrap.appendChild(desc);
+      wrap.appendChild(list);
+      container.appendChild(wrap);
+    });
+  })
+  .catch(err => {
+    document.body.innerHTML = "JSON読み込み失敗";
+    console.error(err);
   });
-}
-
-// 検索
-document.getElementById("search").addEventListener("input", e => {
-  render(e.target.value);
-});
-
-// コピー
-document.addEventListener("click", e => {
-  if (e.target.classList.contains("item")) {
-    navigator.clipboard.writeText(e.target.textContent);
-  }
-});
-
-loadData();
 </script>
 
 </body>
