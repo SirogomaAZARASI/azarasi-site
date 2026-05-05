@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>顔文字一覧</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
+header { padding: 10px; background: #333; color: white; text-align: center; }
+#search { width: 95%; padding: 10px; margin: 10px auto; display: block; }
+
+.category { margin: 15px; background: white; border-radius: 10px; padding: 10px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.item {
+  background: #eee;
+  padding: 8px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header><h1>顔文字一覧</h1></header>
+
+<input id="search" placeholder="検索">
+
+<div id="app">読み込み中...</div>
+
+<script>
+let data = [];
+
+async function loadData() {
+  try {
+    const res = await fetch("./data.json"); // ←これ重要
+    if (!res.ok) throw new Error("404 or fetch error");
+
+    data = await res.json();
+    render();
+
+  } catch (e) {
+    document.getElementById("app").innerHTML =
+      "❌ データ読み込み失敗<br>data.jsonの場所を確認";
+    console.error(e);
+  }
+}
+
+function render(filter="") {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  data.forEach(cat => {
+    const items = cat.items.filter(i =>
+      i.includes(filter) || cat.category.includes(filter)
+    );
+
+    if (!items.length) return;
+
+    const div = document.createElement("div");
+    div.className = "category";
+
+    div.innerHTML = `
+      <h2>${cat.category}</h2>
+      <small>${cat.description}</small>
+      <div class="grid">
+        ${items.map(i => `<div class="item">${i}</div>`).join("")}
+      </div>
+    `;
+
+    app.appendChild(div);
+  });
+}
+
+// 検索
+document.getElementById("search").addEventListener("input", e => {
+  render(e.target.value);
+});
+
+// コピー
+document.addEventListener("click", e => {
+  if (e.target.classList.contains("item")) {
+    navigator.clipboard.writeText(e.target.textContent);
+  }
+});
+
+loadData();
+</script>
+
+</body>
+</html>
