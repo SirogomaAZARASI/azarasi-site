@@ -3,79 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顔文字一覧 | AZAtool</title>
 
-<title>AZAtool｜無料ツール集</title>
-<meta name="description" content="AZAtoolはドット絵変換、RGBコピー、カラーパレット生成、16進数・10進数・2進数・8進数変換などブラウザで使える無料ツール集です。">
-<link rel="canonical" href="https://sirogomaazarasi.github.io/azasite/tool/">
+<meta name="description" content="顔文字一覧サイトコピーできます。あざらしツールの顔文字辞典。">
   
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-DK3VQGQTWC');
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-DK3VQGQTWC');
 </script>
 
 <style>
-body{
-  margin:0;
-  background:#0f1115;
-  color:#e6e6eb;
-  font-family:sans-serif;
-  text-align:center;
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f5f5f5;
 }
 
-h1{
-  margin-top:20px;
-  font-size:28px;
+/* ===== ヘッダー ===== */
+header {
+  position: relative;
+  background: #222;
+  color: white;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 18px;
 }
 
-p.subtitle{
-  color:#aaa;
-  margin-bottom:10px;
+/* ===== 三本線（改良：丸ボタン） ===== */
+#menuBtn {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 200;
+  color: white;
+  transition: 0.2s;
 }
 
-.container{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:20px;
-  padding:20px;
+/* スクロール後 */
+#menuBtn.dark {
+  color: black;
+  background: rgba(255,255,255,0.85);
 }
 
-.card{
-  width:260px;
-  background:#171a21;
-  border:1px solid #2a2f3a;
-  border-radius:12px;
-  padding:15px;
-  text-decoration:none;
-  color:#e6e6eb;
-  transition:0.2s;
+/* 説明 */
+#description {
+  font-size: 12px;
+  color: #ccc;
+  margin-top: 5px;
 }
 
-.card:hover{
-  transform:translateY(-5px);
-  border-color:#4a90ff;
+/* ===== サイドバー ===== */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background: white;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.2);
+  overflow-y: auto;
+  transition: 0.3s;
+  z-index: 150;
+
+  /* ← 追加：三本線分下げる */
+  padding-top: 60px;
 }
 
-.card img{
-  width:100%;
-  border-radius:8px;
+#sidebar.open {
+  left: 0;
 }
 
-.card h2{
-  font-size:18px;
-  margin:10px 0 5px;
+.sidebar-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
 }
 
-.card p{
-  font-size:14px;
-  color:#aaa;
+.sidebar-item:hover {
+  background: #f0f0f0;
 }
 
+/* 背景 */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: none;
+  z-index: 100;
+}
+
+#overlay.show {
+  display: block;
+}
+
+/* ===== コンテンツ ===== */
+#container {
+  padding: 10px;
+}
+
+.category {
+  margin-bottom: 24px;
+}
+
+.category-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.category-desc {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* 縦リスト（強化） */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item {
+  background: white;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  /* 長文対応 */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: 0.15s;
+}
+
+.item:active {
+  background: #ddd;
+  transform: scale(0.97);
+}
+
+/* コピー時 */
+.item.copied {
+  background: #c8f7c5;
+}
+
+/* ===== フッター（変更なし） ===== */
 .footer{
   position:fixed;
   bottom:10px;
@@ -116,67 +206,118 @@ p.subtitle{
 }
 
 body{padding-bottom:80px;}
-
 </style>
 </head>
 
 <body>
 
-<h1>AZAtoolあざらしツール</h1>
-<p class="subtitle">ブラウザで使える無料ツール集</p>
+<!-- 三本線 -->
+<div id="menuBtn">☰</div>
 
-<div class="container">
+<header>
+  顔文字一覧
+  <div id="description">クリックでコピー・カテゴリは左メニュー(☰)から移動できます</div>
+</header>
 
-<!-- DotCamera -->
-<a href="dotcamera" class="card">
-  <img src="images/dotcamera.png" alt="画像をドット絵に変換するツール DotCamera">
-  <h2>DotCamera</h2>
-  <p>画像をレトロなドット絵に変換できるツール</p>
-</a>
-
-<!-- RGBカラーコピー -->
-<a href="rgbcolorcopy" class="card">
-  <img src="images/rgb.png" alt="RGBカラーコードをコピーできるツール">
-  <h2>RGBカラーコピー</h2>
-  <p>RGB・HEXカラーコードを取得・コピー</p>
-</a>
-
-<!-- カラーパレット -->
-<a href="colorpalettegenerator" class="card">
-  <img src="images/palette.png" alt="カラーパレットを自動生成するツール">
-  <h2>カラーパレット生成</h2>
-  <p>配色を自動で作成できるツール</p>
-</a>
-
-<!-- 進数変換 -->
-<a href="hexdecoctbinconverter" class="card">
-  <img src="images/converter.png" alt="16進数10進数2進数8進数を相互変換できるツール">
-  <h2>進数変換</h2>
-  <p>16進数・10進数・2進数・8進数を変換</p>
-</a>
-
-<!-- 全角半角判別ツール -->
-<a href="textwidthchecker" class="card">
-  <img src="images/textchecker.png" alt="全角か半角かで文字に色をつけるツール。スペースも対応">
-  <h2>全角半角判別</h2>
-  <p>全角か半角かで文字に色をつけるツール。スペースも対応</p>
-</a>
-
-<!-- html実行ツール -->
-<a href="htmlrunner" class="card">
-  <img src="images/htmlrunner.png" alt="書いたコードをリアルタイムプレビューするツール(無料)">
-  <h2>HTML実行ツール</h2>
-  <p>書いたコードをリアルタイムプレビューするツール(無料)</p>
-</a>
-
-</div>
+<div id="sidebar"></div>
+<div id="overlay"></div>
+<div id="container"></div>
 
 <div class="footer">
-  <a href="../">← サイト一覧に戻る</a><br>
+  <a href="../">← ツール一覧に戻る</a><br>
   <div class="copyright">
     Copyright © 2026 SirogomaAZARASI All Rights Reserved.
   </div>
 </div>
+
+<script>
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const menuBtn = document.getElementById("menuBtn");
+
+function openMenu(){
+  sidebar.classList.add("open");
+  overlay.classList.add("show");
+  menuBtn.classList.add("dark");
+}
+
+function closeMenu(){
+  sidebar.classList.remove("open");
+  overlay.classList.remove("show");
+
+  if (window.scrollY <= document.querySelector("header").offsetHeight - 20) {
+    menuBtn.classList.remove("dark");
+  }
+}
+
+menuBtn.onclick = openMenu;
+overlay.onclick = closeMenu;
+
+fetch("data.json")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("container");
+
+    data.forEach((cat, index) => {
+      const id = "cat-" + index;
+
+      const sbItem = document.createElement("div");
+      sbItem.className = "sidebar-item";
+      sbItem.textContent = cat.category;
+
+      sbItem.onclick = () => {
+        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+        closeMenu();
+      };
+
+      sidebar.appendChild(sbItem);
+
+      const wrap = document.createElement("div");
+      wrap.className = "category";
+      wrap.id = id;
+
+      const title = document.createElement("div");
+      title.className = "category-title";
+      title.textContent = cat.category;
+
+      const desc = document.createElement("div");
+      desc.className = "category-desc";
+      desc.textContent = cat.description;
+
+      const list = document.createElement("div");
+      list.className = "list";
+
+      cat.items.forEach(text => {
+        const item = document.createElement("div");
+        item.className = "item";
+        item.textContent = text;
+
+        item.onclick = () => {
+          navigator.clipboard.writeText(text);
+          item.classList.add("copied");
+          setTimeout(() => item.classList.remove("copied"), 300);
+        };
+
+        list.appendChild(item);
+      });
+
+      wrap.appendChild(title);
+      wrap.appendChild(desc);
+      wrap.appendChild(list);
+      container.appendChild(wrap);
+    });
+  });
+
+const header = document.querySelector("header");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > header.offsetHeight - 20) {
+    menuBtn.classList.add("dark");
+  } else {
+    menuBtn.classList.remove("dark");
+  }
+});
+</script>
 
 </body>
 </html>
