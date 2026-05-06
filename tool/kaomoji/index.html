@@ -32,15 +32,36 @@ header {
   font-size: 18px;
 }
 
-/* 三本線（固定） */
+/* ===== 三本線 ===== */
 #menuBtn {
   position: fixed;
   top: 10px;
   left: 10px;
-  font-size: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
   cursor: pointer;
   z-index: 200;
   color: white;
+  transition: 0.2s;
+}
+
+/* 白背景時 */
+#menuBtn.dark {
+  color: black;
+  background: rgba(255,255,255,0.85);
+}
+
+/* 非表示 */
+#menuBtn.hide {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* 説明 */
@@ -62,6 +83,7 @@ header {
   overflow-y: auto;
   transition: 0.3s;
   z-index: 150;
+  padding-top: 60px;
 }
 
 #sidebar.open {
@@ -126,31 +148,25 @@ header {
   padding: 10px;
   border-radius: 6px;
   cursor: pointer;
-  word-break: break-all;
+
+  word-break: break-word;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
+
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: 0.15s;
 }
 
 .item:active {
   background: #ddd;
+  transform: scale(0.97);
 }
 
-#menuBtn {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  font-size: 22px;
-  cursor: pointer;
-  z-index: 200;
-  color: white;
-  transition: color 0.2s;
+.item.copied {
+  background: #c8f7c5;
 }
 
-/* 黒状態 */
-#menuBtn.dark {
-  color: black;
-}
-
+/* ===== フッター ===== */
 .footer{
   position:fixed;
   bottom:10px;
@@ -191,13 +207,11 @@ header {
 }
 
 body{padding-bottom:80px;}
-
 </style>
 </head>
 
 <body>
 
-<!-- 三本線 -->
 <div id="menuBtn">☰</div>
 
 <header>
@@ -205,12 +219,8 @@ body{padding-bottom:80px;}
   <div id="description">クリックでコピー・カテゴリは左メニュー(☰)から移動できます</div>
 </header>
 
-<!-- サイドバー -->
 <div id="sidebar"></div>
-
-<!-- 背景 -->
 <div id="overlay"></div>
-
 <div id="container"></div>
 
 <div class="footer">
@@ -224,125 +234,97 @@ body{padding-bottom:80px;}
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const menuBtn = document.getElementById("menuBtn");
+const header = document.querySelector("header");
 
-menuBtn.onclick = () => {
+/* ===== 開閉 ===== */
+function openMenu(){
   sidebar.classList.add("open");
   overlay.classList.add("show");
-};
+  menuBtn.classList.add("dark");
+  menuBtn.classList.add("hide");
+}
 
-overlay.onclick = () => {
+function closeMenu(){
   sidebar.classList.remove("open");
   overlay.classList.remove("show");
-};
+  menuBtn.classList.remove("hide");
 
+  if (window.scrollY <= header.offsetHeight - 20) {
+    menuBtn.classList.remove("dark");
+  }
+}
+
+menuBtn.onclick = openMenu;
+overlay.onclick = closeMenu;
+
+/* ===== JSON読み込み ===== */
 fetch("data.json")
-  .then(res => res.json())
-  .then(data => {
-    const container = document.getElementById("container");
+.then(res => res.json())
+.then(data => {
 
-    data.forEach((cat, index) => {
-      const id = "cat-" + index;
+  const container = document.getElementById("container");
 
-      /* サイドバー */
-      const sbItem = document.createElement("div");
-      sbItem.className = "sidebar-item";
-      sbItem.textContent = cat.category;
+  data.forEach((cat, index) => {
+    const id = "cat-" + index;
 
-      sbItem.onclick = () => {
-        document.getElementById(id).scrollIntoView({
-          behavior: "smooth"
-        });
-        sidebar.classList.remove("open");
-        overlay.classList.remove("show");
+    const sbItem = document.createElement("div");
+    sbItem.className = "sidebar-item";
+    sbItem.textContent = cat.category;
+
+    sbItem.onclick = () => {
+      document.getElementById(id).scrollIntoView({
+        behavior: "smooth"
+      });
+      closeMenu();
+    };
+
+    sidebar.appendChild(sbItem);
+
+    const wrap = document.createElement("div");
+    wrap.className = "category";
+    wrap.id = id;
+
+    const title = document.createElement("div");
+    title.className = "category-title";
+    title.textContent = cat.category;
+
+    const desc = document.createElement("div");
+    desc.className = "category-desc";
+    desc.textContent = cat.description;
+
+    const list = document.createElement("div");
+    list.className = "list";
+
+    cat.items.forEach(text => {
+      const item = document.createElement("div");
+      item.className = "item";
+      item.textContent = text;
+
+      item.onclick = () => {
+        navigator.clipboard.writeText(text);
+        item.classList.add("copied");
+        setTimeout(() => item.classList.remove("copied"), 300);
       };
 
-      sidebar.appendChild(sbItem);
-
-      /* 本体 */
-      const wrap = document.createElement("div");
-      wrap.className = "category";
-      wrap.id = id;
-
-      const title = document.createElement("div");
-      title.className = "category-title";
-      title.textContent = cat.category;
-
-      const desc = document.createElement("div");
-      desc.className = "category-desc";
-      desc.textContent = cat.description;
-
-      const list = document.createElement("div");
-      list.className = "list";
-
-      cat.items.forEach(text => {
-        const item = document.createElement("div");
-        item.className = "item";
-        item.textContent = text;
-
-        item.onclick = () => {
-          navigator.clipboard.writeText(text);
-          item.style.background = "#c8f7c5";
-          setTimeout(() => item.style.background = "white", 300);
-        };
-
-        list.appendChild(item);
-      });
-
-      wrap.appendChild(title);
-      wrap.appendChild(desc);
-      wrap.appendChild(list);
-      container.appendChild(wrap);
+      list.appendChild(item);
     });
+
+    wrap.appendChild(title);
+    wrap.appendChild(desc);
+    wrap.appendChild(list);
+    container.appendChild(wrap);
   });
-  
-  const header = document.querySelector("header");
-
-// スクロールで色変更
-
-window.addEventListener("scroll", () => {
-
-  const headerBottom = header.offsetHeight;
-
-  if (window.scrollY > headerBottom - 20) {
-
-    menuBtn.classList.add("dark");
-
-  } else {
-
-    menuBtn.classList.remove("dark");
-
-  }
 
 });
 
-// サイドバー開いたら黒固定
-
-menuBtn.onclick = () => {
-
-  sidebar.classList.add("open");
-
-  overlay.classList.add("show");
-
-  menuBtn.classList.add("dark");
-
-};
-
-overlay.onclick = () => {
-
-  sidebar.classList.remove("open");
-
-  overlay.classList.remove("show");
-
-  // スクロール位置に応じて戻す
-
-  if (window.scrollY <= header.offsetHeight - 20) {
-
+/* ===== スクロール ===== */
+window.addEventListener("scroll", () => {
+  if (window.scrollY > header.offsetHeight - 20) {
+    menuBtn.classList.add("dark");
+  } else {
     menuBtn.classList.remove("dark");
-
   }
-
-};
-
+});
 </script>
 
 </body>
