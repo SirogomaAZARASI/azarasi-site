@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>顔文字一覧</title>
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顔文字一覧</title>
+
 <meta name="description" content="顔文字一覧サイトコピーできます。あざらしツールの顔文字辞典。">
   
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
@@ -24,18 +27,30 @@ body {
 
 /* ===== ヘッダー ===== */
 header {
-  display: flex;
-  align-items: center;
+  position: relative;
   background: #222;
   color: white;
-  padding: 10px;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 18px;
 }
 
-/* 三本線 */
+/* 三本線（固定） */
 #menuBtn {
-  font-size: 20px;
-  margin-right: 10px;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  font-size: 22px;
   cursor: pointer;
+  z-index: 200;
+  color: white;
+}
+
+/* 説明 */
+#description {
+  font-size: 12px;
+  color: #ccc;
+  margin-top: 5px;
 }
 
 /* ===== サイドバー ===== */
@@ -49,7 +64,7 @@ header {
   box-shadow: 2px 0 6px rgba(0,0,0,0.2);
   overflow-y: auto;
   transition: 0.3s;
-  z-index: 100;
+  z-index: 150;
 }
 
 #sidebar.open {
@@ -66,7 +81,7 @@ header {
   background: #f0f0f0;
 }
 
-/* 背景暗転 */
+/* 背景 */
 #overlay {
   position: fixed;
   top: 0;
@@ -75,7 +90,7 @@ header {
   height: 100%;
   background: rgba(0,0,0,0.3);
   display: none;
-  z-index: 50;
+  z-index: 100;
 }
 
 #overlay.show {
@@ -127,9 +142,12 @@ header {
 
 <body>
 
+<!-- 三本線 -->
+<div id="menuBtn">☰</div>
+
 <header>
-  <div id="menuBtn">☰</div>
-  <div>顔文字一覧</div>
+  顔文字一覧
+  <div id="description">クリックでコピー・カテゴリは左メニューから移動できます</div>
 </header>
 
 <!-- サイドバー -->
@@ -163,7 +181,7 @@ fetch("data.json")
     data.forEach((cat, index) => {
       const id = "cat-" + index;
 
-      /* ===== サイドバー ===== */
+      /* サイドバー */
       const sbItem = document.createElement("div");
       sbItem.className = "sidebar-item";
       sbItem.textContent = cat.category;
@@ -178,7 +196,7 @@ fetch("data.json")
 
       sidebar.appendChild(sbItem);
 
-      /* ===== 本体 ===== */
+      /* 本体 */
       const wrap = document.createElement("div");
       wrap.className = "category";
       wrap.id = id;
