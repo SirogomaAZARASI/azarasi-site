@@ -134,6 +134,64 @@ header {
 .item:active {
   background: #ddd;
 }
+
+#menuBtn {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 200;
+  color: white;
+  transition: color 0.2s;
+}
+
+/* 黒状態 */
+#menuBtn.dark {
+  color: black;
+}
+
+.footer{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+  backdrop-filter:blur(10px);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  z-index:999;
+}
+
+.footer a{
+  color:#66ccff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.footer a:hover{
+  text-decoration:underline;
+}
+
+.footer .copyright{
+  font-size:13px;
+  font-weight:500;
+  background:linear-gradient(90deg,#ffffff,#bbbbbb);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:0.3px;
+  text-shadow:0 1px 2px rgba(0,0,0,0.6);
+}
+
+body{padding-bottom:80px;}
+
 </style>
 </head>
 
@@ -154,6 +212,13 @@ header {
 <div id="overlay"></div>
 
 <div id="container"></div>
+
+<div class="footer">
+  <a href="../">← ツール一覧に戻る</a><br>
+  <div class="copyright">
+    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+  </div>
+</div>
 
 <script>
 const sidebar = document.getElementById("sidebar");
@@ -229,6 +294,55 @@ fetch("data.json")
       container.appendChild(wrap);
     });
   });
+  
+  const header = document.querySelector("header");
+
+// スクロールで色変更
+
+window.addEventListener("scroll", () => {
+
+  const headerBottom = header.offsetHeight;
+
+  if (window.scrollY > headerBottom - 20) {
+
+    menuBtn.classList.add("dark");
+
+  } else {
+
+    menuBtn.classList.remove("dark");
+
+  }
+
+});
+
+// サイドバー開いたら黒固定
+
+menuBtn.onclick = () => {
+
+  sidebar.classList.add("open");
+
+  overlay.classList.add("show");
+
+  menuBtn.classList.add("dark");
+
+};
+
+overlay.onclick = () => {
+
+  sidebar.classList.remove("open");
+
+  overlay.classList.remove("show");
+
+  // スクロール位置に応じて戻す
+
+  if (window.scrollY <= header.offsetHeight - 20) {
+
+    menuBtn.classList.remove("dark");
+
+  }
+
+};
+
 </script>
 
 </body>
