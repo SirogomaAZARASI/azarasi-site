@@ -126,33 +126,17 @@ body{padding-bottom:80px;}
   text-decoration:none;
   color:#e6e6eb;
   transition:0.2s;
-  position:relative; /* 追加 */
-  overflow:hidden;
-}
-
-/* NEWやUPDATEバッジ */
-.card{
-  width:260px;
-  background:#171a21;
-  border:1px solid #2a2f3a;
-  border-radius:12px;
-  padding:15px;
-  text-decoration:none;
-  color:#e6e6eb;
-  transition:0.2s;
   position:relative;
   overflow:hidden;
 }
 
-/* バッジまとめ */
+/* バッジを横並び */
 .badge-container{
   position:absolute;
   top:10px;
   right:10px;
   display:flex;
-  flex-direction:column;
   gap:6px;
-  align-items:flex-end;
   z-index:5;
 }
 
@@ -160,30 +144,27 @@ body{padding-bottom:80px;}
 .badge{
   padding:4px 10px;
   border-radius:999px;
-  font-size:11px;
+  font-size:12px;
   font-weight:bold;
   color:white;
   backdrop-filter:blur(6px);
   box-shadow:0 2px 8px rgba(0,0,0,0.3);
-  letter-spacing:0.3px;
+  white-space:nowrap;
 }
 
-/* 種類 */
+/* NEW */
 .badge.new{
   background:linear-gradient(135deg,#ff4d6d,#ff7b00);
 }
 
+/* UPDATE */
 .badge.update{
   background:linear-gradient(135deg,#00bfff,#0066ff);
 }
 
+/* BETA */
 .badge.beta{
   background:linear-gradient(135deg,#9b5cff,#5f27cd);
-}
-
-.badge.hot{
-  background:linear-gradient(135deg,#ffcc00,#ff6600);
-  color:#111;
 }
 
 </style>
