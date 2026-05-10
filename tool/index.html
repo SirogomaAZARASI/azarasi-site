@@ -61,9 +61,54 @@ p.subtitle{
   border-color:#4a90ff;
 }
 
-.card img{
+/* 画像エリア */
+.card-image{
+  position:relative;
+}
+
+/* 画像 */
+.card-image img{
   width:100%;
   border-radius:8px;
+  display:block;
+}
+
+/* バッジ横並び */
+.badge-container{
+  position:absolute;
+  top:8px;
+  right:8px;
+  display:flex;
+  gap:6px;
+  z-index:5;
+}
+
+/* バッジ共通 */
+.badge{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:bold;
+  color:white;
+  line-height:1;
+  white-space:nowrap;
+  backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,0.35);
+}
+
+/* NEW */
+.badge.new{
+  background:linear-gradient(135deg,#ff4d6d,#ff7b00);
+}
+
+/* UPDATE */
+.badge.update{
+  background:linear-gradient(135deg,#00bfff,#0066ff);
+}
+
+/* BETA */
+.badge.beta{
+  background:linear-gradient(135deg,#9b5cff,#5f27cd);
 }
 
 .card h2{
@@ -115,72 +160,9 @@ p.subtitle{
   text-shadow:0 1px 2px rgba(0,0,0,0.6);
 }
 
-body{padding-bottom:80px;}
-
-.card{
-  width:260px;
-  background:#171a21;
-  border:1px solid #2a2f3a;
-  border-radius:12px;
-  padding:15px;
-  text-decoration:none;
-  color:#e6e6eb;
-  transition:0.2s;
+body{
+  padding-bottom:80px;
 }
-
-.card:hover{
-  transform:translateY(-5px);
-  border-color:#4a90ff;
-}
-
-/* 画像を基準にする */
-.card-image{
-  position:relative;
-}
-
-/* 画像 */
-.card-image img{
-  width:100%;
-  border-radius:8px;
-  display:block;
-}
-
-/* バッジ横並び */
-.badge-container{
-  position:absolute;
-  top:8px;
-  right:8px;
-  display:flex;
-  gap:6px;
-  z-index:5;
-}
-
-/* バッジ */
-.badge{
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:bold;
-  color:white;
-  line-height:1;
-  backdrop-filter:blur(6px);
-  box-shadow:0 2px 8px rgba(0,0,0,0.35);
-  white-space:nowrap;
-}
-
-/* 種類 */
-.badge.new{
-  background:linear-gradient(135deg,#ff4d6d,#ff7b00);
-}
-
-.badge.update{
-  background:linear-gradient(135deg,#00bfff,#0066ff);
-}
-
-.badge.beta{
-  background:linear-gradient(135deg,#9b5cff,#5f27cd);
-}
-
 </style>
 </head>
 
@@ -193,52 +175,89 @@ body{padding-bottom:80px;}
 
 <!-- DotCamera -->
 <a href="dotcamera" class="card">
-  <img src="images/dotcamera.png" alt="画像をドット絵に変換するツール DotCamera">
+
+  <div class="card-image">
+    <img src="images/dotcamera.png" alt="画像をドット絵に変換するツール DotCamera">
+  </div>
+
   <h2>DotCamera</h2>
   <p>画像をレトロなドット絵に変換できるツール</p>
 </a>
 
 <!-- RGBカラーコピー -->
 <a href="rgbcolorcopy" class="card">
-  <img src="images/rgb.png" alt="RGBカラーコードをコピーできるツール">
+
+  <div class="card-image">
+    <img src="images/rgb.png" alt="RGBカラーコードをコピーできるツール">
+  </div>
+
   <h2>RGBカラーコピー</h2>
   <p>RGB・HEXカラーコードを取得・コピー</p>
 </a>
 
 <!-- カラーパレット -->
 <a href="colorpalettegenerator" class="card">
-  <img src="images/palette.png" alt="カラーパレットを自動生成するツール">
+
+  <div class="card-image">
+    <img src="images/palette.png" alt="カラーパレットを自動生成するツール">
+  </div>
+
   <h2>カラーパレット生成</h2>
   <p>配色を自動で作成できるツール</p>
 </a>
 
 <!-- 進数変換 -->
 <a href="hexdecoctbinconverter" class="card">
-  <img src="images/converter.png" alt="16進数10進数2進数8進数を相互変換できるツール">
+
+  <div class="card-image">
+    <img src="images/converter.png" alt="16進数10進数2進数8進数を相互変換できるツール">
+  </div>
+
   <h2>進数変換</h2>
   <p>16進数・10進数・2進数・8進数を変換</p>
 </a>
 
 <!-- 全角半角判別ツール -->
 <a href="textwidthchecker" class="card">
-  <img src="images/textchecker.png" alt="全角か半角かで文字に色をつけるツール。スペースも対応">
+
+  <div class="card-image">
+    <img src="images/textchecker.png" alt="全角か半角かで文字に色をつけるツール。スペースも対応">
+  </div>
+
   <h2>全角半角判別</h2>
   <p>全角か半角かで文字に色をつけるツール。スペースも対応</p>
 </a>
 
 <!-- html実行ツール -->
 <a href="htmlrunner" class="card">
-  <img src="images/htmlrunner.png" alt="書いたコードをリアルタイムプレビューするツール(無料)">
+
+  <div class="card-image">
+    <img src="images/htmlrunner.png" alt="書いたコードをリアルタイムプレビューするツール(無料)">
+  </div>
+
   <h2>HTML実行ツール</h2>
   <p>書いたコードをリアルタイムプレビューするツール(無料)</p>
 </a>
 
 <!-- 顔文字一覧ツール -->
 <a href="kaomoji" class="card">
-  <div class="badge new">NEW</div>
-  <img src="images/kaomoji.png" alt="顔文字一覧コピーできます。">
+
+  <div class="card-image">
+
+    <!-- バッジ -->
+    <div class="badge-container">
+      <div class="badge new">NEW</div>
+      <div class="badge update">UPDATE</div>
+      <div class="badge beta">BETA</div>
+    </div>
+
+    <img src="images/kaomoji.png" alt="顔文字一覧コピーできます。">
+
+  </div>
+
   <h2>顔文字一覧</h2>
   <p>顔文字一覧、約700個のデータがあります。コピー可。</p>
+
 </a>
 
 </div>
