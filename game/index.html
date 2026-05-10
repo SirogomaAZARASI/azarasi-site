@@ -60,9 +60,54 @@ p.subtitle{
   border-color:#4a90ff;
 }
 
-.card img{
+/* 画像エリア */
+.card-image{
+  position:relative;
+}
+
+/* 画像 */
+.card-image img{
   width:100%;
   border-radius:8px;
+  display:block;
+}
+
+/* バッジ横並び */
+.badge-container{
+  position:absolute;
+  top:8px;
+  right:8px;
+  display:flex;
+  gap:6px;
+  z-index:5;
+}
+
+/* バッジ共通 */
+.badge{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:bold;
+  color:white;
+  line-height:1;
+  white-space:nowrap;
+  backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,0.35);
+}
+
+/* NEW */
+.badge.new{
+  background:linear-gradient(135deg,#ff4d6d,#ff7b00);
+}
+
+/* UPDATE */
+.badge.update{
+  background:linear-gradient(135deg,#00bfff,#0066ff);
+}
+
+/* BETA */
+.badge.beta{
+  background:linear-gradient(135deg,#9b5cff,#5f27cd);
 }
 
 .card h2{
@@ -114,8 +159,9 @@ p.subtitle{
   text-shadow:0 1px 2px rgba(0,0,0,0.6);
 }
 
-body{padding-bottom:80px;}
-
+body{
+  padding-bottom:80px;
+}
 </style>
 </head>
 
@@ -128,21 +174,37 @@ body{padding-bottom:80px;}
 
 <!-- あざらし叩き -->
 <a href="azatataki" class="card">
-  <img src="images/azatataki.png" alt="あざらし叩き">
+   <div class="card-image">
+    <div class="badge-container">
+      <div class="badge new">NEW</div>
+  	  <div class="badge update">UPDATE</div>
+    </div>
+  	<img src="images/azatataki.png" alt="あざらし叩き">
+  </div>
   <h2>あざらし叩き</h2>
   <p>あざらしを叩こう。</p>
 </a>
 
 <!-- 迷路ゲーム -->
 <a href="maze" class="card">
-  <img src="images/maze.png" alt="迷路ゲーム">
+  <div class="card-image">
+    <div class="badge-container">
+    
+    </div>
+  	<img src="images/maze.png" alt="迷路ゲーム">
+  </div>
   <h2>迷路</h2>
   <p>迷路ゲーム、ランダムに生成された迷路をクリアしよう</p>
 </a>
 
   <!-- リバーシゲーム -->
 <a href="reversi" class="card">
-  <img src="images/reversi.png" alt="リバーシゲーム">
+  <div class="card-image">
+    <div class="badge-container">
+    <div class="badge new">NEW</div>
+    </div>
+  	<img src="images/reversi.png" alt="リバーシゲーム">
+  </div>
   <h2>リバーシ</h2></h2>
   <p>CPU、対人両対応</p>
 </a>
