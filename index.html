@@ -60,9 +60,54 @@ p.subtitle{
   border-color:#4a90ff;
 }
 
-.card img{
+/* 画像エリア */
+.card-image{
+  position:relative;
+}
+
+/* 画像 */
+.card-image img{
   width:100%;
   border-radius:8px;
+  display:block;
+}
+
+/* バッジ横並び */
+.badge-container{
+  position:absolute;
+  top:8px;
+  right:8px;
+  display:flex;
+  gap:6px;
+  z-index:5;
+}
+
+/* バッジ共通 */
+.badge{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:bold;
+  color:white;
+  line-height:1;
+  white-space:nowrap;
+  backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,0.35);
+}
+
+/* NEW */
+.badge.new{
+  background:linear-gradient(135deg,#ff4d6d,#ff7b00);
+}
+
+/* UPDATE */
+.badge.update{
+  background:linear-gradient(135deg,#00bfff,#0066ff);
+}
+
+/* BETA */
+.badge.beta{
+  background:linear-gradient(135deg,#9b5cff,#5f27cd);
 }
 
 .card h2{
@@ -73,6 +118,49 @@ p.subtitle{
 .card p{
   font-size:14px;
   color:#aaa;
+}
+
+.footer{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+  backdrop-filter:blur(10px);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  z-index:999;
+}
+
+.footer a{
+  color:#66ccff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.footer a:hover{
+  text-decoration:underline;
+}
+
+.footer .copyright{
+  font-size:13px;
+  font-weight:500;
+  background:linear-gradient(90deg,#ffffff,#bbbbbb);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:0.3px;
+  text-shadow:0 1px 2px rgba(0,0,0,0.6);
+}
+
+body{
+  padding-bottom:80px;
 }
 </style>
 </head>
@@ -86,14 +174,24 @@ p.subtitle{
 
 <!-- tool -->
 <a href="tool" class="card">
-  <img src="images/tool.png" alt="ツール集">
+    <div class="card-image">
+    <div class="badge-container">
+
+    </div>
+    <img src="images/tool.png" alt="ツール集">
+  </div>
   <h2>tool</h2>
   <p>無料ツール集</p>
 </a>
 
 <!-- game -->
 <a href="game" class="card">
-  <img src="images/game.png" alt="game集">
+      <div class="card-image">
+    <div class="badge-container">
+
+    </div>
+    <img src="images/game.png" alt="game集">
+  </div>
   <h2>game</h2>
   <p>無料game集</p>
 </a>
