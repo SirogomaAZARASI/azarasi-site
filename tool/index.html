@@ -117,6 +117,49 @@ p.subtitle{
 
 body{padding-bottom:80px;}
 
+.card{
+  width:260px;
+  background:#171a21;
+  border:1px solid #2a2f3a;
+  border-radius:12px;
+  padding:15px;
+  text-decoration:none;
+  color:#e6e6eb;
+  transition:0.2s;
+  position:relative; /* 追加 */
+  overflow:hidden;
+}
+
+/* NEWやUPDATEバッジ */
+.badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:bold;
+  color:white;
+  backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  z-index:5;
+}
+
+/* NEW */
+.badge.new{
+  background:linear-gradient(135deg,#ff4d6d,#ff7b00);
+}
+
+/* UPDATE */
+.badge.update{
+  background:linear-gradient(135deg,#00bfff,#0066ff);
+}
+
+/* BETA */
+.badge.beta{
+  background:linear-gradient(135deg,#9b5cff,#5f27cd);
+}
+
 </style>
 </head>
 
@@ -171,6 +214,7 @@ body{padding-bottom:80px;}
 
 <!-- 顔文字一覧ツール -->
 <a href="kaomoji" class="card">
+  <div class="badge new">NEW</div>
   <img src="images/kaomoji.png" alt="顔文字一覧コピーできます。">
   <h2>顔文字一覧</h2>
   <p>顔文字一覧、約700個のデータがあります。コピー可。</p>
