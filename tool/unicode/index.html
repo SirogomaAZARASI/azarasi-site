@@ -6,7 +6,7 @@
 <title>Unicode(特殊文字など)ビューア | AZAtool</title>
 
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <meta name="description"
 content="unicode文字一覧、特殊文字などをコピーできます。あざらしツールの無料unicode一覧サイト。">
@@ -41,11 +41,22 @@ gtag('config', 'G-DK3VQGQTWC');
 
 <style>
 
+html{
+  height:100%;
+  overflow:hidden;
+}
+
 body{
   margin:0;
   display:flex;
-  height:100vh;
+
+  height:100dvh;
   overflow:hidden;
+
+  padding-top:
+  env(safe-area-inset-top);
+
+  background:#f5f5f5;
 
   font-family:
   "Noto Sans JP",
@@ -159,13 +170,25 @@ body{
   display:flex;
   flex-direction:column;
   background:#f5f5f5;
+  min-width:0;
 }
 
 header{
   background:#111;
   color:#fff;
-  padding:10px;
+
+  padding:
+  calc(env(safe-area-inset-top) + 10px)
+  10px
+  10px;
+
   font-size:18px;
+
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  box-sizing:border-box;
 }
 
 /* ===== Unicode一覧 ===== */
@@ -174,6 +197,8 @@ header{
   flex:1;
   overflow:auto;
   position:relative;
+
+  -webkit-overflow-scrolling:touch;
 }
 
 #spacer{
@@ -264,18 +289,35 @@ header{
 
 .footer{
   position:fixed;
-  bottom:10px;
+
+  bottom:
+  calc(env(safe-area-inset-bottom) + 10px);
+
   left:50%;
   transform:translateX(-50%);
+
   width:90%;
-  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+
+  background:
+  linear-gradient(
+    to right,
+    rgba(0,0,0,0.2),
+    rgba(0,0,0,0.85)
+  );
+
   backdrop-filter:blur(10px);
+
   border-radius:12px;
   padding:10px;
+
   text-align:center;
   font-size:13px;
+
   border:1px solid rgba(255,255,255,0.15);
-  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+
+  box-shadow:
+  0 5px 20px rgba(0,0,0,0.3);
+
   z-index:999;
 }
 
@@ -301,7 +343,9 @@ header{
   text-shadow:0 1px 2px rgba(0,0,0,0.6);
 }
 
-body{padding-bottom:80px;}
+body{
+  padding-bottom:80px;
+}
 
 </style>
 </head>
@@ -373,8 +417,6 @@ Unicode 全ブロック
 const blocks = `
 0000..007F; Basic Latin
 0080..00FF; Latin-1 Supplement
-0100..017F; Latin Extended-A
-0180..024F; Latin Extended-B
 0370..03FF; Greek and Coptic
 0400..04FF; Cyrillic
 0590..05FF; Hebrew
@@ -396,25 +438,12 @@ const blocks = `
 4E00..9FFF; CJK Unified Ideographs
 AC00..D7AF; Hangul Syllables
 E000..F8FF; Private Use Area
-FB00..FDFF; Arabic Presentation Forms
-FE00..FE0F; Variation Selectors
-FF00..FFEF; Fullwidth Forms
-12000..123FF; Cuneiform
-13000..1342F; Egyptian Hieroglyphs
 1D100..1D1FF; Musical Symbols
-1D400..1D7FF; Math Alphanumeric Symbols
 1F300..1F5FF; Emoji Symbols
 1F600..1F64F; Emoticons
 20000..2A6DF; CJK Extension B
-2A700..2B73F; CJK Extension C
-2B740..2B81D; CJK Extension D
-2B820..2CEAF; CJK Extension E
-2CEB0..2EBEF; CJK Extension F
 30000..3134F; CJK Extension G
-31350..323AF; CJK Extension H
 E0000..E007F; Tags
-E0100..E01EF; Variation Selectors Supplement
-F0000..FFFFF; Supplementary Private Use Area-A
 100000..10FFFF; Supplementary Private Use Area-B
 `
 .trim()
