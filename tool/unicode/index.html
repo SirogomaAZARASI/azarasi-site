@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+
+<title>Unicode(特殊文字など)ビューア | AZAtool</title>
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<meta name="description"
+content="unicode文字一覧、特殊文字などをコピーできます。あざらしツールの無料unicode一覧サイト。">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
+
+<script>
+window.dataLayer = window.dataLayer || [];
+
+function gtag(){
+  dataLayer.push(arguments);
+}
+
+gtag('js', new Date());
+gtag('config', 'G-DK3VQGQTWC');
+</script>
+
+<!-- ===== フォント ===== -->
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Music&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+  margin:0;
+  display:flex;
+  height:100vh;
+  overflow:hidden;
+
+  font-family:
+  "Noto Sans JP",
+  "Noto Sans SC",
+  "Noto Sans TC",
+  "Noto Sans KR",
+  "Noto Sans Arabic",
+  "Noto Sans Devanagari",
+  "Noto Sans Thai",
+  "Noto Sans Hebrew",
+  "Noto Sans Symbols",
+  "Noto Sans Symbols 2",
+  "Noto Sans Math",
+  "Noto Music",
+  "Segoe UI Symbol",
+  "Apple Color Emoji",
+  "Segoe UI Emoji",
+  sans-serif;
+}
+
+/* ===== ローディング ===== */
+
+#fontLoader{
+  position:fixed;
+  inset:0;
+  background:#111;
+  color:#fff;
+  z-index:999999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  transition:.4s;
+}
+
+.loaderBox{
+  text-align:center;
+}
+
+.spinner{
+  width:48px;
+  height:48px;
+
+  border:5px solid #444;
+  border-top:5px solid #fff;
+
+  border-radius:50%;
+
+  animation:spin 1s linear infinite;
+
+  margin:auto;
+  margin-bottom:14px;
+}
+
+.loaderText{
+  font-size:16px;
+}
+
+@keyframes spin{
+
+  from{
+    transform:rotate(0deg);
+  }
+
+  to{
+    transform:rotate(360deg);
+  }
+
+}
+
+/* ===== サイドバー ===== */
+
+#sidebar{
+  width:320px;
+  background:#1e1e1e;
+  color:#fff;
+  overflow:auto;
+  padding:10px;
+  box-sizing:border-box;
+}
+
+#searchBox{
+  width:100%;
+  padding:10px;
+  border:none;
+  outline:none;
+  border-radius:8px;
+  margin-bottom:10px;
+  box-sizing:border-box;
+  font-size:14px;
+}
+
+.block{
+  padding:8px;
+  margin:2px 0;
+  background:#2c2c2c;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.block:hover{
+  background:#444;
+}
+
+/* ===== メイン ===== */
+
+#main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  background:#f5f5f5;
+}
+
+header{
+  background:#111;
+  color:#fff;
+  padding:10px;
+  font-size:18px;
+}
+
+/* ===== Unicode一覧 ===== */
+
+#container{
+  flex:1;
+  overflow:auto;
+  position:relative;
+}
+
+#spacer{
+  height:0;
+}
+
+#grid{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+
+  width:100%;
+  box-sizing:border-box;
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(auto-fill,minmax(80px,1fr));
+
+  gap:6px;
+  padding:10px;
+}
+
+.cell{
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:8px;
+  text-align:center;
+  padding:8px;
+  cursor:pointer;
+  position:relative;
+  min-height:72px;
+  box-sizing:border-box;
+}
+
+.cell:hover{
+  background:#dff0ff;
+}
+
+.char{
+  font-size:24px;
+  word-break:break-word;
+  line-height:1.3;
+}
+
+.code{
+  font-size:10px;
+  color:#666;
+  word-break:break-all;
+  margin-top:4px;
+}
+
+.star{
+  position:absolute;
+  top:4px;
+  right:4px;
+  font-size:14px;
+  cursor:pointer;
+  user-select:none;
+}
+
+.star.active{
+  color:gold;
+}
+
+#toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#333;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:20px;
+  opacity:0;
+  transition:.3s;
+  z-index:9999;
+}
+
+@media(max-width:700px){
+
+  #sidebar{
+    width:220px;
+  }
+
+}
+
+.footer{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+  backdrop-filter:blur(10px);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  z-index:999;
+}
+
+.footer a{
+  color:#66ccff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.footer a:hover{
+  text-decoration:underline;
+}
+
+.footer .copyright{
+  font-size:13px;
+  font-weight:500;
+  background:linear-gradient(90deg,#ffffff,#bbbbbb);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:0.3px;
+  text-shadow:0 1px 2px rgba(0,0,0,0.6);
+}
+
+body{padding-bottom:80px;}
+
+</style>
+</head>
+<body>
+
+<!-- ===== ローディング ===== -->
+
+<div id="fontLoader">
+  <div class="loaderBox">
+    <div class="spinner"></div>
+
+    <div class="loaderText">
+      フォントを読み込み中...
+    </div>
+  </div>
+</div>
+
+<!-- ===== サイドバー ===== -->
+
+<div id="sidebar">
+
+<input id="searchBox"
+placeholder="あ/U+3042/数字を2文字打つとunicodeと認識されます">
+
+<div class="block"
+onclick="showFavorites()">
+⭐ お気に入り
+</div>
+
+<div id="list"></div>
+
+</div>
+
+<!-- ===== メイン ===== -->
+
+<div id="main">
+
+<header>
+Unicode Viewer
+</header>
+
+<div id="container">
+
+<div id="spacer"></div>
+
+<div id="grid"></div>
+
+</div>
+
+</div>
+
+<div id="toast">
+コピーしました
+</div>
+
+<div class="footer">
+  <a href="../">← ツール一覧に戻る</a><br>
+  <div class="copyright">
+    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+  </div>
+</div>
+
+<script>
+
+/* =========================
+Unicode 全ブロック
+========================= */
+
+const blocks = `
+0000..007F; Basic Latin
+0080..00FF; Latin-1 Supplement
+0100..017F; Latin Extended-A
+0180..024F; Latin Extended-B
+0370..03FF; Greek and Coptic
+0400..04FF; Cyrillic
+0590..05FF; Hebrew
+0600..06FF; Arabic
+0900..097F; Devanagari
+0E00..0E7F; Thai
+2190..21FF; Arrows
+2200..22FF; Mathematical Operators
+2500..257F; Box Drawing
+25A0..25FF; Geometric Shapes
+2600..26FF; Misc Symbols
+2700..27BF; Dingbats
+2800..28FF; Braille Patterns
+2B00..2BFF; Misc Symbols and Arrows
+3000..303F; CJK Symbols
+3040..309F; Hiragana
+30A0..30FF; Katakana
+3400..4DBF; CJK Extension A
+4E00..9FFF; CJK Unified Ideographs
+AC00..D7AF; Hangul Syllables
+E000..F8FF; Private Use Area
+FB00..FDFF; Arabic Presentation Forms
+FE00..FE0F; Variation Selectors
+FF00..FFEF; Fullwidth Forms
+12000..123FF; Cuneiform
+13000..1342F; Egyptian Hieroglyphs
+1D100..1D1FF; Musical Symbols
+1D400..1D7FF; Math Alphanumeric Symbols
+1F300..1F5FF; Emoji Symbols
+1F600..1F64F; Emoticons
+20000..2A6DF; CJK Extension B
+2A700..2B73F; CJK Extension C
+2B740..2B81D; CJK Extension D
+2B820..2CEAF; CJK Extension E
+2CEB0..2EBEF; CJK Extension F
+30000..3134F; CJK Extension G
+31350..323AF; CJK Extension H
+E0000..E007F; Tags
+E0100..E01EF; Variation Selectors Supplement
+F0000..FFFFF; Supplementary Private Use Area-A
+100000..10FFFF; Supplementary Private Use Area-B
+`
+.trim()
+.split("\n")
+.map(line=>{
+
+  const [range,name]=line.split(";");
+
+  return [
+    name.trim(),
+    range.replace("..","-")
+  ];
+
+});
+
+/* =========================
+DOM
+========================= */
+
+const list =
+document.getElementById("list");
+
+const grid =
+document.getElementById("grid");
+
+const container =
+document.getElementById("container");
+
+const spacer =
+document.getElementById("spacer");
+
+const searchBox =
+document.getElementById("searchBox");
+
+/* =========================
+お気に入り
+========================= */
+
+let favoriteMode = false;
+
+let favorites =
+JSON.parse(
+  localStorage.getItem("unicodeFav")
+  || "[]"
+);
+
+function saveFav(){
+
+  localStorage.setItem(
+    "unicodeFav",
+    JSON.stringify(favorites)
+  );
+
+}
+
+function toggleFavorite(code,starEl){
+
+  const exists =
+  favorites.includes(code);
+
+  if(exists){
+
+    favorites =
+    favorites.filter(v=>v!==code);
+
+    if(starEl){
+
+      starEl.classList.remove("active");
+
+    }
+
+  }else{
+
+    favorites.unshift(code);
+
+    if(starEl){
+
+      starEl.classList.add("active");
+
+    }
+
+  }
+
+  saveFav();
+
+  if(favoriteMode){
+
+    showFavorites();
+
+  }
+
+}
+
+function showFavorites(){
+
+  favoriteMode = true;
+
+  grid.innerHTML="";
+
+  spacer.style.height="0px";
+
+  favorites.forEach(code=>{
+
+    createCell(code,grid);
+
+  });
+
+}
+
+/* =========================
+サイドバー
+========================= */
+
+blocks.forEach(b=>{
+
+  const div =
+  document.createElement("div");
+
+  div.className="block";
+
+  div.textContent=b[0];
+
+  div.onclick=()=>loadBlock(b[1]);
+
+  list.appendChild(div);
+
+});
+
+/* =========================
+仮想スクロール
+========================= */
+
+let start=0;
+let end=0;
+
+const CELL_H=95;
+const ROWS=60;
+
+let cols=6;
+
+let lastVisibleRow=-1;
+let ticking=false;
+
+function updateCols(){
+
+  cols =
+  Math.max(
+    1,
+    Math.floor(grid.offsetWidth / 86)
+  );
+
+}
+
+function loadBlock(range){
+
+  favoriteMode = false;
+
+  const [s,e]=range.split("-");
+
+  start=parseInt(s,16);
+  end=parseInt(e,16);
+
+  updateSpacer();
+
+  container.scrollTop=0;
+
+  lastVisibleRow=-1;
+
+  render();
+
+}
+
+function updateSpacer(){
+
+  updateCols();
+
+  const total =
+  end-start;
+
+  const totalRows =
+  Math.ceil(total/cols);
+
+  spacer.style.height =
+  (totalRows * CELL_H) + "px";
+
+}
+
+function render(){
+
+  const scrollTop =
+  container.scrollTop;
+
+  const visibleRow =
+  Math.floor(scrollTop/CELL_H);
+
+  const rowStart =
+  Math.max(
+    0,
+    visibleRow-20
+  );
+
+  if(visibleRow===lastVisibleRow){
+
+    ticking=false;
+    return;
+
+  }
+
+  lastVisibleRow=visibleRow;
+
+  updateCols();
+
+  const fragment =
+  document.createDocumentFragment();
+
+  for(let r=0;r<ROWS;r++){
+
+    for(let c=0;c<cols;c++){
+
+      const code =
+      start + ((rowStart+r)*cols+c);
+
+      if(code>end) continue;
+
+      const cell =
+      createCellElement(code);
+
+      if(cell){
+
+        fragment.appendChild(cell);
+
+      }
+
+    }
+
+  }
+
+  grid.innerHTML="";
+
+  grid.appendChild(fragment);
+
+  grid.style.top =
+  (rowStart * CELL_H) + "px";
+
+  ticking=false;
+
+}
+
+/* =========================
+セル生成
+========================= */
+
+function createCellElement(code){
+
+  try{
+
+    const ch =
+    String.fromCodePoint(code);
+
+    const div =
+    document.createElement("div");
+
+    div.className="cell";
+
+    const active =
+    favorites.includes(code);
+
+    div.innerHTML=`
+
+      <div class="star ${active?"active":""}">
+        ★
+      </div>
+
+      <div class="char">
+        ${ch}
+      </div>
+
+      <div class="code">
+        U+${code.toString(16).toUpperCase()}
+      </div>
+
+    `;
+
+    div.onclick=()=>copy(ch);
+
+    const star =
+    div.querySelector(".star");
+
+    star.onclick=(e)=>{
+
+      e.stopPropagation();
+
+      toggleFavorite(code,star);
+
+    };
+
+    return div;
+
+  }catch{
+
+    return null;
+
+  }
+
+}
+
+function createCell(code,target){
+
+  const el =
+  createCellElement(code);
+
+  if(el){
+
+    target.appendChild(el);
+
+  }
+
+}
+
+/* =========================
+コピー
+========================= */
+
+function copy(char){
+
+  navigator.clipboard.writeText(char);
+
+  const t =
+  document.getElementById("toast");
+
+  t.style.opacity=1;
+
+  setTimeout(()=>{
+
+    t.style.opacity=0;
+
+  },1000);
+
+}
+
+/* =========================
+検索
+========================= */
+
+searchBox.addEventListener("input",()=>{
+
+  favoriteMode = false;
+
+  const q =
+  searchBox.value.trim();
+
+  if(!q){
+
+    lastVisibleRow=-1;
+
+    updateSpacer();
+
+    render();
+
+    return;
+
+  }
+
+  grid.innerHTML="";
+
+  spacer.style.height="0px";
+
+  const unicodePattern =
+  /^(U\+)?[0-9A-Fa-f]{2,6}$/;
+
+  if(unicodePattern.test(q)){
+
+    const hex =
+    q.replace(/^U\+/i,"");
+
+    const code =
+    parseInt(hex,16);
+
+    if(!isNaN(code)){
+
+      createCell(code,grid);
+
+    }
+
+  }else{
+
+    for(const ch of q){
+
+      const code =
+      ch.codePointAt(0);
+
+      createCell(code,grid);
+
+    }
+
+  }
+
+});
+
+/* =========================
+スクロール
+========================= */
+
+container.addEventListener("scroll",()=>{
+
+  if(favoriteMode) return;
+
+  if(!ticking){
+
+    ticking=true;
+
+    requestAnimationFrame(render);
+
+  }
+
+});
+
+/* =========================
+リサイズ
+========================= */
+
+window.addEventListener("resize",()=>{
+
+  lastVisibleRow=-1;
+
+  updateSpacer();
+
+  render();
+
+});
+
+/* ===== フォント読込完了 ===== */
+
+window.addEventListener("load", async ()=>{
+
+  try{
+
+    await document.fonts.ready;
+
+  }catch(e){}
+
+  const loader =
+  document.getElementById("fontLoader");
+
+  loader.style.opacity="0";
+  loader.style.pointerEvents="none";
+
+  setTimeout(()=>{
+
+    loader.remove();
+
+  },400);
+
+});
+
+/* 初期表示 */
+
+loadBlock("3040-309F");
+
+</script>
+
+</body>
+</html>
