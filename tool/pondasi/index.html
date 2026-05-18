@@ -28,22 +28,25 @@ body{
 }
 
 #headerImage{
-
     width:100%;
-
     aspect-ratio:3/1;
-
     object-fit:cover;
-
     border-radius:24px;
-
     margin-bottom:20px;
-
     display:block;
 }
 
 h1{
     margin-top:0;
+    margin-bottom:8px;
+}
+
+#description{
+    margin-top:0;
+    margin-bottom:20px;
+    color:#bbb;
+    line-height:1.7;
+    font-size:15px;
 }
 
 input[type="file"]{
@@ -52,26 +55,20 @@ input[type="file"]{
 }
 
 #soundList{
-
     display:grid;
-
     grid-template-columns:
     repeat(auto-fill,minmax(140px,1fr));
-
     gap:16px;
 }
 
 .sound-wrapper{
-
     position:relative;
-
     transition:
     transform 0.18s ease,
     opacity 0.18s ease;
 }
 
 .sound-btn{
-
     width:100%;
     aspect-ratio:1/1;
 
@@ -84,11 +81,8 @@ input[type="file"]{
     padding:12px;
 
     display:flex;
-
     flex-direction:column;
-
     justify-content:center;
-
     align-items:center;
 
     text-align:center;
@@ -105,7 +99,6 @@ input[type="file"]{
 }
 
 .sound-btn.sorting{
-
     animation:
     wiggle 0.12s infinite alternate;
 }
@@ -122,26 +115,18 @@ input[type="file"]{
 }
 
 .sound-wrapper.dragging{
-
     z-index:999;
-
     opacity:0.8;
-
     transform:scale(1.06);
 }
 
 .sound-name{
-
     width:100%;
-
     overflow:hidden;
-
     text-overflow:ellipsis;
-
     white-space:nowrap;
 
     font-size:16px;
-
     font-weight:bold;
 
     margin-bottom:10px;
@@ -153,9 +138,7 @@ input[type="file"]{
 }
 
 .menu{
-
     position:absolute;
-
     inset:0;
 
     background:rgba(0,0,0,0.92);
@@ -165,9 +148,7 @@ input[type="file"]{
     display:none;
 
     flex-direction:column;
-
     justify-content:center;
-
     align-items:center;
 
     gap:10px;
@@ -176,52 +157,32 @@ input[type="file"]{
 }
 
 .menu button{
-
     width:100px;
 
     border:none;
-
     border-radius:12px;
 
     padding:10px;
 
     background:#222;
-
     color:white;
 }
 
 #doneBtn{
-
     position:fixed;
 
     right:20px;
-
     bottom:20px;
 
     border:none;
-
     border-radius:14px;
 
     padding:14px 18px;
 
     background:#d80000;
-
     color:white;
 
     z-index:9999;
-}
-
-#description{
-
-    margin-top:-8px;
-
-    margin-bottom:20px;
-
-    color:#bbb;
-
-    line-height:1.6;
-
-    font-size:15px;
 }
 
 </style>
@@ -234,11 +195,13 @@ src="pondasi.png"
 alt="ぽんだしヘッダー"
 >
 
-<h1>効果音ぽんだし</h1>
+<h1>音楽ポン出しサイト | あざらしツール | あざらしサイト</h1>
 
 <p id="description">
-タップで再生/一時停止　ダブルタップで最初に戻る<br>
-長押しで削除や並び替え
+タップで再生/一時停止<br>
+ダブルタップで最初から<br>
+トリプルタップでメニュー<br>
+各種拡張子対応　例)mp3,mp4,mov,wavなど
 </p>
 
 <input
@@ -353,17 +316,23 @@ function createSound(file){
 
     soundList.appendChild(wrapper);
 
-    let clickCount = 0;
+    let tapCount = 0;
 
-    let clickTimeout;
+    let tapTimer;
+
+    let moved = false;
 
     let longPressTimer;
 
-    let moved = false;
+    let holdSeekInterval;
+
+    let longPressSeek = false;
 
     button.addEventListener(
     "touchstart",
     e=>{
+
+        moved = false;
 
         if(sortMode){
 
@@ -375,15 +344,29 @@ function createSound(file){
             return;
         }
 
-        moved = false;
+        clearTimeout(
+        longPressTimer
+        );
+
+        longPressSeek = false;
 
         longPressTimer =
         setTimeout(()=>{
 
-            menu.style.display =
-            "flex";
+            if(tapCount === 2){
 
-        },500);
+                longPressSeek = true;
+
+                holdSeekInterval =
+                setInterval(()=>{
+
+                    audio.currentTime += 0.12;
+
+                },16);
+
+            }
+
+        },220);
 
     },
     { passive:true }
@@ -409,6 +392,10 @@ function createSound(file){
         longPressTimer
         );
 
+        clearInterval(
+        holdSeekInterval
+        );
+
         if(sortMode){
             return;
         }
@@ -421,12 +408,23 @@ function createSound(file){
             return;
         }
 
-        clickCount++;
+        if(longPressSeek){
 
-        if(clickCount === 1){
+            tapCount = 0;
 
-            clickTimeout =
-            setTimeout(()=>{
+            return;
+        }
+
+        tapCount++;
+
+        clearTimeout(
+        tapTimer
+        );
+
+        tapTimer =
+        setTimeout(()=>{
+
+            if(tapCount === 1){
 
                 if(audio.paused){
 
@@ -446,29 +444,32 @@ function createSound(file){
 
                 }
 
-                clickCount = 0;
+            }
 
-            },250);
+            else if(tapCount === 2){
 
-        }else{
+                audio.pause();
 
-            clearTimeout(
-            clickTimeout
-            );
+                audio.currentTime = 0;
 
-            audio.pause();
+                button.classList.remove(
+                "playing"
+                );
 
-            audio.currentTime = 0;
+                updateTime();
 
-            button.classList.remove(
-            "playing"
-            );
+            }
 
-            updateTime();
+            else if(tapCount >= 3){
 
-            clickCount = 0;
+                menu.style.display =
+                "flex";
 
-        }
+            }
+
+            tapCount = 0;
+
+        },250);
 
     });
 
