@@ -4,113 +4,171 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>迷路ゲーム | AZAgame</title>
+
 <meta name="description" content="AZAgameの迷路ゲーム。ランダム生成の迷路を攻略し、ゴールを目指そう。スマホ・PC対応のブラウザ無料ゲーム。">
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-DK3VQGQTWC');
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-DK3VQGQTWC');
 </script>
 
 <style>
-html, body {
-  margin: 0;
-  height: 100%;
+html,body{
+  margin:0;
+  height:100%;
+  overflow:hidden;
 }
-body {
-  font-family: sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #2a2a40);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+
+body{
+  font-family:sans-serif;
+  background:linear-gradient(135deg,#1e1e2f,#2a2a40);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  overscroll-behavior:none;
 }
 
 /* 上UI */
-#topUI {
-  text-align: center;
-  padding: 10px;
+#topUI{
+  text-align:center;
+  padding:10px;
+  z-index:10;
+}
+
+#timer{
+  margin-bottom:10px;
+  font-size:20px;
+  font-weight:bold;
+}
+
+button{
+  padding:10px 16px;
+  border:none;
+  border-radius:10px;
+  background:rgba(255,255,255,0.12);
+  color:#fff;
+  backdrop-filter:blur(10px);
+  cursor:pointer;
+  margin:4px;
+  font-size:16px;
+}
+
+button:active{
+  transform:scale(0.96);
 }
 
 /* 迷路エリア */
-#mazeArea {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
+#mazeArea{
+  flex:1;
+  position:relative;
+  overflow:hidden;
 }
-#mazeWrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-origin: 0 0;
-  touch-action: none;
+
+#mazeWrapper{
+  position:absolute;
+  top:0;
+  left:0;
+  transform-origin:0 0;
+  touch-action:none;
 }
 
 /* 迷路 */
-table { border-collapse: collapse; }
-td {
-  border: 1px solid #666;
-  box-sizing: border-box;
+table{
+  border-collapse:collapse;
 }
-.wall { background: #ccc; }
-.player { background: #00c6ff; }
-.goal { background: gold; }
+
+td{
+  border:1px solid #666;
+  box-sizing:border-box;
+}
+
+.wall{
+  background:#d6d6d6;
+}
+
+.player{
+  background:#00c6ff;
+}
+
+.goal{
+  background:gold;
+}
 
 /* 下UI */
-#bottomUI {
-  text-align: center;
-  padding: 10px;
+#bottomUI{
+  text-align:center;
+  padding:10px;
+  z-index:10;
 }
 
 /* ジョイスティック */
-#joystick {
-  position: fixed;
-  bottom: 120px;
-  left: 20px;
-  width: 100px;
-  height: 100px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 50%;
-  z-index: 9999;
+#joystick{
+  position:fixed;
+  bottom:120px;
+  left:20px;
+  width:110px;
+  height:110px;
+  background:rgba(255,255,255,0.08);
+  border-radius:50%;
+  z-index:9999;
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.1);
 }
-#stick {
-  width: 40px;
-  height: 40px;
-  background: #00c6ff;
-  border-radius: 50%;
-  position: absolute;
-  top: 30px;
-  left: 30px;
+
+#stick{
+  width:44px;
+  height:44px;
+  background:#00c6ff;
+  border-radius:50%;
+  position:absolute;
+  top:33px;
+  left:33px;
 }
 
 /* 遊び方 */
-#howToScreen {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-#howToBox {
-  background: #222;
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 300px;
-  text-align: center;
+#howToScreen{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.72);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
 }
 
+#howToBox{
+  background:#222;
+  padding:22px;
+  border-radius:16px;
+  width:280px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+#howToBox h3{
+  margin-top:0;
+}
+
+#howToBox button{
+  margin-top:10px;
+  width:100%;
+}
+/* フッター */
 .footer{
   position:fixed;
   bottom:10px;
   left:50%;
   transform:translateX(-50%);
   width:90%;
-  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+  background:linear-gradient(
+    to right,
+    rgba(0,0,0,0.2),
+    rgba(0,0,0,0.85)
+  );
   backdrop-filter:blur(10px);
   border-radius:12px;
   padding:10px;
@@ -134,7 +192,11 @@ td {
 .footer .copyright{
   font-size:13px;
   font-weight:500;
-  background:linear-gradient(90deg,#ffffff,#bbbbbb);
+  background:linear-gradient(
+    90deg,
+    #ffffff,
+    #bbbbbb
+  );
   background-clip:text;
   -webkit-background-clip:text;
   color:transparent;
@@ -142,7 +204,11 @@ td {
   letter-spacing:0.3px;
   text-shadow:0 1px 2px rgba(0,0,0,0.6);
 }
-body{padding-bottom:80px;}
+
+/* 被り防止 */
+body{
+  padding-bottom:100px;
+}
 
 </style>
 </head>
@@ -151,6 +217,7 @@ body{padding-bottom:80px;}
 
 <div id="topUI">
   <h2>迷路ゲーム</h2>
+
   <div id="timer">0.0 秒</div>
 
   <div id="sizeUI">
@@ -166,38 +233,46 @@ body{padding-bottom:80px;}
   </div>
 </div>
 
-<div id="bottomUI">
-  <button onclick="restart()">リスタート</button>
-</div>
-
-<div id="joystick"><div id="stick"></div></div>
-
-<div class="footer">
-  <a href="../">← ゲーム一覧に戻る</a><br>
-  <div class="copyright">
-    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
-  </div>
+<!-- ジョイスティック -->
+<div id="joystick">
+  <div id="stick"></div>
 </div>
 
 <!-- 遊び方 -->
 <div id="howToScreen">
   <div id="howToBox">
     <h3>遊び方</h3>
+
     <p>🕹 ジョイスティックで移動</p>
+    <p>⌨️ 矢印キー・WASD対応</p>
     <p>🤏 2本指でズーム</p>
     <p>👉 1本指でドラッグ</p>
-	<p>🟦はプレイヤー🟨はゴール</p>
+    <p>🟦 プレイヤー</p>
+    <p>🟨 ゴール</p>
+
     <button onclick="startGameReal()">OK</button>
   </div>
 </div>
 
 <script>
-let size=61, maze=[], playerX=1, playerY=1;
-let startTime, timerInterval;
+let size=61;
+let maze=[];
+let playerX=1;
+let playerY=1;
+
+let startTime;
+let timerInterval;
 
 /* ===== ズーム状態 ===== */
-let scale=1, posX=0, posY=0;
-let startX=0,startY=0,startDist=0,mode="";
+let scale=1;
+let posX=0;
+let posY=0;
+
+let startX=0;
+let startY=0;
+let startDist=0;
+
+let mode="";
 let isUsingJoystick=false;
 
 /* ===== マスサイズ ===== */
@@ -207,31 +282,47 @@ function getCellSize(){
 
 /* ===== 描画 ===== */
 function drawMaze(){
+
   const table=document.getElementById("maze");
   table.innerHTML="";
+
   const s=getCellSize();
 
   for(let y=0;y<size;y++){
-    let tr=document.createElement("tr");
+
+    const tr=document.createElement("tr");
+
     for(let x=0;x<size;x++){
-      let td=document.createElement("td");
+
+      const td=document.createElement("td");
+
       td.style.width=s+"px";
       td.style.height=s+"px";
 
-      if(x===playerX&&y===playerY) td.className="player";
-      else if(maze[y][x]===1) td.className="wall";
-      else if(maze[y][x]===2) td.className="goal";
+      if(x===playerX && y===playerY){
+        td.className="player";
+      }
+      else if(maze[y][x]===1){
+        td.className="wall";
+      }
+      else if(maze[y][x]===2){
+        td.className="goal";
+      }
 
       tr.appendChild(td);
     }
+
     table.appendChild(tr);
   }
 
-  if(!isUsingJoystick) fitToCenter();
+  if(!isUsingJoystick){
+    fitToCenter();
+  }
 }
 
-/* 中央配置 */
+/* ===== 中央配置 ===== */
 function fitToCenter(){
+
   const area=mazeArea;
   const wrap=mazeWrapper;
 
@@ -249,69 +340,126 @@ function fitToCenter(){
   update();
 }
 
-/* 更新 */
+/* ===== transform更新 ===== */
 function update(){
-  mazeWrapper.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`;
+  mazeWrapper.style.transform=
+    `translate(${posX}px,${posY}px) scale(${scale})`;
 }
 
-/* 迷路生成 */
+/* ===== 迷路生成 ===== */
 function generateMaze(){
-  maze=Array(size).fill().map(()=>Array(size).fill(1));
+
+  maze=Array(size)
+    .fill()
+    .map(()=>Array(size).fill(1));
+
   function carve(x,y){
+
     maze[y][x]=0;
-    [[0,2],[0,-2],[2,0],[-2,0]].sort(()=>Math.random()-0.5)
+
+    [[0,2],[0,-2],[2,0],[-2,0]]
+    .sort(()=>Math.random()-0.5)
     .forEach(([dx,dy])=>{
-      let nx=x+dx, ny=y+dy;
-      if(nx>0&&ny>0&&nx<size&&ny<size&&maze[ny][nx]){
+
+      let nx=x+dx;
+      let ny=y+dy;
+
+      if(
+        nx>0 &&
+        ny>0 &&
+        nx<size &&
+        ny<size &&
+        maze[ny][nx]
+      ){
         maze[y+dy/2][x+dx/2]=0;
         carve(nx,ny);
       }
+
     });
   }
+
   carve(1,1);
+
   maze[size-2][size-2]=2;
 }
 
-/* 移動 */
+/* ===== 移動 ===== */
 function move(dx,dy){
-  let nx=playerX+dx, ny=playerY+dy;
-  if(maze[ny]&&maze[ny][nx]!==1){
-    playerX=nx; playerY=ny;
+
+  let nx=playerX+dx;
+  let ny=playerY+dy;
+
+  if(
+    maze[ny] &&
+    maze[ny][nx]!==1
+  ){
+    playerX=nx;
+    playerY=ny;
+
     drawMaze();
+
+    if(maze[ny][nx]===2){
+
+      clearInterval(timerInterval);
+
+      setTimeout(()=>{
+        alert(
+          "ゴール！\nタイム: " +
+          timer.textContent
+        );
+      },100);
+    }
   }
 }
 
-/* タイマー */
+/* ===== タイマー ===== */
 function startTimer(){
+
+  clearInterval(timerInterval);
+
   startTime=Date.now();
+
   timerInterval=setInterval(()=>{
-    timer.textContent=((Date.now()-startTime)/1000).toFixed(1)+" 秒";
+
+    timer.textContent=
+      ((Date.now()-startTime)/1000).toFixed(1)
+      +" 秒";
+
   },100);
 }
 
-/* サイズ押す → 必ず説明 */
+/* ===== サイズ押す ===== */
 function startGame(s){
+
   size=s;
+
   howToScreen.style.display="flex";
 }
 
-/* OKで開始 */
+/* ===== OKで開始 ===== */
 function startGameReal(){
+
   howToScreen.style.display="none";
   sizeUI.style.display="none";
 
-  playerX=1; playerY=1;
+  playerX=1;
+  playerY=1;
+
   generateMaze();
   drawMaze();
   startTimer();
 }
 
-/* リスタート */
+/* ===== リスタート ===== */
 function restart(){
-  sizeUI.style.display="block";
-  maze.innerHTML="";
+
   clearInterval(timerInterval);
+
   timer.textContent="0.0 秒";
+
+  maze.innerHTML="";
+
+  sizeUI.style.display="block";
 }
 
 /* ===== ジョイスティック ===== */
@@ -319,93 +467,186 @@ let lastMove=0;
 const delay=150;
 
 function tryMove(dx,dy){
+
   if(Date.now()-lastMove>delay){
+
     move(dx,dy);
+
     lastMove=Date.now();
   }
 }
 
 let sx,sy;
 
-joystick.addEventListener("touchstart", e=>{
+joystick.addEventListener("touchstart",e=>{
+
   isUsingJoystick=true;
+
   e.stopPropagation();
+
   sx=e.touches[0].clientX;
   sy=e.touches[0].clientY;
 });
 
-joystick.addEventListener("touchmove", e=>{
+joystick.addEventListener("touchmove",e=>{
+
   e.stopPropagation();
 
   let dx=e.touches[0].clientX-sx;
   let dy=e.touches[0].clientY-sy;
 
   const max=30;
+
   dx=Math.max(-max,Math.min(max,dx));
   dy=Math.max(-max,Math.min(max,dy));
 
-  stick.style.transform=`translate(${dx}px,${dy}px)`;
+  stick.style.transform=
+    `translate(${dx}px,${dy}px)`;
 
   if(Math.abs(dx)>Math.abs(dy)){
+
     if(dx>20) tryMove(1,0);
     if(dx<-20) tryMove(-1,0);
+
   }else{
+
     if(dy>20) tryMove(0,1);
     if(dy<-20) tryMove(0,-1);
   }
 });
 
-joystick.addEventListener("touchend", ()=>{
+joystick.addEventListener("touchend",()=>{
+
   isUsingJoystick=false;
+
   stick.style.transform="translate(0,0)";
 });
 
-/* ===== ズーム ===== */
+/* ===== 距離 ===== */
 function dist(t){
+
   let dx=t[0].clientX-t[1].clientX;
   let dy=t[0].clientY-t[1].clientY;
+
   return Math.sqrt(dx*dx+dy*dy);
 }
 
-mazeWrapper.addEventListener("touchstart", e=>{
+/* ===== ズーム ===== */
+mazeWrapper.addEventListener("touchstart",e=>{
+
   if(isUsingJoystick) return;
 
   if(e.touches.length===1){
+
     mode="drag";
+
     startX=e.touches[0].clientX-posX;
     startY=e.touches[0].clientY-posY;
-  }else if(e.touches.length===2){
+  }
+
+  else if(e.touches.length===2){
+
     mode="zoom";
+
     startDist=dist(e.touches);
   }
 });
 
-mazeWrapper.addEventListener("touchmove", e=>{
+mazeWrapper.addEventListener("touchmove",e=>{
+
   if(isUsingJoystick) return;
+
   e.preventDefault();
 
   if(mode==="drag"){
+
     posX=e.touches[0].clientX-startX;
     posY=e.touches[0].clientY-startY;
+
     update();
   }
 
-  if(mode==="zoom"&&e.touches.length===2){
+  if(mode==="zoom" && e.touches.length===2){
+
     let d=dist(e.touches);
+
     scale*=d/startDist;
+
     scale=Math.max(0.8,Math.min(3,scale));
+
     startDist=d;
+
     update();
   }
-});
+
+},{ passive:false });
 
 mazeWrapper.ondblclick=fitToCenter;
 
-/* 背景タップでも開始 */
-howToScreen.onclick = (e)=>{
-  if(e.target.id==="howToScreen") startGameReal();
+/* ===== キーボード操作 ===== */
+document.addEventListener("keydown",function(e){
+
+  if(howToScreen.style.display==="flex"){
+    return;
+  }
+
+  const keys=[
+    "ArrowUp","ArrowDown",
+    "ArrowLeft","ArrowRight",
+    "w","a","s","d",
+    "W","A","S","D"
+  ];
+
+  if(keys.includes(e.key)){
+    e.preventDefault();
+  }
+
+  switch(e.key){
+
+    case "ArrowUp":
+    case "w":
+    case "W":
+      move(0,-1);
+      break;
+
+    case "ArrowDown":
+    case "s":
+    case "S":
+      move(0,1);
+      break;
+
+    case "ArrowLeft":
+    case "a":
+    case "A":
+      move(-1,0);
+      break;
+
+    case "ArrowRight":
+    case "d":
+    case "D":
+      move(1,0);
+      break;
+  }
+
+},{ passive:false });
+
+/* ===== 背景タップ開始 ===== */
+howToScreen.onclick=(e)=>{
+
+  if(e.target.id==="howToScreen"){
+    startGameReal();
+  }
 };
 </script>
+
+<!-- フッター -->
+<div class="footer">
+  <a href="../">← ゲーム一覧に戻る</a><br>
+
+  <div class="copyright">
+    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+  </div>
+</div>
 
 </body>
 </html>
