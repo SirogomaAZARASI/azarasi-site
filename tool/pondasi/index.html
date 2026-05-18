@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>ポン出しあざらし</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    margin:0;
+    padding:20px;
+    background:#111;
+    color:white;
+    font-family:sans-serif;
+    overflow-x:hidden;
+}
+
+#headerImage{
+
+    width:100%;
+
+    aspect-ratio:3/1;
+
+    object-fit:cover;
+
+    border-radius:24px;
+
+    margin-bottom:20px;
+
+    display:block;
+}
+
+h1{
+    margin-top:0;
+}
+
+input[type="file"]{
+    margin-bottom:20px;
+    color:white;
+}
+
+#soundList{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fill,minmax(140px,1fr));
+
+    gap:16px;
+}
+
+.sound-wrapper{
+
+    position:relative;
+
+    transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.sound-btn{
+
+    width:100%;
+    aspect-ratio:1/1;
+
+    border:none;
+    border-radius:24px;
+
+    background:#444;
+    color:white;
+
+    padding:12px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    user-select:none;
+
+    transition:
+    background 0.15s,
+    transform 0.15s;
+}
+
+.sound-btn.playing{
+    background:#d80000;
+}
+
+.sound-btn.sorting{
+
+    animation:
+    wiggle 0.12s infinite alternate;
+}
+
+@keyframes wiggle{
+
+    from{
+        transform:rotate(-1deg);
+    }
+
+    to{
+        transform:rotate(1deg);
+    }
+}
+
+.sound-wrapper.dragging{
+
+    z-index:999;
+
+    opacity:0.8;
+
+    transform:scale(1.06);
+}
+
+.sound-name{
+
+    width:100%;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    margin-bottom:10px;
+}
+
+.sound-time{
+    font-size:14px;
+    opacity:0.8;
+}
+
+.menu{
+
+    position:absolute;
+
+    inset:0;
+
+    background:rgba(0,0,0,0.92);
+
+    border-radius:24px;
+
+    display:none;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    z-index:100;
+}
+
+.menu button{
+
+    width:100px;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:10px;
+
+    background:#222;
+
+    color:white;
+}
+
+#doneBtn{
+
+    position:fixed;
+
+    right:20px;
+
+    bottom:20px;
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:14px 18px;
+
+    background:#d80000;
+
+    color:white;
+
+    z-index:9999;
+}
+
+#description{
+
+    margin-top:-8px;
+
+    margin-bottom:20px;
+
+    color:#bbb;
+
+    line-height:1.6;
+
+    font-size:15px;
+}
+
+</style>
+</head>
+<body>
+
+<img
+id="headerImage"
+src="pondasi.png"
+alt="ぽんだしヘッダー"
+>
+
+<h1>効果音ぽんだし</h1>
+
+<p id="description">
+タップで再生/一時停止　ダブルタップで最初に戻る<br>
+長押しで削除や並び替え
+</p>
+
+<input
+type="file"
+id="fileInput"
+multiple
+accept=".mp3,.wav,.mp4,audio/*,video/mp4"
+>
+
+<div id="soundList"></div>
+
+<script>
+
+const soundList =
+document.getElementById("soundList");
+
+let sortMode = false;
+
+let draggedWrapper = null;
+
+document
+.getElementById("fileInput")
+.addEventListener("change", e=>{
+
+    for(const file of e.target.files){
+
+        createSound(file);
+
+    }
+
+});
+
+function createSound(file){
+
+    const url =
+    URL.createObjectURL(file);
+
+    const audio =
+    new Audio(url);
+
+    const wrapper =
+    document.createElement("div");
+
+    wrapper.className =
+    "sound-wrapper";
+
+    const button =
+    document.createElement("button");
+
+    button.className =
+    "sound-btn";
+
+    const name =
+    document.createElement("div");
+
+    name.className =
+    "sound-name";
+
+    name.textContent =
+    file.name;
+
+    const time =
+    document.createElement("div");
+
+    time.className =
+    "sound-time";
+
+    time.textContent =
+    "0:00/0:00";
+
+    button.appendChild(name);
+    button.appendChild(time);
+
+    wrapper.appendChild(button);
+
+    const menu =
+    document.createElement("div");
+
+    menu.className =
+    "menu";
+
+    const sortBtn =
+    document.createElement("button");
+
+    sortBtn.textContent =
+    "並べ替え";
+
+    const renameBtn =
+    document.createElement("button");
+
+    renameBtn.textContent =
+    "名前変更";
+
+    const deleteBtn =
+    document.createElement("button");
+
+    deleteBtn.textContent =
+    "削除";
+
+    const closeBtn =
+    document.createElement("button");
+
+    closeBtn.textContent =
+    "閉じる";
+
+    menu.appendChild(sortBtn);
+    menu.appendChild(renameBtn);
+    menu.appendChild(deleteBtn);
+    menu.appendChild(closeBtn);
+
+    wrapper.appendChild(menu);
+
+    soundList.appendChild(wrapper);
+
+    let clickCount = 0;
+
+    let clickTimeout;
+
+    let longPressTimer;
+
+    let moved = false;
+
+    button.addEventListener(
+    "touchstart",
+    e=>{
+
+        if(sortMode){
+
+            startDrag(
+                e,
+                wrapper
+            );
+
+            return;
+        }
+
+        moved = false;
+
+        longPressTimer =
+        setTimeout(()=>{
+
+            menu.style.display =
+            "flex";
+
+        },500);
+
+    },
+    { passive:true }
+    );
+
+    button.addEventListener(
+    "touchmove",
+    ()=>{
+
+        moved = true;
+
+        clearTimeout(
+        longPressTimer
+        );
+
+    });
+
+    button.addEventListener(
+    "touchend",
+    ()=>{
+
+        clearTimeout(
+        longPressTimer
+        );
+
+        if(sortMode){
+            return;
+        }
+
+        if(menu.style.display === "flex"){
+            return;
+        }
+
+        if(moved){
+            return;
+        }
+
+        clickCount++;
+
+        if(clickCount === 1){
+
+            clickTimeout =
+            setTimeout(()=>{
+
+                if(audio.paused){
+
+                    audio.play();
+
+                    button.classList.add(
+                    "playing"
+                    );
+
+                }else{
+
+                    audio.pause();
+
+                    button.classList.remove(
+                    "playing"
+                    );
+
+                }
+
+                clickCount = 0;
+
+            },250);
+
+        }else{
+
+            clearTimeout(
+            clickTimeout
+            );
+
+            audio.pause();
+
+            audio.currentTime = 0;
+
+            button.classList.remove(
+            "playing"
+            );
+
+            updateTime();
+
+            clickCount = 0;
+
+        }
+
+    });
+
+    sortBtn.onclick = ()=>{
+
+        menu.style.display =
+        "none";
+
+        enableSortMode();
+
+    };
+
+    renameBtn.onclick = ()=>{
+
+        const newName =
+        prompt(
+            "新しい名前",
+            name.textContent
+        );
+
+        if(
+            newName &&
+            newName.trim()
+        ){
+
+            name.textContent =
+            newName.trim();
+
+        }
+
+    };
+
+    deleteBtn.onclick = ()=>{
+
+        wrapper.remove();
+
+    };
+
+    closeBtn.onclick = ()=>{
+
+        menu.style.display =
+        "none";
+
+    };
+
+    audio.addEventListener(
+    "timeupdate",
+    updateTime
+    );
+
+    audio.addEventListener(
+    "loadedmetadata",
+    updateTime
+    );
+
+    audio.addEventListener(
+    "ended",
+    ()=>{
+
+        button.classList.remove(
+        "playing"
+        );
+
+        audio.currentTime = 0;
+
+        updateTime();
+
+    });
+
+    function updateTime(){
+
+        const current =
+        formatTime(
+        audio.currentTime
+        );
+
+        const total =
+        formatTime(
+        audio.duration || 0
+        );
+
+        time.textContent =
+        `${current}/${total}`;
+
+    }
+
+}
+
+function enableSortMode(){
+
+    sortMode = true;
+
+    document
+    .querySelectorAll(".sound-btn")
+    .forEach(btn=>{
+
+        btn.classList.add(
+        "sorting"
+        );
+
+    });
+
+    if(
+        document.getElementById(
+        "doneBtn"
+        )
+    ){
+        return;
+    }
+
+    const doneBtn =
+    document.createElement("button");
+
+    doneBtn.id =
+    "doneBtn";
+
+    doneBtn.textContent =
+    "完了";
+
+    document.body.appendChild(
+    doneBtn
+    );
+
+    doneBtn.onclick = ()=>{
+
+        sortMode = false;
+
+        draggedWrapper = null;
+
+        document
+        .querySelectorAll(".sound-btn")
+        .forEach(btn=>{
+
+            btn.classList.remove(
+            "sorting"
+            );
+
+        });
+
+        document
+        .querySelectorAll(".sound-wrapper")
+        .forEach(w=>{
+
+            w.classList.remove(
+            "dragging"
+            );
+
+        });
+
+        doneBtn.remove();
+
+    };
+
+}
+
+function startDrag(
+e,
+wrapper
+){
+
+    draggedWrapper =
+    wrapper;
+
+    wrapper.classList.add(
+    "dragging"
+    );
+
+    function moveHandler(ev){
+
+        const touch =
+        ev.touches[0];
+
+        const x =
+        touch.clientX;
+
+        const y =
+        touch.clientY;
+
+        const elements =
+        [
+            ...document.querySelectorAll(
+            ".sound-wrapper"
+            )
+        ];
+
+        for(const target of elements){
+
+            if(
+                target === draggedWrapper
+            ){
+                continue;
+            }
+
+            const rect =
+            target.getBoundingClientRect();
+
+            const inside =
+            x > rect.left &&
+            x < rect.right &&
+            y > rect.top &&
+            y < rect.bottom;
+
+            if(inside){
+
+                const targetIndex =
+                elements.indexOf(
+                target
+                );
+
+                const dragIndex =
+                elements.indexOf(
+                draggedWrapper
+                );
+
+                if(
+                    dragIndex <
+                    targetIndex
+                ){
+
+                    soundList.insertBefore(
+                        draggedWrapper,
+                        target.nextSibling
+                    );
+
+                }else{
+
+                    soundList.insertBefore(
+                        draggedWrapper,
+                        target
+                    );
+
+                }
+
+                break;
+
+            }
+
+        }
+
+    }
+
+    function endHandler(){
+
+        wrapper.classList.remove(
+        "dragging"
+        );
+
+        document.removeEventListener(
+        "touchmove",
+        moveHandler
+        );
+
+        document.removeEventListener(
+        "touchend",
+        endHandler
+        );
+
+    }
+
+    document.addEventListener(
+    "touchmove",
+    moveHandler,
+    { passive:true }
+    );
+
+    document.addEventListener(
+    "touchend",
+    endHandler
+    );
+
+}
+
+function formatTime(sec){
+
+    sec = Math.floor(sec);
+
+    const min =
+    Math.floor(sec / 60);
+
+    const s =
+    sec % 60;
+
+    return `${min}:${
+        s
+        .toString()
+        .padStart(2,"0")
+    }`;
+
+}
+
+</script>
+
+</body>
+</html>
