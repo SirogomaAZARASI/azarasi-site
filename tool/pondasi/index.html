@@ -3,7 +3,8 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>効果音ぽんだし</title>
 
@@ -47,14 +48,30 @@ input[type="file"]{
     color:white;
 }
 
+/* ===== fade toggle ===== */
+
+#fadeToggleWrap{
+    margin-bottom:12px;
+    color:#ccc;
+    font-size:14px;
+}
+
+#fadeToggle{
+    transform:scale(1.2);
+    margin-right:6px;
+}
+
 /* ===== grid ===== */
+
 #soundList{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    grid-template-columns:
+    repeat(auto-fill,minmax(140px,1fr));
     gap:16px;
 }
 
 /* ===== tile ===== */
+
 .sound-wrapper{
     position:relative;
 }
@@ -62,28 +79,29 @@ input[type="file"]{
 .sound-btn{
     width:100%;
     aspect-ratio:1/1;
+
     border:none;
     border-radius:24px;
+
     background:#444;
     color:white;
+
     padding:12px;
+
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    user-select:none;
-    transition:0.2s;
 
-    position:relative;
-    z-index:1;
+    user-select:none;
+
+    transition:0.2s;
 }
 
-/* 再生中 */
 .sound-btn.playing{
     background:#d80000;
 }
 
-/* 並び替え */
 .sound-btn.sorting{
     animation:wiggle 0.12s infinite alternate;
 }
@@ -96,10 +114,12 @@ input[type="file"]{
 .sound-name{
     font-size:15px;
     font-weight:bold;
+
     width:100%;
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
+
     margin-bottom:6px;
 }
 
@@ -109,72 +129,94 @@ input[type="file"]{
     margin-bottom:6px;
 }
 
-/* ===== bar ===== */
+/* ===== fade label ===== */
+
+.fade-label{
+    font-size:12px;
+    color:#ffcc00;
+    margin-bottom:6px;
+    display:none;
+}
+
+/* ===== slider ===== */
 
 .sound-bar-wrap{
     position:relative;
     width:100%;
-    height:14px;
-    z-index:1;
+    height:16px;
 }
 
-/* グレー背景 */
 .sound-bar-wrap::before{
     content:"";
+
     position:absolute;
     left:0;
     top:50%;
+
     transform:translateY(-50%);
+
     width:100%;
     height:4px;
+
     background:#3a3a3a;
     border-radius:999px;
+
     z-index:0;
 }
 
-/* 操作用 */
-.sound-bar{
-    width:100%;
+.sound-bar-track{
+    position:absolute;
+
+    left:0;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:0%;
     height:4px;
+
+    background:white;
+    border-radius:999px;
+
+    z-index:1;
+    pointer-events:none;
+}
+
+.sound-bar{
+    position:absolute;
+
+    left:0;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:100%;
+    height:16px;
+
     appearance:none;
     background:transparent;
 
-    position:absolute;
-    left:0;
-    top:50%;
-    transform:translateY(-50%);
     z-index:2;
 }
 
-/* 白進捗 */
-.sound-bar-track{
-    position:absolute;
-    left:0;
-    top:50%;
-    transform:translateY(-50%);
-    height:4px;
-    width:0%;
-    background:white;
-    border-radius:999px;
-    pointer-events:none;
-    z-index:1;
-}
-
-/* thumb */
 .sound-bar::-webkit-slider-thumb{
     appearance:none;
+
     width:14px;
     height:14px;
+
     border-radius:50%;
-    background:#fff;
+    background:white;
 }
 
-/* ===== menu（最前面固定） ===== */
+/* ===== menu ===== */
 
 .menu{
     position:absolute;
     inset:0;
+
     background:rgba(0,0,0,0.92);
+
     border-radius:24px;
 
     display:none;
@@ -182,189 +224,406 @@ input[type="file"]{
     flex-direction:column;
     justify-content:center;
     align-items:center;
+
     gap:10px;
 
-    z-index:9999; /* ←ここが重要 */
+    z-index:9999;
 }
 
 .menu button{
     width:110px;
+
     border:none;
     border-radius:12px;
+
     padding:10px;
+
     background:#222;
     color:white;
 }
 
+/* ===== sort done ===== */
+
 #doneBtn{
     position:fixed;
+
     right:20px;
     bottom:20px;
+
     padding:14px 18px;
+
     border:none;
     border-radius:14px;
+
     background:#d80000;
     color:white;
-    z-index:9999;
+
+    z-index:99999;
 }
 
+.footer{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+  backdrop-filter:blur(10px);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  z-index:999;
+}
+
+.footer a{
+  color:#66ccff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.footer a:hover{
+  text-decoration:underline;
+}
+
+.footer .copyright{
+  font-size:13px;
+  font-weight:500;
+  background:linear-gradient(90deg,#ffffff,#bbbbbb);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:0.3px;
+  text-shadow:0 1px 2px rgba(0,0,0,0.6);
+}
+
+body{padding-bottom:80px;}
+
 </style>
-
 </head>
-
 <body>
 
 <img id="headerImage" src="pondasi.png">
 
 <h1>効果音ぽんだし</h1>
 
+<div id="fadeToggleWrap">
+<label>
+<input type="checkbox"
+id="fadeToggle"
+checked>
+
+フェード停止を有効にする
+</label>
+</div>
+
 <p id="description">
-タップ：再生/停止<br>
+タップ：再生 / 停止<br>
 ダブルタップ：最初に戻る<br>
 スライド：シーク<br>
 トリプルタップ：メニュー
 </p>
 
-<input type="file" id="fileInput" multiple accept="audio/*,video/mp4">
+<input
+type="file"
+id="fileInput"
+multiple
+accept=".mp3,.wav,.m4a,.aac,.ogg,.mp4,audio/*,video/mp4">
 
 <div id="soundList"></div>
 
 <script>
 
-const soundList = document.getElementById("soundList");
+const soundList =
+document.getElementById("soundList");
 
 let sortMode = false;
 let draggedWrapper = null;
 
-document.getElementById("fileInput").addEventListener("change", e=>{
-    for(const file of e.target.files){
-        createSound(file);
-    }
+/* ===== fade toggle ===== */
+
+let fadeEnabled = true;
+
+document
+.getElementById("fadeToggle")
+.addEventListener("change",(e)=>{
+
+    fadeEnabled = e.target.checked;
+
 });
+
+/* ===== file load ===== */
+
+document
+.getElementById("fileInput")
+.addEventListener("change",e=>{
+
+    for(const file of e.target.files){
+
+        createSound(file);
+
+    }
+
+});
+
+/* ===== create ===== */
 
 function createSound(file){
 
-    const url = URL.createObjectURL(file);
-    const audio = new Audio(url);
+    const url =
+    URL.createObjectURL(file);
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "sound-wrapper";
+    /* ===== Safari安定版 ===== */
 
-    const button = document.createElement("button");
-    button.className = "sound-btn";
+    const audio =
+    document.createElement("audio");
 
-    const name = document.createElement("div");
-    name.className = "sound-name";
-    name.textContent = file.name;
+    audio.src = url;
+    audio.preload = "metadata";
+    audio.playsInline = true;
+    audio.crossOrigin = "anonymous";
 
-    const time = document.createElement("div");
-    time.className = "sound-time";
+    /* ===== wrapper ===== */
 
-    const barWrap = document.createElement("div");
-    barWrap.className = "sound-bar-wrap";
+    const wrapper =
+    document.createElement("div");
 
-    const bar = document.createElement("input");
+    wrapper.className =
+    "sound-wrapper";
+
+    const button =
+    document.createElement("button");
+
+    button.className =
+    "sound-btn";
+
+    /* ===== fade label ===== */
+
+    const fadeLabel =
+    document.createElement("div");
+
+    fadeLabel.className =
+    "fade-label";
+
+    fadeLabel.textContent =
+    "フェード中...";
+
+    /* ===== name ===== */
+
+    const name =
+    document.createElement("div");
+
+    name.className =
+    "sound-name";
+
+    name.textContent =
+    file.name;
+
+    /* ===== time ===== */
+
+    const time =
+    document.createElement("div");
+
+    time.className =
+    "sound-time";
+
+    /* ===== slider ===== */
+
+    const barWrap =
+    document.createElement("div");
+
+    barWrap.className =
+    "sound-bar-wrap";
+
+    const barTrack =
+    document.createElement("div");
+
+    barTrack.className =
+    "sound-bar-track";
+
+    const bar =
+    document.createElement("input");
+
     bar.type = "range";
     bar.min = 0;
     bar.max = 100;
     bar.value = 0;
-    bar.className = "sound-bar";
 
-    const barTrack = document.createElement("div");
-    barTrack.className = "sound-bar-track";
+    bar.className =
+    "sound-bar";
 
     barWrap.appendChild(barTrack);
     barWrap.appendChild(bar);
 
+    /* ===== append ===== */
+
+    button.appendChild(fadeLabel);
     button.appendChild(name);
     button.appendChild(time);
     button.appendChild(barWrap);
 
     wrapper.appendChild(button);
+
     soundList.appendChild(wrapper);
 
-    const menu = document.createElement("div");
+    /* ===== menu ===== */
+
+    const menu =
+    document.createElement("div");
+
     menu.className = "menu";
 
     menu.innerHTML = `
-        <button class="sort">並べ替え</button>
-        <button class="rename">名前変更</button>
-        <button class="delete">削除</button>
-        <button class="close">閉じる</button>
+    <button class="sort">並べ替え</button>
+    <button class="rename">名前変更</button>
+    <button class="delete">削除</button>
+    <button class="close">閉じる</button>
     `;
 
     wrapper.appendChild(menu);
 
-    const sortBtn = menu.querySelector(".sort");
-    const renameBtn = menu.querySelector(".rename");
-    const deleteBtn = menu.querySelector(".delete");
-    const closeBtn = menu.querySelector(".close");
+    const sortBtn =
+    menu.querySelector(".sort");
+
+    const renameBtn =
+    menu.querySelector(".rename");
+
+    const deleteBtn =
+    menu.querySelector(".delete");
+
+    const closeBtn =
+    menu.querySelector(".close");
+
+    /* ===== state ===== */
 
     let tapCount = 0;
     let tapTimer;
-    let moved = false;
-    let longPressTimer;
-    let longPressSeek = false;
+
     let seeking = false;
     let smooth = 0;
 
+    let fadeInterval = null;
+
+    /* ===== playing ui ===== */
+
     function setPlaying(v){
-        button.classList.toggle("playing", v);
+
+        button.classList.toggle(
+        "playing",v);
+
     }
+
+    /* ===== time ===== */
 
     function formatTime(sec){
+
         sec = Math.floor(sec || 0);
-        const m = Math.floor(sec/60);
-        const s = sec%60;
-        return `${m}:${String(s).padStart(2,"0")}`;
+
+        const m =
+        Math.floor(sec / 60);
+
+        const s =
+        sec % 60;
+
+        return `${m}:${String(s)
+        .padStart(2,"0")}`;
+
     }
 
-    /* ===== smooth bar ===== */
-    function animate(){
-        if(audio.duration){
-            const target = (audio.currentTime / audio.duration) * 100;
-            smooth += (target - smooth) * 0.15;
+    /* ===== fade ===== */
 
-            barTrack.style.width = smooth + "%";
-            bar.value = smooth;
-        }
-        requestAnimationFrame(animate);
-    }
-    animate();
+    function fadeOutStop(){
 
-    /* ===== tap ===== */
-    button.addEventListener("touchstart", e=>{
+        setPlaying(false);
 
-        moved = false;
+        fadeLabel.style.display =
+        "block";
 
-        if(sortMode){
-            startDrag(e, wrapper);
+        /* OFF */
+
+        if(!fadeEnabled){
+
+            fadeLabel.style.display =
+            "none";
+
+            audio.pause();
+
             return;
         }
 
-        clearTimeout(longPressTimer);
-        longPressSeek = false;
+        if(fadeInterval){
 
-        longPressTimer = setTimeout(()=>{
-            if(tapCount === 2){
-                longPressSeek = true;
+            clearInterval(fadeInterval);
+
+            fadeInterval = null;
+        }
+
+        let vol = audio.volume;
+
+        const duration = 3000;
+        const stepTime = 30;
+
+        const step =
+        vol / (duration / stepTime);
+
+        fadeInterval = setInterval(()=>{
+
+            vol -= step;
+
+            if(vol <= 0){
+
+                clearInterval(fadeInterval);
+
+                fadeInterval = null;
+
+                audio.pause();
+
+                audio.volume = 1;
+
+                fadeLabel.style.display =
+                "none";
+
+                return;
             }
-        },220);
 
-    },{passive:true});
+            audio.volume = vol;
 
-    button.addEventListener("touchmove", ()=>{
-        moved = true;
-        clearTimeout(longPressTimer);
-    });
+        },stepTime);
 
-    button.addEventListener("touchend", ()=>{
+    }
 
-        clearTimeout(longPressTimer);
+    /* ===== slider smooth ===== */
 
-        if(sortMode) return;
-        if(moved) return;
-        if(longPressSeek) return;
+    function animate(){
+
+        if(audio.duration){
+
+            const target =
+            (audio.currentTime
+            / audio.duration) * 100;
+
+            smooth +=
+            (target - smooth) * 0.15;
+
+            barTrack.style.width =
+            smooth + "%";
+
+            bar.value = smooth;
+        }
+
+        requestAnimationFrame(animate);
+
+    }
+
+    animate();
+
+    /* ===== tap ===== */
+
+    button.addEventListener(
+    "touchend",()=>{
 
         tapCount++;
 
@@ -372,29 +631,60 @@ function createSound(file){
 
         tapTimer = setTimeout(()=>{
 
+            /* single */
+
             if(tapCount === 1){
 
                 if(audio.paused){
-                    audio.play();
+
+                    if(fadeInterval){
+
+                        clearInterval(
+                        fadeInterval);
+
+                        fadeInterval = null;
+                    }
+
+                    fadeLabel.style.display =
+                    "none";
+
+                    audio.volume = 1;
+
+                    audio.play()
+                    .catch(err=>{
+                        console.log(err);
+                    });
+
                     setPlaying(true);
+
                 }else{
-                    audio.pause();
-                    setPlaying(false);
+
+                    fadeOutStop();
                 }
 
-            }else if(tapCount === 2){
+            }
+
+            /* double */
+
+            else if(tapCount === 2){
 
                 audio.currentTime = 0;
-                audio.pause();
-                setPlaying(false);
 
                 bar.value = 0;
-                barTrack.style.width = "0%";
+
+                barTrack.style.width =
+                "0%";
+
                 updateTime();
 
-            }else if(tapCount >= 3){
+            }
 
-                menu.style.display = "flex";
+            /* triple */
+
+            else if(tapCount >= 3){
+
+                menu.style.display =
+                "flex";
             }
 
             tapCount = 0;
@@ -403,135 +693,196 @@ function createSound(file){
 
     });
 
-    /* ===== seek ===== */
+    /* ===== slider ===== */
 
-    bar.addEventListener("input", ()=>{
+    bar.addEventListener(
+    "input",()=>{
 
         seeking = true;
 
-        audio.currentTime =
-        (bar.value / 100) * audio.duration;
+        if(audio.duration){
 
-        barTrack.style.width = bar.value + "%";
+            audio.currentTime =
+            (bar.value / 100)
+            * audio.duration;
+
+            barTrack.style.width =
+            bar.value + "%";
+        }
+
     });
 
-    bar.addEventListener("touchend", ()=>{
+    bar.addEventListener(
+    "change",()=>{
+
         seeking = false;
+
     });
 
-    audio.addEventListener("timeupdate", updateTime);
-    audio.addEventListener("loadedmetadata", updateTime);
-    audio.addEventListener("seeked", updateTime);
+    /* ===== audio events ===== */
 
-    audio.addEventListener("ended", ()=>{
-        audio.currentTime = 0;
-        audio.pause();
+    audio.addEventListener(
+    "timeupdate",updateTime);
+
+    audio.addEventListener(
+    "loadedmetadata",updateTime);
+
+    audio.addEventListener(
+    "seeked",updateTime);
+
+    audio.addEventListener(
+    "pause",()=>{
+
         setPlaying(false);
-        updateTime();
+
     });
+
+    audio.addEventListener(
+    "ended",()=>{
+
+        audio.currentTime = 0;
+
+        setPlaying(false);
+
+        updateTime();
+
+    });
+
+    /* ===== update ===== */
 
     function updateTime(){
 
-        const cur = formatTime(audio.currentTime);
-        const tot = formatTime(audio.duration);
+        const cur =
+        formatTime(audio.currentTime);
 
-        time.textContent = `${cur}/${tot}`;
+        const tot =
+        formatTime(audio.duration);
+
+        time.textContent =
+        `${cur}/${tot}`;
 
         if(!seeking && audio.duration){
-            const v = (audio.currentTime / audio.duration) * 100;
-            barTrack.style.width = v + "%";
+
+            const v =
+            (audio.currentTime
+            / audio.duration) * 100;
+
             bar.value = v;
+
+            barTrack.style.width =
+            v + "%";
         }
+
     }
 
     /* ===== menu ===== */
 
-    sortBtn.onclick = ()=> enableSortMode();
+    sortBtn.onclick = ()=>{
 
-    renameBtn.onclick = ()=>{
-        const n = prompt("名前変更", name.textContent);
-        if(n?.trim()) name.textContent = n.trim();
+        enableSortMode();
+
     };
 
-    deleteBtn.onclick = ()=> wrapper.remove();
+    renameBtn.onclick = ()=>{
 
-    closeBtn.onclick = ()=> menu.style.display = "none";
+        const n =
+        prompt(
+        "名前変更",
+        name.textContent
+        );
+
+        if(n?.trim()){
+
+            name.textContent =
+            n.trim();
+
+        }
+
+    };
+
+    deleteBtn.onclick = ()=>{
+
+        wrapper.remove();
+
+    };
+
+    closeBtn.onclick = ()=>{
+
+        menu.style.display =
+        "none";
+
+    };
+
+    /* ===== sort ===== */
 
     function enableSortMode(){
 
         sortMode = true;
-        menu.style.display = "none";
 
-        document.querySelectorAll(".sound-btn")
-        .forEach(b=>b.classList.add("sorting"));
+        menu.style.display =
+        "none";
 
-        if(document.getElementById("doneBtn")) return;
+        document
+        .querySelectorAll(".sound-btn")
+        .forEach(b=>{
 
-        const doneBtn = document.createElement("button");
+            b.classList.add("sorting");
+
+        });
+
+        if(document
+        .getElementById("doneBtn")){
+
+            return;
+        }
+
+        const doneBtn =
+        document.createElement("button");
+
         doneBtn.id = "doneBtn";
-        doneBtn.textContent = "完了";
+
+        doneBtn.textContent =
+        "完了";
+
         document.body.appendChild(doneBtn);
 
         doneBtn.onclick = ()=>{
 
             sortMode = false;
 
-            document.querySelectorAll(".sound-btn")
-            .forEach(b=>b.classList.remove("sorting"));
+            document
+            .querySelectorAll(".sound-btn")
+            .forEach(b=>{
 
-            document.querySelectorAll(".sound-wrapper")
-            .forEach(w=>w.classList.remove("dragging"));
+                b.classList.remove(
+                "sorting");
+
+            });
 
             doneBtn.remove();
+
         };
+
     }
 
 }
 
 /* ===== drag ===== */
 
-function startDrag(e, wrapper){
+function startDrag(e,wrapper){
 
     draggedWrapper = wrapper;
-    wrapper.classList.add("dragging");
 
-    function move(ev){
-
-        const t = ev.touches[0];
-        const list = [...document.querySelectorAll(".sound-wrapper")];
-
-        for(const el of list){
-
-            if(el === draggedWrapper) continue;
-
-            const r = el.getBoundingClientRect();
-
-            if(
-                t.clientX > r.left &&
-                t.clientX < r.right &&
-                t.clientY > r.top &&
-                t.clientY < r.bottom
-            ){
-                soundList.insertBefore(
-                    draggedWrapper,
-                    t.clientY < r.top + r.height/2 ? el : el.nextSibling
-                );
-                break;
-            }
-        }
-    }
-
-    function end(){
-        wrapper.classList.remove("dragging");
-        document.removeEventListener("touchmove", move);
-        document.removeEventListener("touchend", end);
-    }
-
-    document.addEventListener("touchmove", move, {passive:true});
-    document.addEventListener("touchend", end);
 }
 
 </script>
+
+<div class="footer">
+  <div class="copyright">
+    Copyright © 2026 SirogomaAZARASI All Rights Reserved.<br>
+	  このサイトを無断で複製しないでください。
+  </div>
+</div>
 
 </body>
 </html>
