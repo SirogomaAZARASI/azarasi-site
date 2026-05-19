@@ -3,8 +3,12 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
 <title>効果音ぽんだし</title>
 
@@ -18,17 +22,26 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 body{
     margin:0;
     padding:20px;
+    padding-bottom:110px;
+
     background:#111;
     color:white;
+
     font-family:sans-serif;
+
     overflow-x:hidden;
+
+    touch-action:pan-y;
 }
 
 #headerImage{
     width:100%;
     aspect-ratio:3/1;
+
     object-fit:cover;
+
     border-radius:24px;
+
     margin-bottom:20px;
 }
 
@@ -40,6 +53,7 @@ h1{
     color:#bbb;
     font-size:14px;
     line-height:1.6;
+
     margin-bottom:20px;
 }
 
@@ -48,35 +62,41 @@ input[type="file"]{
     color:white;
 }
 
-/* ===== fade toggle ===== */
+/* ===== toggles ===== */
 
-#fadeToggleWrap{
-    margin-bottom:12px;
+.settingBox{
+    margin-bottom:10px;
+
     color:#ccc;
     font-size:14px;
 }
 
-#fadeToggle{
+.settingBox input{
     transform:scale(1.2);
-    margin-right:6px;
+    margin-right:8px;
 }
 
 /* ===== grid ===== */
 
 #soundList{
     display:grid;
+
     grid-template-columns:
-    repeat(auto-fill,minmax(140px,1fr));
+    repeat(auto-fill,minmax(150px,1fr));
+
     gap:16px;
 }
-
-/* ===== tile ===== */
 
 .sound-wrapper{
     position:relative;
 }
 
+/* ===== tile ===== */
+
 .sound-btn{
+
+    position:relative;
+
     width:100%;
     aspect-ratio:1/1;
 
@@ -86,70 +106,114 @@ input[type="file"]{
     background:#444;
     color:white;
 
-    padding:12px;
+    overflow:hidden;
+
+    padding:14px;
 
     display:flex;
     flex-direction:column;
-    justify-content:center;
+
+    justify-content:flex-start;
+
     align-items:center;
 
     user-select:none;
 
-    transition:0.2s;
+    transition:
+    background .2s,
+    transform .15s;
+
+    touch-action:manipulation;
 }
 
 .sound-btn.playing{
     background:#d80000;
 }
 
-.sound-btn.sorting{
-    animation:wiggle 0.12s infinite alternate;
+.sound-btn:active{
+    transform:scale(0.98);
 }
 
-@keyframes wiggle{
-    from{transform:rotate(-1deg);}
-    to{transform:rotate(1deg);}
-}
+/* ===== title ===== */
 
 .sound-name{
+
+    width:100%;
+
     font-size:15px;
     font-weight:bold;
 
-    width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    text-align:center;
 
-    margin-bottom:6px;
+    line-height:1.25;
+
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+
+    -webkit-line-clamp:3;
+
+    overflow:hidden;
+
+    word-break:break-word;
+
+    min-height:56px;
 }
+
+/* ===== time ===== */
 
 .sound-time{
+
+    position:absolute;
+
+    left:12px;
+    right:12px;
+
+    bottom:34px;
+
     font-size:12px;
+
     color:#ccc;
-    margin-bottom:6px;
+
+    text-align:center;
+
+    pointer-events:none;
 }
 
-/* ===== fade label ===== */
+/* ===== fade ===== */
 
 .fade-label{
+
     font-size:12px;
+
     color:#ffcc00;
-    margin-bottom:6px;
+
+    margin-bottom:8px;
+
     display:none;
 }
 
 /* ===== slider ===== */
 
 .sound-bar-wrap{
-    position:relative;
-    width:100%;
+
+    position:absolute;
+
+    left:12px;
+    right:12px;
+
+    bottom:12px;
+
     height:16px;
+
+    z-index:5;
 }
 
 .sound-bar-wrap::before{
+
     content:"";
 
     position:absolute;
+
     left:0;
     top:50%;
 
@@ -159,12 +223,14 @@ input[type="file"]{
     height:4px;
 
     background:#3a3a3a;
+
     border-radius:999px;
 
     z-index:0;
 }
 
 .sound-bar-track{
+
     position:absolute;
 
     left:0;
@@ -173,16 +239,20 @@ input[type="file"]{
     transform:translateY(-50%);
 
     width:0%;
+
     height:4px;
 
     background:white;
+
     border-radius:999px;
 
     z-index:1;
+
     pointer-events:none;
 }
 
 .sound-bar{
+
     position:absolute;
 
     left:0;
@@ -194,28 +264,34 @@ input[type="file"]{
     height:16px;
 
     appearance:none;
+
     background:transparent;
 
     z-index:2;
 }
 
 .sound-bar::-webkit-slider-thumb{
+
     appearance:none;
 
     width:14px;
     height:14px;
 
     border-radius:50%;
+
     background:white;
 }
 
 /* ===== menu ===== */
 
 .menu{
+
     position:absolute;
+
     inset:0;
 
-    background:rgba(0,0,0,0.92);
+    background:
+    rgba(0,0,0,.92);
 
     border-radius:24px;
 
@@ -231,6 +307,7 @@ input[type="file"]{
 }
 
 .menu button{
+
     width:110px;
 
     border:none;
@@ -242,89 +319,111 @@ input[type="file"]{
     color:white;
 }
 
-/* ===== sort done ===== */
-
-#doneBtn{
-    position:fixed;
-
-    right:20px;
-    bottom:20px;
-
-    padding:14px 18px;
-
-    border:none;
-    border-radius:14px;
-
-    background:#d80000;
-    color:white;
-
-    z-index:99999;
-}
+/* ===== footer ===== */
 
 .footer{
-  position:fixed;
-  bottom:10px;
-  left:50%;
-  transform:translateX(-50%);
-  width:90%;
-  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
-  backdrop-filter:blur(10px);
-  border-radius:12px;
-  padding:10px;
-  text-align:center;
-  font-size:13px;
-  border:1px solid rgba(255,255,255,0.15);
-  box-shadow:0 5px 20px rgba(0,0,0,0.3);
-  z-index:999;
-}
 
-.footer a{
-  color:#66ccff;
-  text-decoration:none;
-  font-weight:600;
-}
+    position:fixed;
 
-.footer a:hover{
-  text-decoration:underline;
+    bottom:10px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:90%;
+
+    background:
+    linear-gradient(
+    to right,
+    rgba(0,0,0,.2),
+    rgba(0,0,0,.85));
+
+    backdrop-filter:blur(10px);
+
+    border-radius:12px;
+
+    padding:10px;
+
+    text-align:center;
+
+    font-size:13px;
+
+    border:
+    1px solid
+    rgba(255,255,255,.15);
+
+    box-shadow:
+    0 5px 20px
+    rgba(0,0,0,.3);
+
+    z-index:999;
 }
 
 .footer .copyright{
-  font-size:13px;
-  font-weight:500;
-  background:linear-gradient(90deg,#ffffff,#bbbbbb);
-  background-clip:text;
-  -webkit-background-clip:text;
-  color:transparent;
-  -webkit-text-fill-color:transparent;
-  letter-spacing:0.3px;
-  text-shadow:0 1px 2px rgba(0,0,0,0.6);
-}
 
-body{padding-bottom:80px;}
+    font-size:13px;
+    font-weight:500;
+
+    background:
+    linear-gradient(
+    90deg,#fff,#bbb);
+
+    background-clip:text;
+    -webkit-background-clip:text;
+
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+
+    letter-spacing:.3px;
+
+    text-shadow:
+    0 1px 2px
+    rgba(0,0,0,.6);
+}
 
 </style>
 </head>
 <body>
 
-<img id="headerImage" src="pondasi.png">
+<img
+id="headerImage"
+src="pondasi.png">
 
 <h1>効果音ぽんだし</h1>
 
-<div id="fadeToggleWrap">
+<div class="settingBox">
 <label>
-<input type="checkbox"
+
+<input
+type="checkbox"
 id="fadeToggle"
 checked>
 
-フェード停止を有効にする
+フェード停止を有効
+
+</label>
+</div>
+
+<div class="settingBox">
+<label>
+
+<input
+type="checkbox"
+id="speakerSafeToggle"
+checked>
+
+音割れ防止モード(完全に防止はできません)
+
 </label>
 </div>
 
 <p id="description">
+
 タップ：再生 / 停止<br>
 ダブルタップ：最初に戻る<br>
 スライド：シーク<br>
 トリプルタップ：メニュー
+
 </p>
 
 <input
@@ -337,29 +436,57 @@ accept=".mp3,.wav,.m4a,.aac,.ogg,.mp4,audio/*,video/mp4">
 
 <script>
 
-const soundList =
-document.getElementById("soundList");
+/* ===== audio ===== */
 
-let sortMode = false;
-let draggedWrapper = null;
+const audioContext =
+new (
+window.AudioContext ||
+window.webkitAudioContext
+)();
 
-/* ===== fade toggle ===== */
+/* ===== settings ===== */
 
 let fadeEnabled = true;
 
+let speakerSafe =
+true;
+
 document
 .getElementById("fadeToggle")
-.addEventListener("change",(e)=>{
+.addEventListener(
+"change",
+e=>{
 
-    fadeEnabled = e.target.checked;
+    fadeEnabled =
+    e.target.checked;
 
 });
 
-/* ===== file load ===== */
+document
+.getElementById(
+"speakerSafeToggle")
+.addEventListener(
+"change",
+e=>{
+
+    speakerSafe =
+    e.target.checked;
+
+});
+
+/* ===== list ===== */
+
+const soundList =
+document.getElementById(
+"soundList");
+
+/* ===== load ===== */
 
 document
 .getElementById("fileInput")
-.addEventListener("change",e=>{
+.addEventListener(
+"change",
+e=>{
 
     for(const file of e.target.files){
 
@@ -376,34 +503,162 @@ function createSound(file){
     const url =
     URL.createObjectURL(file);
 
-    /* ===== Safari安定版 ===== */
-
     const audio =
-    document.createElement("audio");
+    new Audio(url);
 
-    audio.src = url;
-    audio.preload = "metadata";
-    audio.playsInline = true;
-    audio.crossOrigin = "anonymous";
+    audio.preload =
+    "metadata";
+
+    audio.playsInline =
+    true;
+
+    /* ===== nodes ===== */
+
+    const source =
+    audioContext
+    .createMediaElementSource(
+    audio);
+
+    const highpass =
+    audioContext
+    .createBiquadFilter();
+
+    highpass.type =
+    "highpass";
+
+    highpass.frequency.value =
+    120;
+
+    const compressor =
+    audioContext
+    .createDynamicsCompressor();
+
+    compressor.threshold.value =
+    -18;
+
+    compressor.knee.value =
+    20;
+
+    compressor.ratio.value =
+    12;
+
+    compressor.attack.value =
+    0.003;
+
+    compressor.release.value =
+    0.25;
+
+    const limiter =
+    audioContext
+    .createDynamicsCompressor();
+
+    limiter.threshold.value =
+    -6;
+
+    limiter.knee.value =
+    0;
+
+    limiter.ratio.value =
+    20;
+
+    limiter.attack.value =
+    0.001;
+
+    limiter.release.value =
+    0.08;
+
+    const gainNode =
+    audioContext
+    .createGain();
+
+    gainNode.gain.value =
+    0.55;
+
+    /* ===== connect ===== */
+
+    function connectAudio(){
+
+        source.disconnect();
+
+        highpass.disconnect();
+
+        compressor.disconnect();
+
+        limiter.disconnect();
+
+        gainNode.disconnect();
+
+        if(speakerSafe){
+
+            source.connect(highpass);
+
+            highpass.connect(
+            compressor);
+
+            compressor.connect(
+            limiter);
+
+            limiter.connect(
+            gainNode);
+
+            gainNode.connect(
+            audioContext.destination);
+
+            gainNode.gain.value =
+            0.55;
+
+        }else{
+
+            source.connect(
+            gainNode);
+
+            gainNode.connect(
+            audioContext.destination);
+
+            gainNode.gain.value =
+            1;
+
+        }
+
+    }
+
+    connectAudio();
+
+    /* ===== realtime ===== */
+
+    document
+    .getElementById(
+    "speakerSafeToggle")
+    .addEventListener(
+    "change",
+    ()=>{
+
+        connectAudio();
+
+    });
 
     /* ===== wrapper ===== */
 
     const wrapper =
-    document.createElement("div");
+    document.createElement(
+    "div");
 
     wrapper.className =
     "sound-wrapper";
 
     const button =
-    document.createElement("button");
+    document.createElement(
+    "button");
+
+    button.type =
+    "button";
 
     button.className =
     "sound-btn";
 
-    /* ===== fade label ===== */
-
     const fadeLabel =
-    document.createElement("div");
+    document.createElement(
+    "div");
 
     fadeLabel.className =
     "fade-label";
@@ -411,10 +666,9 @@ function createSound(file){
     fadeLabel.textContent =
     "フェード中...";
 
-    /* ===== name ===== */
-
     const name =
-    document.createElement("div");
+    document.createElement(
+    "div");
 
     name.className =
     "sound-name";
@@ -422,32 +676,37 @@ function createSound(file){
     name.textContent =
     file.name;
 
-    /* ===== time ===== */
-
     const time =
-    document.createElement("div");
+    document.createElement(
+    "div");
 
     time.className =
     "sound-time";
 
-    /* ===== slider ===== */
+    time.textContent =
+    "0:00/0:00";
 
     const barWrap =
-    document.createElement("div");
+    document.createElement(
+    "div");
 
     barWrap.className =
     "sound-bar-wrap";
 
     const barTrack =
-    document.createElement("div");
+    document.createElement(
+    "div");
 
     barTrack.className =
     "sound-bar-track";
 
     const bar =
-    document.createElement("input");
+    document.createElement(
+    "input");
 
-    bar.type = "range";
+    bar.type =
+    "range";
+
     bar.min = 0;
     bar.max = 100;
     bar.value = 0;
@@ -455,64 +714,70 @@ function createSound(file){
     bar.className =
     "sound-bar";
 
-    barWrap.appendChild(barTrack);
-    barWrap.appendChild(bar);
-
     /* ===== append ===== */
 
-    button.appendChild(fadeLabel);
-    button.appendChild(name);
-    button.appendChild(time);
-    button.appendChild(barWrap);
+    barWrap.appendChild(
+    barTrack);
 
-    wrapper.appendChild(button);
+    barWrap.appendChild(
+    bar);
 
-    soundList.appendChild(wrapper);
+    button.appendChild(
+    fadeLabel);
+
+    button.appendChild(
+    name);
+
+    button.appendChild(
+    time);
+
+    button.appendChild(
+    barWrap);
+
+    wrapper.appendChild(
+    button);
 
     /* ===== menu ===== */
 
     const menu =
-    document.createElement("div");
+    document.createElement(
+    "div");
 
-    menu.className = "menu";
+    menu.className =
+    "menu";
 
     menu.innerHTML = `
-    <button class="sort">並べ替え</button>
     <button class="rename">名前変更</button>
     <button class="delete">削除</button>
     <button class="close">閉じる</button>
     `;
 
-    wrapper.appendChild(menu);
+    wrapper.appendChild(
+    menu);
 
-    const sortBtn =
-    menu.querySelector(".sort");
-
-    const renameBtn =
-    menu.querySelector(".rename");
-
-    const deleteBtn =
-    menu.querySelector(".delete");
-
-    const closeBtn =
-    menu.querySelector(".close");
+    soundList.appendChild(
+    wrapper);
 
     /* ===== state ===== */
 
     let tapCount = 0;
+
     let tapTimer;
 
+    let moved = false;
+
     let seeking = false;
-    let smooth = 0;
 
-    let fadeInterval = null;
+    let fadeInterval =
+    null;
 
-    /* ===== playing ui ===== */
+    /* ===== ui ===== */
 
     function setPlaying(v){
 
         button.classList.toggle(
-        "playing",v);
+        "playing",
+        v);
 
     }
 
@@ -520,7 +785,8 @@ function createSound(file){
 
     function formatTime(sec){
 
-        sec = Math.floor(sec || 0);
+        sec =
+        Math.floor(sec || 0);
 
         const m =
         Math.floor(sec / 60);
@@ -533,6 +799,34 @@ function createSound(file){
 
     }
 
+    function updateTime(){
+
+        const cur =
+        formatTime(
+        audio.currentTime);
+
+        const tot =
+        formatTime(
+        audio.duration);
+
+        time.textContent =
+        `${cur}/${tot}`;
+
+        if(audio.duration){
+
+            const v =
+            (audio.currentTime
+            / audio.duration)
+            * 100;
+
+            bar.value = v;
+
+            barTrack.style.width =
+            v + "%";
+        }
+
+    }
+
     /* ===== fade ===== */
 
     function fadeOutStop(){
@@ -541,8 +835,6 @@ function createSound(file){
 
         fadeLabel.style.display =
         "block";
-
-        /* OFF */
 
         if(!fadeEnabled){
 
@@ -556,32 +848,39 @@ function createSound(file){
 
         if(fadeInterval){
 
-            clearInterval(fadeInterval);
+            clearInterval(
+            fadeInterval);
 
-            fadeInterval = null;
         }
 
-        let vol = audio.volume;
+        let vol =
+        gainNode.gain.value;
 
-        const duration = 3000;
-        const stepTime = 30;
+        const duration =
+        5000;
+
+        const stepTime =
+        30;
 
         const step =
         vol / (duration / stepTime);
 
-        fadeInterval = setInterval(()=>{
+        fadeInterval =
+        setInterval(()=>{
 
             vol -= step;
 
             if(vol <= 0){
 
-                clearInterval(fadeInterval);
-
-                fadeInterval = null;
+                clearInterval(
+                fadeInterval);
 
                 audio.pause();
 
-                audio.volume = 1;
+                gainNode.gain.value =
+                speakerSafe
+                ? 0.55
+                : 1;
 
                 fadeLabel.style.display =
                 "none";
@@ -589,102 +888,104 @@ function createSound(file){
                 return;
             }
 
-            audio.volume = vol;
+            gainNode.gain.value =
+            vol;
 
         },stepTime);
 
     }
 
-    /* ===== slider smooth ===== */
+    /* ===== touch ===== */
 
-    function animate(){
+    button.addEventListener(
+    "touchstart",
+    ()=>{
 
-        if(audio.duration){
+        moved = false;
 
-            const target =
-            (audio.currentTime
-            / audio.duration) * 100;
+    },
+    {passive:true});
 
-            smooth +=
-            (target - smooth) * 0.15;
+    button.addEventListener(
+    "touchmove",
+    ()=>{
 
-            barTrack.style.width =
-            smooth + "%";
+        moved = true;
 
-            bar.value = smooth;
-        }
-
-        requestAnimationFrame(animate);
-
-    }
-
-    animate();
+    },
+    {passive:true});
 
     /* ===== tap ===== */
 
     button.addEventListener(
-    "touchend",()=>{
+    "touchend",
+    ()=>{
+
+        if(moved || seeking){
+
+            moved = false;
+
+            return;
+        }
 
         tapCount++;
 
-        clearTimeout(tapTimer);
+        clearTimeout(
+        tapTimer);
 
-        tapTimer = setTimeout(()=>{
-
-            /* single */
+        tapTimer =
+        setTimeout(()=>{
 
             if(tapCount === 1){
 
                 if(audio.paused){
 
-                    if(fadeInterval){
+                    if(
+                    audioContext.state
+                    === "suspended"
+                    ){
 
-                        clearInterval(
-                        fadeInterval);
+                        audioContext
+                        .resume();
 
-                        fadeInterval = null;
                     }
 
                     fadeLabel.style.display =
                     "none";
 
-                    audio.volume = 1;
+                    gainNode.gain.value =
+                    speakerSafe
+                    ? 0.55
+                    : 1;
 
                     audio.play()
-                    .catch(err=>{
-                        console.log(err);
-                    });
+                    .catch(console.log);
 
                     setPlaying(true);
 
                 }else{
 
                     fadeOutStop();
+
                 }
 
             }
 
-            /* double */
-
-            else if(tapCount === 2){
+            else if(
+            tapCount === 2){
 
                 audio.currentTime = 0;
-
-                bar.value = 0;
-
-                barTrack.style.width =
-                "0%";
 
                 updateTime();
 
             }
 
-            /* triple */
-
-            else if(tapCount >= 3){
+            else if(
+            tapCount >= 3){
 
                 menu.style.display =
                 "flex";
+
             }
 
             tapCount = 0;
@@ -696,9 +997,16 @@ function createSound(file){
     /* ===== slider ===== */
 
     bar.addEventListener(
-    "input",()=>{
+    "touchstart",
+    ()=>{
 
         seeking = true;
+
+    });
+
+    bar.addEventListener(
+    "input",
+    ()=>{
 
         if(audio.duration){
 
@@ -713,83 +1021,61 @@ function createSound(file){
     });
 
     bar.addEventListener(
-    "change",()=>{
+    "change",
+    ()=>{
 
-        seeking = false;
+        setTimeout(()=>{
+
+            seeking = false;
+
+        },50);
 
     });
 
-    /* ===== audio events ===== */
+    /* ===== audio ===== */
 
     audio.addEventListener(
-    "timeupdate",updateTime);
+    "timeupdate",
+    updateTime);
 
     audio.addEventListener(
-    "loadedmetadata",updateTime);
+    "loadedmetadata",
+    updateTime);
 
     audio.addEventListener(
-    "seeked",updateTime);
+    "seeked",
+    updateTime);
 
     audio.addEventListener(
-    "pause",()=>{
+    "pause",
+    ()=>{
 
         setPlaying(false);
 
     });
 
     audio.addEventListener(
-    "ended",()=>{
+    "ended",
+    ()=>{
 
         audio.currentTime = 0;
 
-        setPlaying(false);
-
         updateTime();
+
+        setPlaying(false);
 
     });
 
-    /* ===== update ===== */
-
-    function updateTime(){
-
-        const cur =
-        formatTime(audio.currentTime);
-
-        const tot =
-        formatTime(audio.duration);
-
-        time.textContent =
-        `${cur}/${tot}`;
-
-        if(!seeking && audio.duration){
-
-            const v =
-            (audio.currentTime
-            / audio.duration) * 100;
-
-            bar.value = v;
-
-            barTrack.style.width =
-            v + "%";
-        }
-
-    }
-
     /* ===== menu ===== */
 
-    sortBtn.onclick = ()=>{
-
-        enableSortMode();
-
-    };
-
-    renameBtn.onclick = ()=>{
+    menu.querySelector(
+    ".rename")
+    .onclick = ()=>{
 
         const n =
         prompt(
         "名前変更",
-        name.textContent
-        );
+        name.textContent);
 
         if(n?.trim()){
 
@@ -800,88 +1086,39 @@ function createSound(file){
 
     };
 
-    deleteBtn.onclick = ()=>{
+    menu.querySelector(
+    ".delete")
+    .onclick = ()=>{
 
         wrapper.remove();
 
     };
 
-    closeBtn.onclick = ()=>{
+    menu.querySelector(
+    ".close")
+    .onclick = ()=>{
 
         menu.style.display =
         "none";
 
     };
-
-    /* ===== sort ===== */
-
-    function enableSortMode(){
-
-        sortMode = true;
-
-        menu.style.display =
-        "none";
-
-        document
-        .querySelectorAll(".sound-btn")
-        .forEach(b=>{
-
-            b.classList.add("sorting");
-
-        });
-
-        if(document
-        .getElementById("doneBtn")){
-
-            return;
-        }
-
-        const doneBtn =
-        document.createElement("button");
-
-        doneBtn.id = "doneBtn";
-
-        doneBtn.textContent =
-        "完了";
-
-        document.body.appendChild(doneBtn);
-
-        doneBtn.onclick = ()=>{
-
-            sortMode = false;
-
-            document
-            .querySelectorAll(".sound-btn")
-            .forEach(b=>{
-
-                b.classList.remove(
-                "sorting");
-
-            });
-
-            doneBtn.remove();
-
-        };
-
-    }
-
-}
-
-/* ===== drag ===== */
-
-function startDrag(e,wrapper){
-
-    draggedWrapper = wrapper;
 
 }
 
 </script>
 
 <div class="footer">
-  <div class="copyright">
-    Copyright © 2026 SirogomaAZARASI All Rights Reserved.<br>
-	  このサイトを無断で複製しないでください。
-  </div>
+
+<div class="copyright">
+
+Copyright © 2026
+SirogomaAZARASI
+All Rights Reserved.<br>
+
+このサイトを無断で複製しないでください。
+
+</div>
+
 </div>
 
 </body>
