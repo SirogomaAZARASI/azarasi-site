@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -21,7 +22,7 @@ user-scalable=no">
 body{
     margin:0;
     padding:20px;
-    padding-bottom:120px;
+    padding-bottom:100px;
     background:#111;
     color:white;
     font-family:sans-serif;
@@ -53,29 +54,22 @@ input[type="file"]{
     color:white;
 }
 
-.settingBox{
-    margin-bottom:14px;
+#controlWrap{
+    margin-bottom:16px;
     color:#ccc;
     font-size:14px;
+    line-height:2;
 }
 
-.settingBox input[type="checkbox"]{
+#controlWrap input{
     transform:scale(1.2);
     margin-right:8px;
 }
 
-.settingBox input[type="range"]{
-    width:100%;
-}
-
-/* ===== grid ===== */
-
 #soundList{
     display:grid;
-
     grid-template-columns:
     repeat(auto-fill,minmax(150px,1fr));
-
     gap:16px;
 }
 
@@ -83,38 +77,24 @@ input[type="file"]{
     position:relative;
 }
 
-/* ===== tile ===== */
-
 .sound-btn{
-
     position:relative;
-
     width:100%;
     aspect-ratio:1/1;
-
     border:none;
     border-radius:24px;
-
     background:#444;
     color:white;
-
     overflow:hidden;
-
     padding:14px;
-
     display:flex;
     flex-direction:column;
-
     justify-content:flex-start;
-
     align-items:center;
-
     user-select:none;
-
     transition:
     background .2s,
     transform .15s;
-
     touch-action:manipulation;
 }
 
@@ -126,246 +106,151 @@ input[type="file"]{
     transform:scale(0.98);
 }
 
-/* ===== title ===== */
-
 .sound-name{
-
     width:100%;
-
     font-size:15px;
     font-weight:bold;
-
     text-align:center;
-
     line-height:1.25;
 
     display:-webkit-box;
     -webkit-box-orient:vertical;
-
     -webkit-line-clamp:3;
 
     overflow:hidden;
-
     word-break:break-word;
 
     min-height:56px;
 }
 
-/* ===== time ===== */
-
 .sound-time{
-
     position:absolute;
-
     left:12px;
     right:12px;
-
     bottom:34px;
-
     font-size:12px;
-
     color:#ccc;
-
     text-align:center;
-
     pointer-events:none;
 }
 
-/* ===== fade ===== */
-
 .fade-label{
-
     font-size:12px;
     color:#ffcc00;
-
-    margin-bottom:8px;
-
+    margin-top:4px;
     display:none;
 }
 
-/* ===== slider ===== */
-
 .sound-bar-wrap{
-
     position:absolute;
-
     left:12px;
     right:12px;
-
     bottom:12px;
-
     height:16px;
-
     z-index:5;
 }
 
 .sound-bar-wrap::before{
-
     content:"";
-
     position:absolute;
-
     left:0;
     top:50%;
-
     transform:translateY(-50%);
-
     width:100%;
     height:4px;
-
     background:#3a3a3a;
-
     border-radius:999px;
-
-    z-index:0;
 }
 
 .sound-bar-track{
-
     position:absolute;
-
     left:0;
     top:50%;
-
     transform:translateY(-50%);
-
     width:0%;
-
     height:4px;
-
     background:white;
-
     border-radius:999px;
-
-    z-index:1;
-
     pointer-events:none;
 }
 
 .sound-bar{
-
     position:absolute;
-
     left:0;
     top:50%;
-
     transform:translateY(-50%);
-
     width:100%;
     height:16px;
-
     appearance:none;
-
     background:transparent;
-
-    z-index:2;
 }
 
 .sound-bar::-webkit-slider-thumb{
-
     appearance:none;
-
     width:14px;
     height:14px;
-
     border-radius:50%;
-
     background:white;
 }
 
-/* ===== menu ===== */
-
 .menu{
-
     position:absolute;
     inset:0;
-
-    background:
-    rgba(0,0,0,.92);
-
+    background:rgba(0,0,0,.92);
     border-radius:24px;
-
     display:none;
-
     flex-direction:column;
     justify-content:center;
     align-items:center;
-
     gap:10px;
-
     z-index:9999;
 }
 
 .menu button{
-
     width:110px;
-
     border:none;
     border-radius:12px;
-
     padding:10px;
-
     background:#222;
     color:white;
 }
 
-/* ===== footer ===== */
-
 .footer{
-
     position:fixed;
-
     bottom:10px;
     left:50%;
-
     transform:translateX(-50%);
-
     width:90%;
-
     background:
     linear-gradient(
     to right,
     rgba(0,0,0,.2),
     rgba(0,0,0,.85));
-
     backdrop-filter:blur(10px);
-
     border-radius:12px;
-
     padding:10px;
-
     text-align:center;
-
     font-size:13px;
-
     border:
     1px solid
     rgba(255,255,255,.15);
-
     box-shadow:
     0 5px 20px
     rgba(0,0,0,.3);
-
     z-index:999;
 }
 
 .footer .copyright{
-
     font-size:13px;
     font-weight:500;
-
     background:
     linear-gradient(
     90deg,#fff,#bbb);
-
     background-clip:text;
     -webkit-background-clip:text;
-
     color:transparent;
     -webkit-text-fill-color:transparent;
-
     letter-spacing:.3px;
-
     text-shadow:
     0 1px 2px
     rgba(0,0,0,.6);
@@ -381,47 +266,25 @@ src="pondasi.png">
 
 <h1>効果音ぽんだし</h1>
 
-<div class="settingBox">
-<label>
+<div id="controlWrap">
 
+<label>
 <input
 type="checkbox"
 id="fadeToggle"
 checked>
-
-フェード停止を有効
-
+フェード停止を有効にする
 </label>
-</div>
 
-<div class="settingBox">
+<br>
+
 <label>
-
 <input
 type="checkbox"
-id="speakerSafeToggle"
+id="safeAudioToggle"
 checked>
-
-校庭スピーカー安全モード
-
+音割れ対策を有効にする
 </label>
-</div>
-
-<div class="settingBox">
-
-<div style="margin-bottom:6px;">
-
-音割れ対策強度
-<span id="safeValue">80</span>%
-
-</div>
-
-<input
-type="range"
-id="safeSlider"
-min="0"
-max="100"
-value="80">
 
 </div>
 
@@ -444,19 +307,15 @@ accept=".mp3,.wav,.m4a,.aac,.ogg,.mp4,audio/*,video/mp4">
 
 <script>
 
-/* ===== audio ===== */
+/* ===== elements ===== */
 
-const audioContext =
-new (
-window.AudioContext ||
-window.webkitAudioContext
-)();
+const soundList =
+document.getElementById(
+"soundList");
 
 let fadeEnabled = true;
-let speakerSafe = true;
-let safeLevel = 80;
 
-/* ===== toggle ===== */
+/* ===== fade toggle ===== */
 
 document
 .getElementById("fadeToggle")
@@ -468,46 +327,6 @@ e=>{
     e.target.checked;
 
 });
-
-document
-.getElementById(
-"speakerSafeToggle")
-.addEventListener(
-"change",
-e=>{
-
-    speakerSafe =
-    e.target.checked;
-
-});
-
-/* ===== safe slider ===== */
-
-const safeSlider =
-document.getElementById(
-"safeSlider");
-
-const safeValue =
-document.getElementById(
-"safeValue");
-
-safeSlider.addEventListener(
-"input",
-e=>{
-
-    safeLevel =
-    Number(e.target.value);
-
-    safeValue.textContent =
-    safeLevel;
-
-});
-
-/* ===== list ===== */
-
-const soundList =
-document.getElementById(
-"soundList");
 
 /* ===== load ===== */
 
@@ -541,146 +360,28 @@ function createSound(file){
     audio.playsInline =
     true;
 
-    /* ===== nodes ===== */
-
-    const source =
-    audioContext
-    .createMediaElementSource(
-    audio);
-
-    const highpass =
-    audioContext
-    .createBiquadFilter();
-
-    highpass.type =
-    "highpass";
-
-    highpass.frequency.value =
-    120;
-
-    const compressor =
-    audioContext
-    .createDynamicsCompressor();
-
-    const limiter =
-    audioContext
-    .createDynamicsCompressor();
-
-    const gainNode =
-    audioContext
-    .createGain();
-
-    gainNode.gain.value = 1;
-
-    /* ===== connect ===== */
-
-    function connectAudio(){
-
-        try{source.disconnect();}catch(e){}
-        try{highpass.disconnect();}catch(e){}
-        try{compressor.disconnect();}catch(e){}
-        try{limiter.disconnect();}catch(e){}
-        try{gainNode.disconnect();}catch(e){}
-
-        if(speakerSafe){
-
-            const power =
-            safeLevel / 100;
-
-            /* compressor */
-
-            compressor.threshold.value =
-            -10 - (power * 30);
-
-            compressor.knee.value =
-            10 + (power * 30);
-
-            compressor.ratio.value =
-            4 + (power * 80);
-
-            compressor.attack.value =
-            0.0003;
-
-            compressor.release.value =
-            0.3 - (power * 0.25);
-
-            /* limiter */
-
-            limiter.threshold.value =
-            -1 - (power * 18);
-
-            limiter.knee.value = 0;
-
-            limiter.ratio.value =
-            10 + (power * 90);
-
-            limiter.attack.value =
-            0.00001;
-
-            limiter.release.value =
-            0.02;
-
-            source.connect(highpass);
-
-            highpass.connect(
-            compressor);
-
-            compressor.connect(
-            limiter);
-
-            limiter.connect(
-            gainNode);
-
-            gainNode.connect(
-            audioContext.destination);
-
-        }else{
-
-            source.connect(
-            gainNode);
-
-            gainNode.connect(
-            audioContext.destination);
-
-        }
-
-    }
-
-    connectAudio();
-
-    document
-    .getElementById(
-    "speakerSafeToggle")
-    .addEventListener(
-    "change",
-    connectAudio);
-
-    safeSlider.addEventListener(
-    "input",
-    connectAudio);
-
     /* ===== wrapper ===== */
 
     const wrapper =
-    document.createElement(
-    "div");
+    document.createElement("div");
 
     wrapper.className =
     "sound-wrapper";
 
-    const button =
-    document.createElement(
-    "button");
+    /* ===== button ===== */
 
-    button.type =
-    "button";
+    const button =
+    document.createElement("button");
+
+    button.type = "button";
 
     button.className =
     "sound-btn";
 
+    /* ===== fade ===== */
+
     const fadeLabel =
-    document.createElement(
-    "div");
+    document.createElement("div");
 
     fadeLabel.className =
     "fade-label";
@@ -688,9 +389,10 @@ function createSound(file){
     fadeLabel.textContent =
     "フェード中...";
 
+    /* ===== title ===== */
+
     const name =
-    document.createElement(
-    "div");
+    document.createElement("div");
 
     name.className =
     "sound-name";
@@ -698,9 +400,10 @@ function createSound(file){
     name.textContent =
     file.name;
 
+    /* ===== time ===== */
+
     const time =
-    document.createElement(
-    "div");
+    document.createElement("div");
 
     time.className =
     "sound-time";
@@ -708,23 +411,22 @@ function createSound(file){
     time.textContent =
     "0:00/0:00";
 
+    /* ===== slider ===== */
+
     const barWrap =
-    document.createElement(
-    "div");
+    document.createElement("div");
 
     barWrap.className =
     "sound-bar-wrap";
 
     const barTrack =
-    document.createElement(
-    "div");
+    document.createElement("div");
 
     barTrack.className =
     "sound-bar-track";
 
     const bar =
-    document.createElement(
-    "input");
+    document.createElement("input");
 
     bar.type = "range";
 
@@ -737,32 +439,20 @@ function createSound(file){
 
     /* ===== append ===== */
 
-    barWrap.appendChild(
-    barTrack);
+    barWrap.appendChild(barTrack);
+    barWrap.appendChild(bar);
 
-    barWrap.appendChild(
-    bar);
+    button.appendChild(fadeLabel);
+    button.appendChild(name);
+    button.appendChild(time);
+    button.appendChild(barWrap);
 
-    button.appendChild(
-    fadeLabel);
-
-    button.appendChild(
-    name);
-
-    button.appendChild(
-    time);
-
-    button.appendChild(
-    barWrap);
-
-    wrapper.appendChild(
-    button);
+    wrapper.appendChild(button);
 
     /* ===== menu ===== */
 
     const menu =
-    document.createElement(
-    "div");
+    document.createElement("div");
 
     menu.className =
     "menu";
@@ -773,8 +463,7 @@ function createSound(file){
     <button class="close">閉じる</button>
     `;
 
-    wrapper.appendChild(
-    menu);
+    wrapper.appendChild(menu);
 
     soundList.appendChild(
     wrapper);
@@ -782,14 +471,11 @@ function createSound(file){
     /* ===== state ===== */
 
     let tapCount = 0;
+
     let tapTimer;
 
-    let seeking = false;
-
-    let startX = 0;
-    let startY = 0;
-
     let moved = false;
+    let seeking = false;
 
     let fadeInterval =
     null;
@@ -852,7 +538,7 @@ function createSound(file){
 
     /* ===== fade ===== */
 
-    function fadeOutStop(){
+    function fadeOutStop(callback){
 
         setPlaying(false);
 
@@ -866,6 +552,12 @@ function createSound(file){
 
             audio.pause();
 
+            if(callback){
+
+                callback();
+
+            }
+
             return;
         }
 
@@ -874,10 +566,12 @@ function createSound(file){
             clearInterval(
             fadeInterval);
 
+            fadeInterval =
+            null;
         }
 
         let vol =
-        gainNode.gain.value;
+        audio.volume;
 
         const duration =
         5000;
@@ -893,42 +587,44 @@ function createSound(file){
 
             vol -= step;
 
-            if(vol <= 0){
+            if(vol <= 0.01){
 
                 clearInterval(
                 fadeInterval);
 
-                /* 完全無音 */
+                fadeInterval =
+                null;
 
-                gainNode.gain.value = 0;
+                /* ===== 完全無音 ===== */
 
-                /* 停止 */
+                audio.volume = 0;
 
-                audio.pause();
+                /* ===== Bluetooth反映待ち ===== */
 
-                /* バッファ潰し */
+                setTimeout(()=>{
 
-                audio.currentTime =
-                audio.currentTime;
+                    audio.pause();
 
-                requestAnimationFrame(()=>{
+                    /* ===== 次回用 ===== */
 
-                    requestAnimationFrame(()=>{
+                    audio.volume = 1;
 
-                        gainNode.gain.value = 1;
+                    fadeLabel.style.display =
+                    "none";
 
-                    });
+                    if(callback){
 
-                });
+                        callback();
 
-                fadeLabel.style.display =
-                "none";
+                    }
+
+                },80);
 
                 return;
             }
 
-            gainNode.gain.value =
-            vol;
+            audio.volume =
+            Math.max(0,vol);
 
         },stepTime);
 
@@ -938,38 +634,18 @@ function createSound(file){
 
     button.addEventListener(
     "touchstart",
-    e=>{
+    ()=>{
 
         moved = false;
-
-        startX =
-        e.touches[0].clientX;
-
-        startY =
-        e.touches[0].clientY;
 
     },
     {passive:true});
 
     button.addEventListener(
     "touchmove",
-    e=>{
+    ()=>{
 
-        const dx =
-        Math.abs(
-        e.touches[0].clientX
-        - startX);
-
-        const dy =
-        Math.abs(
-        e.touches[0].clientY
-        - startY);
-
-        if(dx > 6 || dy > 6){
-
-            moved = true;
-
-        }
+        moved = true;
 
     },
     {passive:true});
@@ -989,30 +665,21 @@ function createSound(file){
 
         tapCount++;
 
-        clearTimeout(
-        tapTimer);
+        clearTimeout(tapTimer);
 
         tapTimer =
         setTimeout(()=>{
+
+            /* ===== single ===== */
 
             if(tapCount === 1){
 
                 if(audio.paused){
 
-                    if(
-                    audioContext.state
-                    === "suspended"
-                    ){
-
-                        audioContext
-                        .resume();
-
-                    }
-
                     fadeLabel.style.display =
                     "none";
 
-                    gainNode.gain.value = 1;
+                    audio.volume = 1;
 
                     audio.play()
                     .catch(console.log);
@@ -1027,6 +694,8 @@ function createSound(file){
 
             }
 
+            /* ===== double ===== */
+
             else if(
             tapCount === 2){
 
@@ -1035,6 +704,8 @@ function createSound(file){
                 updateTime();
 
             }
+
+            /* ===== triple ===== */
 
             else if(
             tapCount >= 3){
@@ -1064,6 +735,9 @@ function createSound(file){
     "input",
     ()=>{
 
+        const wasPaused =
+        audio.paused;
+
         if(audio.duration){
 
             audio.currentTime =
@@ -1072,6 +746,14 @@ function createSound(file){
 
             barTrack.style.width =
             bar.value + "%";
+        }
+
+        if(wasPaused){
+
+            audio.pause();
+
+            setPlaying(false);
+
         }
 
     });
@@ -1147,6 +829,14 @@ function createSound(file){
     .onclick = ()=>{
 
         wrapper.remove();
+
+        fadeOutStop(()=>{
+
+            audio.pause();
+
+            audio.currentTime = 0;
+
+        });
 
     };
 
