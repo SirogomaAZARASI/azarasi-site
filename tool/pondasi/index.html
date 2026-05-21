@@ -23,18 +23,25 @@ body{
     margin:0;
     padding:20px;
     padding-bottom:100px;
+
     background:#111;
     color:white;
+
     font-family:sans-serif;
+
     overflow-x:hidden;
+
     touch-action:pan-y;
 }
 
 #headerImage{
     width:100%;
     aspect-ratio:3/1;
+
     object-fit:cover;
+
     border-radius:24px;
+
     margin-bottom:20px;
 }
 
@@ -46,6 +53,7 @@ h1{
     color:#bbb;
     font-size:14px;
     line-height:1.6;
+
     margin-bottom:20px;
 }
 
@@ -54,22 +62,23 @@ input[type="file"]{
     color:white;
 }
 
-#controlWrap{
-    margin-bottom:16px;
+#fadeToggleWrap{
+    margin-bottom:12px;
     color:#ccc;
     font-size:14px;
-    line-height:2;
 }
 
-#controlWrap input{
+#fadeToggle{
     transform:scale(1.2);
-    margin-right:8px;
+    margin-right:6px;
 }
 
 #soundList{
     display:grid;
+
     grid-template-columns:
     repeat(auto-fill,minmax(150px,1fr));
+
     gap:16px;
 }
 
@@ -78,24 +87,38 @@ input[type="file"]{
 }
 
 .sound-btn{
+
     position:relative;
+
     width:100%;
     aspect-ratio:1/1;
+
     border:none;
     border-radius:24px;
+
     background:#444;
     color:white;
+
     overflow:hidden;
+
     padding:14px;
+
     display:flex;
     flex-direction:column;
+
     justify-content:flex-start;
+
     align-items:center;
+
     user-select:none;
+
     transition:
     background .2s,
     transform .15s;
+
     touch-action:manipulation;
+
+    cursor:pointer;
 }
 
 .sound-btn.playing{
@@ -107,10 +130,14 @@ input[type="file"]{
 }
 
 .sound-name{
+
     width:100%;
+
     font-size:15px;
     font-weight:bold;
+
     text-align:center;
+
     line-height:1.25;
 
     display:-webkit-box;
@@ -118,139 +145,225 @@ input[type="file"]{
     -webkit-line-clamp:3;
 
     overflow:hidden;
+
     word-break:break-word;
 
-    min-height:56px;
+    min-height:58px;
+
+    margin-top:2px;
 }
 
 .sound-time{
+
     position:absolute;
+
     left:12px;
     right:12px;
+
     bottom:34px;
+
     font-size:12px;
+
     color:#ccc;
+
     text-align:center;
+
     pointer-events:none;
 }
 
 .fade-label{
+
     font-size:12px;
+
     color:#ffcc00;
-    margin-top:4px;
+
+    margin-bottom:8px;
+
     display:none;
 }
 
 .sound-bar-wrap{
+
     position:absolute;
+
     left:12px;
     right:12px;
+
     bottom:12px;
+
     height:16px;
+
     z-index:5;
 }
 
 .sound-bar-wrap::before{
+
     content:"";
+
     position:absolute;
+
     left:0;
     top:50%;
+
     transform:translateY(-50%);
+
     width:100%;
     height:4px;
+
     background:#3a3a3a;
+
     border-radius:999px;
+
+    z-index:0;
 }
 
 .sound-bar-track{
+
     position:absolute;
+
     left:0;
     top:50%;
+
     transform:translateY(-50%);
+
     width:0%;
+
     height:4px;
+
     background:white;
+
     border-radius:999px;
+
+    z-index:1;
+
     pointer-events:none;
 }
 
 .sound-bar{
+
     position:absolute;
+
     left:0;
     top:50%;
+
     transform:translateY(-50%);
+
     width:100%;
     height:16px;
+
     appearance:none;
+
     background:transparent;
+
+    z-index:2;
 }
 
 .sound-bar::-webkit-slider-thumb{
+
     appearance:none;
+
     width:14px;
     height:14px;
+
     border-radius:50%;
+
     background:white;
+
+    cursor:pointer;
 }
 
 .menu{
+
     position:absolute;
+
     inset:0;
-    background:rgba(0,0,0,.92);
+
+    background:
+    rgba(0,0,0,.92);
+
     border-radius:24px;
+
     display:none;
+
     flex-direction:column;
     justify-content:center;
     align-items:center;
+
     gap:10px;
+
     z-index:9999;
 }
 
 .menu button{
+
     width:110px;
+
     border:none;
     border-radius:12px;
+
     padding:10px;
+
     background:#222;
     color:white;
+
+    cursor:pointer;
 }
 
 .footer{
+
     position:fixed;
+
     bottom:10px;
     left:50%;
+
     transform:translateX(-50%);
+
     width:90%;
+
     background:
     linear-gradient(
     to right,
     rgba(0,0,0,.2),
     rgba(0,0,0,.85));
+
     backdrop-filter:blur(10px);
+
     border-radius:12px;
+
     padding:10px;
+
     text-align:center;
+
     font-size:13px;
+
     border:
     1px solid
     rgba(255,255,255,.15);
+
     box-shadow:
     0 5px 20px
     rgba(0,0,0,.3);
+
     z-index:999;
 }
 
 .footer .copyright{
+
     font-size:13px;
     font-weight:500;
+
     background:
     linear-gradient(
     90deg,#fff,#bbb);
+
     background-clip:text;
     -webkit-background-clip:text;
+
     color:transparent;
     -webkit-text-fill-color:transparent;
+
     letter-spacing:.3px;
+
     text-shadow:
     0 1px 2px
     rgba(0,0,0,.6);
@@ -266,24 +379,17 @@ src="pondasi.png">
 
 <h1>効果音ぽんだし</h1>
 
-<div id="controlWrap">
+<div id="fadeToggleWrap">
 
 <label>
+
 <input
 type="checkbox"
 id="fadeToggle"
 checked>
+
 フェード停止を有効にする
-</label>
 
-<br>
-
-<label>
-<input
-type="checkbox"
-id="safeAudioToggle"
-checked>
-音割れ対策を有効にする
 </label>
 
 </div>
@@ -307,15 +413,11 @@ accept=".mp3,.wav,.m4a,.aac,.ogg,.mp4,audio/*,video/mp4">
 
 <script>
 
-/* ===== elements ===== */
-
 const soundList =
 document.getElementById(
 "soundList");
 
 let fadeEnabled = true;
-
-/* ===== fade toggle ===== */
 
 document
 .getElementById("fadeToggle")
@@ -327,8 +429,6 @@ e=>{
     e.target.checked;
 
 });
-
-/* ===== load ===== */
 
 document
 .getElementById("fileInput")
@@ -344,8 +444,6 @@ e=>{
 
 });
 
-/* ===== create ===== */
-
 function createSound(file){
 
     const url =
@@ -360,15 +458,11 @@ function createSound(file){
     audio.playsInline =
     true;
 
-    /* ===== wrapper ===== */
-
     const wrapper =
     document.createElement("div");
 
     wrapper.className =
     "sound-wrapper";
-
-    /* ===== button ===== */
 
     const button =
     document.createElement("button");
@@ -377,8 +471,6 @@ function createSound(file){
 
     button.className =
     "sound-btn";
-
-    /* ===== fade ===== */
 
     const fadeLabel =
     document.createElement("div");
@@ -389,8 +481,6 @@ function createSound(file){
     fadeLabel.textContent =
     "フェード中...";
 
-    /* ===== title ===== */
-
     const name =
     document.createElement("div");
 
@@ -400,8 +490,6 @@ function createSound(file){
     name.textContent =
     file.name;
 
-    /* ===== time ===== */
-
     const time =
     document.createElement("div");
 
@@ -410,8 +498,6 @@ function createSound(file){
 
     time.textContent =
     "0:00/0:00";
-
-    /* ===== slider ===== */
 
     const barWrap =
     document.createElement("div");
@@ -437,8 +523,6 @@ function createSound(file){
     bar.className =
     "sound-bar";
 
-    /* ===== append ===== */
-
     barWrap.appendChild(barTrack);
     barWrap.appendChild(bar);
 
@@ -448,8 +532,6 @@ function createSound(file){
     button.appendChild(barWrap);
 
     wrapper.appendChild(button);
-
-    /* ===== menu ===== */
 
     const menu =
     document.createElement("div");
@@ -468,8 +550,6 @@ function createSound(file){
     soundList.appendChild(
     wrapper);
 
-    /* ===== state ===== */
-
     let tapCount = 0;
 
     let tapTimer;
@@ -480,7 +560,8 @@ function createSound(file){
     let fadeInterval =
     null;
 
-    /* ===== ui ===== */
+    let startX = 0;
+    let startY = 0;
 
     function setPlaying(v){
 
@@ -489,8 +570,6 @@ function createSound(file){
         v);
 
     }
-
-    /* ===== time ===== */
 
     function formatTime(sec){
 
@@ -521,7 +600,7 @@ function createSound(file){
         time.textContent =
         `${cur}/${tot}`;
 
-        if(audio.duration){
+        if(audio.duration && !seeking){
 
             const v =
             (audio.currentTime
@@ -535,8 +614,6 @@ function createSound(file){
         }
 
     }
-
-    /* ===== fade ===== */
 
     function fadeOutStop(callback){
 
@@ -595,17 +672,11 @@ function createSound(file){
                 fadeInterval =
                 null;
 
-                /* ===== 完全無音 ===== */
-
                 audio.volume = 0;
-
-                /* ===== Bluetooth反映待ち ===== */
 
                 setTimeout(()=>{
 
                     audio.pause();
-
-                    /* ===== 次回用 ===== */
 
                     audio.volume = 1;
 
@@ -630,30 +701,44 @@ function createSound(file){
 
     }
 
-    /* ===== touch ===== */
-
     button.addEventListener(
-    "touchstart",
-    ()=>{
+    "pointerdown",
+    e=>{
 
         moved = false;
 
-    },
-    {passive:true});
+        startX =
+        e.clientX;
+
+        startY =
+        e.clientY;
+
+    });
 
     button.addEventListener(
-    "touchmove",
-    ()=>{
+    "pointermove",
+    e=>{
 
-        moved = true;
+        const dx =
+        Math.abs(
+        e.clientX - startX
+        );
 
-    },
-    {passive:true});
+        const dy =
+        Math.abs(
+        e.clientY - startY
+        );
 
-    /* ===== tap ===== */
+        if(dx > 6 || dy > 6){
+
+            moved = true;
+
+        }
+
+    });
 
     button.addEventListener(
-    "touchend",
+    "pointerup",
     ()=>{
 
         if(moved || seeking){
@@ -665,12 +750,11 @@ function createSound(file){
 
         tapCount++;
 
-        clearTimeout(tapTimer);
+        clearTimeout(
+        tapTimer);
 
         tapTimer =
         setTimeout(()=>{
-
-            /* ===== single ===== */
 
             if(tapCount === 1){
 
@@ -694,8 +778,6 @@ function createSound(file){
 
             }
 
-            /* ===== double ===== */
-
             else if(
             tapCount === 2){
 
@@ -704,8 +786,6 @@ function createSound(file){
                 updateTime();
 
             }
-
-            /* ===== triple ===== */
 
             else if(
             tapCount >= 3){
@@ -721,13 +801,32 @@ function createSound(file){
 
     });
 
-    /* ===== slider ===== */
+    [
+    "pointerdown",
+    "pointermove",
+    "pointerup",
+    "click"
+    ].forEach(eventName=>{
+
+        bar.addEventListener(
+        eventName,
+        e=>{
+
+            e.stopPropagation();
+
+        });
+
+    });
 
     bar.addEventListener(
-    "touchstart",
-    ()=>{
+    "pointerdown",
+    e=>{
+
+        e.stopPropagation();
 
         seeking = true;
+
+        moved = true;
 
     });
 
@@ -735,42 +834,50 @@ function createSound(file){
     "input",
     ()=>{
 
-        const wasPaused =
-        audio.paused;
-
         if(audio.duration){
 
+            const v =
+            Number(bar.value);
+
             audio.currentTime =
-            (bar.value / 100)
+            (v / 100)
             * audio.duration;
 
             barTrack.style.width =
-            bar.value + "%";
-        }
-
-        if(wasPaused){
-
-            audio.pause();
-
-            setPlaying(false);
-
+            v + "%";
         }
 
     });
 
     bar.addEventListener(
-    "change",
-    ()=>{
+    "pointerup",
+    e=>{
 
-        setTimeout(()=>{
+        e.stopPropagation();
+
+        tapCount = 0;
+
+        clearTimeout(tapTimer);
+
+        requestAnimationFrame(()=>{
 
             seeking = false;
 
-        },50);
+            moved = false;
+
+        });
 
     });
 
-    /* ===== audio ===== */
+    bar.addEventListener(
+    "pointercancel",
+    ()=>{
+
+        seeking = false;
+
+        moved = false;
+
+    });
 
     audio.addEventListener(
     "timeupdate",
@@ -803,8 +910,6 @@ function createSound(file){
         setPlaying(false);
 
     });
-
-    /* ===== menu ===== */
 
     menu.querySelector(
     ".rename")
