@@ -4,106 +4,334 @@
 <meta charset="UTF-8">
 <title>リバーシ | AZAgame</title>
 
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <style>
-body {
+
+body{
   background:#1e1e1e;
   color:white;
   font-family:sans-serif;
+
   display:flex;
   flex-direction:column;
   align-items:center;
+
   margin:0;
+
+  min-height:100vh;
+
+  padding-bottom:80px;
 }
 
+h1{
+  margin-top:20px;
+}
+
+#menu{
+  margin-top:30px;
+  text-align:center;
+}
+
+#gameUI{
+  display:none;
+}
+
+#turn{
+  margin-top:10px;
+  font-size:1.1em;
+}
+
+/* ステータスバー */
+
+#statusBar{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  width:404px;
+
+  background:#2b2b2b;
+
+  border-radius:16px;
+
+  padding:12px 18px;
+
+  box-sizing:border-box;
+
+  margin-top:10px;
+
+  box-shadow:
+  0 4px 10px
+  rgba(0,0,0,0.4);
+}
+
+#scoreText{
+  font-size:1.1em;
+  font-weight:bold;
+}
+
+#moveText{
+  color:#ffd966;
+}
+
+/* 盤 */
+
 .board{
+
   display:grid;
-  grid-template-columns:repeat(8,50px);
-  grid-template-rows:repeat(8,50px);
+
+  grid-template-columns:
+  repeat(8,50px);
+
+  grid-template-rows:
+  repeat(8,50px);
+
   gap:2px;
+
   background:#006400;
+
   margin:20px 0;
 }
 
 .cell{
-  width:50px;height:50px;
+
+  width:50px;
+  height:50px;
+
   background:#228B22;
+
   display:flex;
+
   justify-content:center;
+
   align-items:center;
+
+  position:relative;
+
   cursor:pointer;
 }
 
-.black,.white{
-  width:40px;height:40px;border-radius:50%;
+/* 石 */
+
+.black,
+.white{
+
+  width:40px;
+  height:40px;
+
+  border-radius:50%;
+
+  animation:drop .2s ease;
 }
-.black{background:black;}
-.white{background:white;}
+
+.black{
+  background:black;
+}
+
+.white{
+  background:white;
+}
+
+/* ヒント */
+
+.hint{
+
+  width:14px;
+  height:14px;
+
+  border-radius:50%;
+
+  background:
+  rgba(255,255,0,0.75);
+}
+
+/* 反転 */
+
+.flip{
+  animation:flip .35s ease;
+}
+
+@keyframes flip{
+
+  0%{
+    transform:
+    rotateY(0deg)
+    scale(1);
+  }
+
+  50%{
+    transform:
+    rotateY(90deg)
+    scale(1.15);
+  }
+
+  100%{
+    transform:
+    rotateY(180deg)
+    scale(1);
+  }
+}
+
+/* 出現 */
+
+@keyframes drop{
+
+  0%{
+    transform:scale(0);
+    opacity:0;
+  }
+
+  100%{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+
+/* ボタン */
+
+button,
+select{
+
+  padding:10px 20px;
+
+  margin-top:10px;
+
+  border:none;
+
+  border-radius:8px;
+
+  font-size:1em;
+}
 
 button{
-  padding:10px 20px;
+
   background:#444;
+
   color:white;
-  border:none;
-  border-radius:6px;
-  margin-top:10px;
+
+  cursor:pointer;
 }
 
-#menu{margin-top:30px;}
-#gameUI{display:none;}
+button:hover{
+  background:#666;
+}
+
+/* 結果 */
 
 #overlay{
+
   position:fixed;
-  top:0;left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.85);
+
+  inset:0;
+
+  background:
+  rgba(0,0,0,0.9);
+
   display:none;
+
   justify-content:center;
+
   align-items:center;
+
   flex-direction:column;
-  z-index:999;
+
+  z-index:9999;
 }
 
 .result{
-  font-size:2em;
-  margin-bottom:10px;
+
+  font-size:3em;
+
+  margin-bottom:20px;
+
+  animation:pop .5s ease;
 }
 
 .score{
-  font-size:1.2em;
+
+  font-size:1.5em;
+
   margin-bottom:20px;
 }
 
-/* 簡易アニメ */
-.win{color:gold;animation:pop 0.6s ease;}
-.lose{color:#aaa;}
-.draw{color:white;}
-
-@keyframes pop{
-  0%{transform:scale(0.5);}
-  100%{transform:scale(1);}
+.win{
+  color:gold;
 }
 
+.lose{
+  color:#ccc;
+}
+
+.draw{
+  color:white;
+}
+
+@keyframes pop{
+
+  from{
+    transform:scale(0.5);
+    opacity:0;
+  }
+
+  to{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+
+/* フッター */
+
 .footer{
+
   position:fixed;
+
   bottom:10px;
+
   left:50%;
+
   transform:translateX(-50%);
+
   width:90%;
-  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+
+  background:
+  linear-gradient(
+    to right,
+    rgba(0,0,0,0.2),
+    rgba(0,0,0,0.85)
+  );
+
   backdrop-filter:blur(10px);
+
   border-radius:12px;
+
   padding:10px;
+
   text-align:center;
+
   font-size:13px;
-  border:1px solid rgba(255,255,255,0.15);
-  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+
+  border:
+  1px solid
+  rgba(255,255,255,0.15);
+
+  box-shadow:
+  0 5px 20px
+  rgba(0,0,0,0.3);
+
   z-index:999;
 }
 
 .footer a{
+
   color:#66ccff;
+
   text-decoration:none;
+
   font-weight:600;
 }
 
@@ -112,18 +340,33 @@ button{
 }
 
 .footer .copyright{
-  font-size:13px;
-  font-weight:500;
-  background:linear-gradient(90deg,#ffffff,#bbbbbb);
-  background-clip:text;
-  -webkit-background-clip:text;
-  color:transparent;
-  -webkit-text-fill-color:transparent;
-  letter-spacing:0.3px;
-  text-shadow:0 1px 2px rgba(0,0,0,0.6);
-}
 
-body{padding-bottom:80px;}
+  font-size:13px;
+
+  font-weight:500;
+
+  background:
+  linear-gradient(
+    90deg,
+    #ffffff,
+    #bbbbbb
+  );
+
+  background-clip:text;
+
+  -webkit-background-clip:text;
+
+  color:transparent;
+
+  -webkit-text-fill-color:
+  transparent;
+
+  letter-spacing:0.3px;
+
+  text-shadow:
+  0 1px 2px
+  rgba(0,0,0,0.6);
+}
 
 </style>
 </head>
@@ -133,177 +376,900 @@ body{padding-bottom:80px;}
 <h1>リバーシ</h1>
 
 <div id="menu">
-  <label><input type="checkbox" id="modeToggle" checked> CPU対戦</label><br>
-  <button id="startBtn">スタート</button>
+
+  <label>
+    <input
+    type="checkbox"
+    id="modeToggle"
+    checked>
+
+    CPU対戦
+  </label>
+
+  <br><br>
+
+  <label>
+
+    難易度:
+
+    <select id="difficulty">
+
+      <option value="baby">
+        最弱
+      </option>
+
+      <option value="easy">
+        弱い
+      </option>
+
+      <option value="normal">
+        普通
+      </option>
+
+      <option value="hard">
+        強い
+      </option>
+
+      <option value="god">
+        最強
+      </option>
+
+    </select>
+
+  </label>
+
+  <br>
+
+  <button id="startBtn">
+    スタート
+  </button>
+
 </div>
 
 <div id="gameUI">
+
   <p id="turn"></p>
-  <div id="board" class="board"></div>
-  <button id="restart">タイトルへ戻る</button>
+
+  <div id="statusBar">
+
+    <div id="scoreText">
+      ● 黒:2 ○ 白:2
+    </div>
+
+    <div id="moveText">
+      置けるマス:4
+    </div>
+
+  </div>
+
+  <div
+  id="board"
+  class="board"></div>
+
+  <button id="restart">
+    タイトルへ戻る
+  </button>
+
 </div>
 
-<!-- 結果画面 -->
 <div id="overlay">
-  <div id="resultText" class="result"></div>
-  <div id="scoreText" class="score"></div>
-  <button onclick="backToMenu()">もう一度遊ぶ</button>
+
+  <div
+  id="resultText"
+  class="result"></div>
+
+  <div
+  id="scoreResult"
+  class="score"></div>
+
+  <button onclick="backToMenu()">
+    もう一度遊ぶ
+  </button>
+
 </div>
 
 <div class="footer">
-  <a href="../">← ゲーム一覧に戻る</a><br>
+
+  <a href="../">
+    ← ゲーム一覧に戻る
+  </a>
+
+  <br>
+
   <div class="copyright">
-    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+    Copyright © 2026
+    SirogomaAZARASI
+    All Rights Reserved.
   </div>
+
 </div>
 
 <script>
+
 const SIZE=8;
-const EMPTY=0,BLACK=1,WHITE=2;
 
-let board,currentPlayer,vsCPU;
+const EMPTY=0;
+const BLACK=1;
+const WHITE=2;
 
-const boardElem=document.getElementById("board");
-const turnDisplay=document.getElementById("turn");
-const menu=document.getElementById("menu");
-const gameUI=document.getElementById("gameUI");
-const toggle=document.getElementById("modeToggle");
+let board;
 
-const overlay=document.getElementById("overlay");
-const resultText=document.getElementById("resultText");
-const scoreText=document.getElementById("scoreText");
+let currentPlayer;
 
-document.getElementById("startBtn").onclick=()=>{
+let vsCPU=true;
+
+let difficulty="easy";
+
+let flippedCells=[];
+
+const boardElem=
+document.getElementById("board");
+
+const turnDisplay=
+document.getElementById("turn");
+
+const menu=
+document.getElementById("menu");
+
+const gameUI=
+document.getElementById("gameUI");
+
+const overlay=
+document.getElementById("overlay");
+
+const resultText=
+document.getElementById("resultText");
+
+const scoreResult=
+document.getElementById("scoreResult");
+
+const toggle=
+document.getElementById("modeToggle");
+
+const dirs=[
+
+[-1,-1],
+[-1,0],
+[-1,1],
+
+[0,-1],
+[0,1],
+
+[1,-1],
+[1,0],
+[1,1]
+
+];
+
+document.getElementById(
+"startBtn"
+).onclick=()=>{
+
   vsCPU=toggle.checked;
+
+  difficulty=
+  document.getElementById(
+  "difficulty"
+  ).value;
+
   menu.style.display="none";
+
   gameUI.style.display="block";
+
   initGame();
 };
 
-document.getElementById("restart").onclick=backToMenu;
+document.getElementById(
+"restart"
+).onclick=backToMenu;
 
 function backToMenu(){
+
   overlay.style.display="none";
+
   gameUI.style.display="none";
+
   menu.style.display="block";
 }
 
-const dirs=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-
 function initGame(){
-  board=Array.from({length:SIZE},()=>Array(SIZE).fill(EMPTY));
-  board[3][3]=WHITE;board[3][4]=BLACK;
-  board[4][3]=BLACK;board[4][4]=WHITE;
+
+  board=Array.from(
+    {length:SIZE},
+    ()=>Array(SIZE).fill(EMPTY)
+  );
+
+  board[3][3]=WHITE;
+  board[3][4]=BLACK;
+
+  board[4][3]=BLACK;
+  board[4][4]=WHITE;
+
   currentPlayer=BLACK;
+
   updateTurn();
+
   render();
 }
 
 function updateTurn(){
-  turnDisplay.textContent = vsCPU
-    ? `ターン: ${currentPlayer===BLACK?"●あなた":"○CPU"}`
-    : `ターン: ${currentPlayer===BLACK?"●黒":"○白"}`;
+
+  if(vsCPU){
+
+    turnDisplay.textContent=
+
+    currentPlayer===BLACK
+
+    ?"ターン: ● あなた"
+
+    :"ターン: ○ CPU";
+
+  }else{
+
+    turnDisplay.textContent=
+
+    currentPlayer===BLACK
+
+    ?"ターン: ● 黒"
+
+    :"ターン: ○ 白";
+  }
 }
 
 function isValid(x,y,p){
-  if(board[y][x])return false;
-  let o=p===BLACK?WHITE:BLACK;
 
-  for(let[dX,dY]of dirs){
-    let nx=x+dX,ny=y+dY,found=false;
-    while(nx>=0&&nx<8&&ny>=0&&ny<8){
-      if(board[ny][nx]===o)found=true;
-      else if(board[ny][nx]===p){if(found)return true;break;}
-      else break;
-      nx+=dX;ny+=dY;
+  if(board[y][x]!==EMPTY)
+  return false;
+
+  const o=
+  p===BLACK?WHITE:BLACK;
+
+  for(const[dX,dY]of dirs){
+
+    let nx=x+dX;
+    let ny=y+dY;
+
+    let found=false;
+
+    while(
+
+      nx>=0&&nx<8&&
+      ny>=0&&ny<8
+
+    ){
+
+      if(board[ny][nx]===o){
+
+        found=true;
+
+      }else if(
+        board[ny][nx]===p
+      ){
+
+        if(found)return true;
+
+        break;
+
+      }else{
+        break;
+      }
+
+      nx+=dX;
+      ny+=dY;
     }
   }
+
   return false;
 }
 
 function apply(x,y,p){
-  board[y][x]=p;
-  let o=p===BLACK?WHITE:BLACK;
 
-  for(let[dX,dY]of dirs){
-    let nx=x+dX,ny=y+dY,path=[];
-    while(nx>=0&&nx<8&&ny>=0&&ny<8){
-      if(board[ny][nx]===o)path.push([nx,ny]);
-      else if(board[ny][nx]===p){path.forEach(([px,py])=>board[py][px]=p);break;}
-      else break;
-      nx+=dX;ny+=dY;
+  flippedCells=[];
+
+  board[y][x]=p;
+
+  flippedCells.push([x,y]);
+
+  const o=
+  p===BLACK?WHITE:BLACK;
+
+  for(const[dX,dY]of dirs){
+
+    let nx=x+dX;
+    let ny=y+dY;
+
+    let path=[];
+
+    while(
+
+      nx>=0&&nx<8&&
+      ny>=0&&ny<8
+
+    ){
+
+      if(board[ny][nx]===o){
+
+        path.push([nx,ny]);
+
+      }else if(
+        board[ny][nx]===p
+      ){
+
+        for(const[px,py]of path){
+
+          board[py][px]=p;
+
+          flippedCells.push([px,py]);
+        }
+
+        break;
+
+      }else{
+        break;
+      }
+
+      nx+=dX;
+      ny+=dY;
     }
   }
 }
 
 function moves(p){
-  let m=[];
-  for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(isValid(x,y,p))m.push([x,y]);
+
+  const m=[];
+
+  for(let y=0;y<8;y++){
+
+    for(let x=0;x<8;x++){
+
+      if(isValid(x,y,p)){
+
+        m.push([x,y]);
+      }
+    }
+  }
+
   return m;
 }
 
 function render(){
+
   boardElem.innerHTML="";
+
+  const canClick=
+
+  !vsCPU ||
+
+  currentPlayer===BLACK;
+
   for(let y=0;y<8;y++){
+
     for(let x=0;x<8;x++){
-      let c=document.createElement("div");
-      c.className="cell";
 
-      if(board[y][x]===BLACK){let d=document.createElement("div");d.className="black";c.appendChild(d);}
-      if(board[y][x]===WHITE){let d=document.createElement("div");d.className="white";c.appendChild(d);}
+      const cell=
+      document.createElement("div");
 
-      if(isValid(x,y,currentPlayer)){
-        c.style.boxShadow="inset 0 0 0 2px yellow";
-        c.onclick=()=>{apply(x,y,currentPlayer);next();};
+      cell.className="cell";
+
+      /* 黒石 */
+
+      if(board[y][x]===BLACK){
+
+        const d=
+        document.createElement("div");
+
+        d.className="black";
+
+        if(
+
+          flippedCells.some(
+          ([fx,fy])=>
+          fx===x&&fy===y
+        )
+
+        ){
+          d.classList.add("flip");
+        }
+
+        cell.appendChild(d);
       }
 
-      boardElem.appendChild(c);
+      /* 白石 */
+
+      if(board[y][x]===WHITE){
+
+        const d=
+        document.createElement("div");
+
+        d.className="white";
+
+        if(
+
+          flippedCells.some(
+          ([fx,fy])=>
+          fx===x&&fy===y
+        )
+
+        ){
+          d.classList.add("flip");
+        }
+
+        cell.appendChild(d);
+      }
+
+      /* 置ける場所 */
+
+      if(
+
+        canClick &&
+
+        isValid(
+          x,
+          y,
+          currentPlayer
+        )
+
+      ){
+
+        const hint=
+        document.createElement("div");
+
+        hint.className="hint";
+
+        cell.appendChild(hint);
+
+        cell.onclick=()=>{
+
+          apply(
+            x,
+            y,
+            currentPlayer
+          );
+
+          next();
+        };
+      }
+
+      boardElem.appendChild(cell);
     }
   }
+
+  updateStatus();
+}
+
+function updateStatus(){
+
+  const black=
+
+  board.flat().filter(
+    v=>v===BLACK
+  ).length;
+
+  const white=
+
+  board.flat().filter(
+    v=>v===WHITE
+  ).length;
+
+  document.getElementById(
+  "scoreText"
+  ).textContent=
+
+  `● 黒:${black} ○ 白:${white}`;
+
+  document.getElementById(
+  "moveText"
+  ).textContent=
+
+  `置けるマス:${
+    moves(currentPlayer).length
+  }`;
 }
 
 function next(){
-  currentPlayer=currentPlayer===BLACK?WHITE:BLACK;
+
+  currentPlayer=
+
+  currentPlayer===BLACK
+  ?WHITE
+  :BLACK;
+
   if(!moves(currentPlayer).length){
-    currentPlayer=currentPlayer===BLACK?WHITE:BLACK;
-    if(!moves(currentPlayer).length)return end();
+
+    currentPlayer=
+
+    currentPlayer===BLACK
+    ?WHITE
+    :BLACK;
+
+    if(!moves(currentPlayer).length){
+
+      endGame();
+
+      return;
+    }
   }
+
   updateTurn();
+
   render();
-  if(vsCPU&&currentPlayer===WHITE)setTimeout(cpu,400);
+
+  if(
+
+    vsCPU &&
+
+    currentPlayer===WHITE
+
+  ){
+
+    setTimeout(()=>{
+
+      cpuMove();
+
+    },300);
+
+    return;
+  }
 }
 
-function cpu(){
-  let m=moves(WHITE);
-  if(m.length){
-    let [x,y]=m[Math.floor(Math.random()*m.length)];
-    apply(x,y,WHITE);
+function cpuMove(){
+
+  let move=null;
+
+  switch(difficulty){
+
+    case"baby":
+      move=worstMove();
+      break;
+
+    case"easy":
+      move=randomMove();
+      break;
+
+    case"normal":
+      move=greedyMove();
+      break;
+
+    case"hard":
+      move=bestMove(5);
+      break;
+
+    case"god":
+      move=bestMove(8);
+      break;
+  }
+
+  if(move){
+
+    apply(
+      move.x,
+      move.y,
+      WHITE
+    );
+
     next();
   }
 }
 
-function end(){
-  let b=0,w=0;
-  board.flat().forEach(v=>{if(v===BLACK)b++;if(v===WHITE)w++;});
+function randomMove(){
 
-  let text,cls;
+  const m=moves(WHITE);
+
+  if(!m.length)return null;
+
+  const[x,y]=
+
+  m[Math.floor(
+    Math.random()*m.length
+  )];
+
+  return{x,y};
+}
+
+function worstMove(){
+
+  const m=moves(WHITE);
+
+  let worst=null;
+
+  let worstScore=Infinity;
+
+  for(const[x,y]of m){
+
+    const temp=
+    cloneBoard(board);
+
+    apply(x,y,WHITE);
+
+    const score=
+    evaluateAdvanced();
+
+    board=temp;
+
+    if(score<worstScore){
+
+      worstScore=score;
+
+      worst={x,y};
+    }
+  }
+
+  return worst;
+}
+
+function greedyMove(){
+
+  const m=moves(WHITE);
+
+  const corners=[
+
+    [0,0],
+    [7,0],
+
+    [0,7],
+    [7,7]
+
+  ];
+
+  for(const[x,y]of m){
+
+    for(const[cx,cy]of corners){
+
+      if(x===cx&&y===cy){
+
+        return{x,y};
+      }
+    }
+  }
+
+  return randomMove();
+}
+
+function cloneBoard(b){
+
+  return b.map(
+    r=>[...r]
+  );
+}
+
+function bestMove(depth){
+
+  const valid=
+  moves(WHITE);
+
+  let bestScore=-Infinity;
+
+  let best=null;
+
+  for(const[x,y]of valid){
+
+    const temp=
+    cloneBoard(board);
+
+    apply(x,y,WHITE);
+
+    const score=
+    alphabeta(
+      depth-1,
+      -Infinity,
+      Infinity,
+      false
+    );
+
+    board=temp;
+
+    if(score>bestScore){
+
+      bestScore=score;
+
+      best={x,y};
+    }
+  }
+
+  return best;
+}
+
+function alphabeta(
+  depth,
+  alpha,
+  beta,
+  max
+){
+
+  if(depth===0){
+
+    return evaluateAdvanced();
+  }
+
+  const player=
+  max?WHITE:BLACK;
+
+  const valid=
+  moves(player);
+
+  if(!valid.length){
+
+    return evaluateAdvanced();
+  }
+
+  if(max){
+
+    let value=-Infinity;
+
+    for(const[x,y]of valid){
+
+      const temp=
+      cloneBoard(board);
+
+      apply(x,y,WHITE);
+
+      value=Math.max(
+
+        value,
+
+        alphabeta(
+          depth-1,
+          alpha,
+          beta,
+          false
+        )
+
+      );
+
+      board=temp;
+
+      alpha=
+      Math.max(alpha,value);
+
+      if(alpha>=beta)break;
+    }
+
+    return value;
+
+  }else{
+
+    let value=Infinity;
+
+    for(const[x,y]of valid){
+
+      const temp=
+      cloneBoard(board);
+
+      apply(x,y,BLACK);
+
+      value=Math.min(
+
+        value,
+
+        alphabeta(
+          depth-1,
+          alpha,
+          beta,
+          true
+        )
+
+      );
+
+      board=temp;
+
+      beta=
+      Math.min(beta,value);
+
+      if(beta<=alpha)break;
+    }
+
+    return value;
+  }
+}
+
+function evaluateAdvanced(){
+
+  const weights=[
+
+    [500,-120,30,10,10,30,-120,500],
+    [-120,-250,0,0,0,0,-250,-120],
+    [30,0,1,2,2,1,0,30],
+    [10,0,2,5,5,2,0,10],
+    [10,0,2,5,5,2,0,10],
+    [30,0,1,2,2,1,0,30],
+    [-120,-250,0,0,0,0,-250,-120],
+    [500,-120,30,10,10,30,-120,500]
+
+  ];
+
+  let score=0;
+
+  for(let y=0;y<8;y++){
+
+    for(let x=0;x<8;x++){
+
+      if(board[y][x]===WHITE){
+
+        score+=weights[y][x];
+      }
+
+      if(board[y][x]===BLACK){
+
+        score-=weights[y][x];
+      }
+    }
+  }
+
+  score+=
+  moves(WHITE).length*15;
+
+  score-=
+  moves(BLACK).length*15;
+
+  return score;
+}
+
+function endGame(){
+
+  const black=
+
+  board.flat().filter(
+    v=>v===BLACK
+  ).length;
+
+  const white=
+
+  board.flat().filter(
+    v=>v===WHITE
+  ).length;
+
+  let text="";
+  let cls="";
 
   if(vsCPU){
-    if(b>w){text="あなたの勝ち！🎉";cls="win";}
-    else if(w>b){text="CPUの勝ち…";cls="lose";}
-    else{text="引き分け";cls="draw";}
+
+    if(black>white){
+
+      text="あなたの勝ち！🎉";
+      cls="win";
+
+    }else if(white>black){
+
+      text="CPUの勝ち";
+      cls="lose";
+
+    }else{
+
+      text="引き分け";
+      cls="draw";
+    }
+
   }else{
-    if(b>w){text="黒の勝ち！";cls="win";}
-    else if(w>b){text="白の勝ち！";cls="win";}
-    else{text="引き分け";cls="draw";}
+
+    if(black>white){
+
+      text="黒の勝ち！";
+      cls="win";
+
+    }else if(white>black){
+
+      text="白の勝ち！";
+      cls="win";
+
+    }else{
+
+      text="引き分け";
+      cls="draw";
+    }
   }
 
   resultText.textContent=text;
-  resultText.className="result "+cls;
-  scoreText.textContent=`●${b}  ○${w}`;
+
+  resultText.className=
+  "result "+cls;
+
+  scoreResult.textContent=
+
+  `● 黒:${black} ○ 白:${white}`;
 
   overlay.style.display="flex";
 }
+
 </script>
 
 </body>
