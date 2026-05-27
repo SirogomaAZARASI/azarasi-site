@@ -33,23 +33,4 @@
 ##警告付け方
 
 <!-- unicode一覧ツール -->
-<a href="unicode" class="card"
-
-    <!-- beta警告消す時は上の行に>付ける -->
-onclick="return confirm('このサイトはBETA版(開発中)です。\n開いてもいいですか？')">
-
-  <div class="card-image">
-
-    <!-- バッジ -->
-    <div class="badge-container">
-      <div class="badge new">NEW</div>
-    </div>
-
-    <img src="images/unicode.png" alt="unicode(特殊文字)一覧コピーできます。">
-
-  </div>
-
-  <h2>unicode(特殊文字等)一覧</h2>
-  <p>unicode一覧全てのunicode文字が閲覧、コピーできます。</p>
-
-</a>
+<a href="block" class="card" onclick="return confirm('◤◢◤◢◤◢◤◢◤◢◤◢\n警告 Warning\n◤◢◤◢◤◢◤◢◤◢◤◢\nこのサイトはBETA版(開発中)です。\n開いてもよろしいですか？')">
