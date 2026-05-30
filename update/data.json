@@ -1,0 +1,18 @@
+[
+  {
+    "site": "AZAtool",
+    "version": "1.2.0",
+    "date": "2026-05-30",
+    "title": "ダークモード追加",
+    "tags": ["feature"],
+    "content": "UIにダークモード追加"
+  },
+  {
+    "site": "AZAgame",
+    "version": "3.1.0",
+    "date": "2026-05-29",
+    "title": "バグ修正",
+    "tags": ["fix"],
+    "content": "迷路生成修正"
+  }
+]
