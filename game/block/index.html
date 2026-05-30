@@ -1,299 +1,1249 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="robots" content="noindex">
-  <title>ブロック崩し 完全版</title>
-  <style>
-    body {
-      background: #111;
-      color: white;
-      margin: 0;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #modeSelect {
-      margin-top: 60px;
-    }
-    button {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    #scorePanel {
-      font-size: 20px;
-      margin: 10px;
-    }
-    canvas {
-      background: #222;
-      border: 2px solid #fff;
-      touch-action: none;
-      display: none;
-    }
-  </style>
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>ブロック崩し | AZAgame</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-DK3VQGQTWC');
+</script>
+
+<style>
+
+body{
+background:#111;
+color:white;
+margin:0;
+font-family:sans-serif;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+#modeSelect{
+margin-top:60px;
+}
+
+button{
+margin:10px;
+padding:10px 20px;
+font-size:18px;
+cursor:pointer;
+}
+
+#scorePanel{
+font-size:20px;
+margin:10px;
+display:none;
+}
+
+canvas{
+background:#222;
+border:2px solid #fff;
+touch-action:none;
+display:none;
+}
+
+</style>
 </head>
+
 <body>
-  <div id="modeSelect">
-    <h1>モードを選んでね！</h1>
-    <button onclick="startGame(1)">🎯 通常モード（ボール1個）</button>
-    <button onclick="startGame(2)">🔥 ダブルボールモード（ボール2個）</button>
-  </div>
-  <div id="scorePanel" style="display:none;">スコア: 0 | レベル: 1 | ライフ: 3</div>
-  <canvas id="gameCanvas" width="480" height="320"></canvas>
 
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const scorePanel = document.getElementById("scorePanel");
-    const modeSelect = document.getElementById("modeSelect");
+<div id="modeSelect">
 
-    let paddleX, rightPressed = false, leftPressed = false, touchX = null;
-    const paddleHeight = 10, paddleWidth = 75;
+<h1>🎯 エンドレスブロック崩し</h1>
 
-    const brickRowCount = 3, brickColumnCount = 5;
-    const brickWidth = 75, brickHeight = 20;
-    const brickPadding = 10, brickOffsetTop = 30, brickOffsetLeft = 30;
+<button onclick="startGame()">
+スタート
+</button>
 
-    let score = 0, level = 1, lives = 3, balls = [], bricks = [], initialBallCount = 1;
-    let gameLoop = null;
+</div>
 
-    function Ball(x, y, dx, dy) {
-      this.x = x;
-      this.y = y;
-      this.dx = dx;
-      this.dy = dy;
-      this.radius = 8;
-    }
+<div id="scorePanel">
+スコア:0
+</div>
 
-    function getRandomBrickHP(level) {
-      const rand = Math.random();
-      if (level === 1) return 1;
-      if (level === 2) return rand < 0.8 ? 1 : 2;
-      if (level === 3) return rand < 0.6 ? 1 : (rand < 0.95 ? 2 : 3);
-      if (level === 4) return rand < 0.5 ? 1 : (rand < 0.85 ? 2 : 3);
-      if (level === 5) return rand < 0.4 ? 1 : (rand < 0.75 ? 2 : 3);
-      if (level === 6) return rand < 0.3 ? 1 : (rand < 0.65 ? 2 : (rand < 0.95 ? 3 : 4));
-      if (level === 7) return rand < 0.25 ? 1 : (rand < 0.55 ? 2 : (rand < 0.9 ? 3 : 4));
-      if (level === 8) return rand < 0.2 ? 1 : (rand < 0.5 ? 2 : (rand < 0.85 ? 3 : 4));
-      if (level === 9) return rand < 0.15 ? 1 : (rand < 0.45 ? 2 : (rand < 0.8 ? 3 : 4));
-      return rand < 0.1 ? 1 : (rand < 0.35 ? 2 : (rand < 0.7 ? 3 : 4));
-    }
+<canvas
+id="gameCanvas"
+width="480"
+height="320">
+</canvas>
 
-    function initBricks() {
-      bricks = [];
-      for (let c = 0; c < brickColumnCount; c++) {
-        bricks[c] = [];
-        for (let r = 0; r < brickRowCount; r++) {
-          let type = "normal";
-          let hp;
-          if (level >= 3 && Math.random() < 0.1) {
-            type = "heal";
-            hp = 10;
-          } else {
-            hp = getRandomBrickHP(level);
-          }
-          bricks[c][r] = {
-            x: 0,
-            y: 0,
-            status: 1,
-            type: type,
-            hp: hp
-          };
-        }
-      }
-    }
+<script>
 
-    function resetGame() {
-      score = 0;
-      level = 1;
-      lives = 3;
-      balls = [];
-      for (let i = 0; i < initialBallCount; i++) {
-        balls.push(new Ball(canvas.width / 2 + i * 20, canvas.height - 30, 2 * (i % 2 ? -1 : 1), -2));
-      }
-      paddleX = (canvas.width - paddleWidth) / 2;
-      initBricks();
-    }
+const canvas=
+document.getElementById(
+"gameCanvas"
+);
 
-    function drawBricks() {
-      for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-          const b = bricks[c][r];
-          if (b.status === 1) {
-            const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-            const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-            b.x = brickX;
-            b.y = brickY;
+const ctx=
+canvas.getContext("2d");
 
-            let color;
-            if (b.type === "heal") {
-              color = "#00ff00";
-            } else {
-              let colors = ['#ff66cc', '#ff9900', '#ff3333', '#cc00ff'];
-              color = colors[(b.hp - 1) % colors.length];
-            }
+const scorePanel=
+document.getElementById(
+"scorePanel"
+);
 
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.closePath();
-          }
-        }
-      }
-    }
+const modeSelect=
+document.getElementById(
+"modeSelect"
+);
 
-    function drawPaddle() {
-      ctx.beginPath();
-      ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-      ctx.fillStyle = "#fff";
-      ctx.fill();
-      ctx.closePath();
-    }
+let paddleX;
 
-    function drawBall(ball) {
-      ctx.beginPath();
-      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-      ctx.fillStyle = "#00ffff";
-      ctx.fill();
-      ctx.closePath();
-    }
+let rightPressed=false;
+let leftPressed=false;
+let touchX=null;
 
-    function collisionDetection(ball) {
-      for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-          let b = bricks[c][r];
-          if (b.status === 1) {
-            if (
-              ball.x > b.x &&
-              ball.x < b.x + brickWidth &&
-              ball.y > b.y &&
-              ball.y < b.y + brickHeight
-            ) {
-              ball.dy = -ball.dy;
-              const hpBefore = b.hp;
-              b.hp -= 1;
-              if (b.hp <= 0) {
-                b.status = 0;
-                if (b.type === "heal") {
-                  lives++;
-                  alert("💚 ライフが1回復したよ！");
-                } else {
-                  score += 10 * hpBefore;
-                }
-              }
-              checkLevelClear();
-            }
-          }
-        }
-      }
-    }
+const paddleHeight=10;
+const paddleWidth=75;
 
-    function checkLevelClear() {
-      let allCleared = true;
-      for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-          if (bricks[c][r].status === 1) {
-            allCleared = false;
-          }
-        }
-      }
-      if (allCleared) {
-        level++;
-        initBricks();
-      }
-    }
+let brickRowCount=3;
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawBricks();
-      drawPaddle();
+const brickColumnCount=5;
 
-      balls.forEach(ball => {
-        drawBall(ball);
-        collisionDetection(ball);
+const brickWidth=75;
+const brickHeight=20;
 
-        if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
-          ball.dx = -ball.dx;
-        }
-        if (ball.y + ball.dy < ball.radius) {
-          ball.dy = -ball.dy;
-        } else if (ball.y + ball.dy > canvas.height - ball.radius) {
-          if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
-            ball.dy = -ball.dy;
-          } else {
-            balls = balls.filter(b => b !== ball);
-            if (balls.length === 0) {
-              lives--;
-              if (lives > 0) {
-                balls = [];
-                for (let i = 0; i < initialBallCount; i++) {
-                  balls.push(new Ball(canvas.width / 2 + i * 20, canvas.height - 30, 2 * (i % 2 ? -1 : 1), -2));
-                }
-                paddleX = (canvas.width - paddleWidth) / 2;
-              } else {
-                alert("ゲームオーバー！ レベル: " + level);
-                cancelAnimationFrame(gameLoop);
-                modeSelect.style.display = 'block';
-                canvas.style.display = 'none';
-                scorePanel.style.display = 'none';
-                return;
-              }
-            }
-          }
-        }
+const brickPadding=10;
 
-        ball.x += ball.dx;
-        ball.y += ball.dy;
-      });
+const brickOffsetTop=30;
+const brickOffsetLeft=30;
 
-      if (rightPressed && paddleX < canvas.width - paddleWidth) {
-        paddleX += 5;
-      } else if (leftPressed && paddleX > 0) {
-        paddleX -= 5;
-      }
+let score=0;
+let level=1;
+let lives=3;
 
-      if (touchX !== null) {
-        paddleX = touchX - paddleWidth / 2;
-        if (paddleX < 0) paddleX = 0;
-        if (paddleX > canvas.width - paddleWidth) paddleX = canvas.width - paddleWidth;
-      }
+let shield=0;
 
-      scorePanel.textContent = `スコア: ${score} | レベル: ${level} | ライフ: ${lives}`;
-      gameLoop = requestAnimationFrame(draw);
-    }
+let balls=[];
+let bricks=[];
 
-    function startGame(ballCount) {
-      initialBallCount = ballCount;
-      modeSelect.style.display = 'none';
-      canvas.style.display = 'block';
-      scorePanel.style.display = 'block';
-      cancelAnimationFrame(gameLoop);
-      resetGame();
-      draw();
-    }
+let gameLoop=null;
 
-    document.addEventListener("keydown", e => {
-      if (e.key === "Right" || e.key === "ArrowRight") rightPressed = true;
-      if (e.key === "Left" || e.key === "ArrowLeft") leftPressed = true;
-    });
-    document.addEventListener("keyup", e => {
-      if (e.key === "Right" || e.key === "ArrowRight") rightPressed = false;
-      if (e.key === "Left" || e.key === "ArrowLeft") leftPressed = false;
-    });
-    canvas.addEventListener("touchstart", e => {
-      touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-    });
-    canvas.addEventListener("touchmove", e => {
-      e.preventDefault();
-      touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-    });
-    canvas.addEventListener("touchend", () => {
-      touchX = null;
-    });
-  </script>
+let bossTimer=0;
+
+let clearMessage="";
+let clearTimer=0;
+
+function Ball(
+x,
+y,
+dx,
+dy
+){
+
+this.x=x;
+this.y=y;
+this.dx=dx;
+this.dy=dy;
+this.radius=8;
+
+}
+
+function getRandomBrickHP(level){
+
+const rand=Math.random();
+
+if(level===1)
+return 1;
+
+if(level===2)
+return rand<0.8?1:2;
+
+if(level===3)
+return rand<0.6?1:
+(rand<0.95?2:3);
+
+if(level===4)
+return rand<0.5?1:
+(rand<0.85?2:3);
+
+if(level===5)
+return rand<0.4?1:
+(rand<0.75?2:3);
+
+if(level<=10)
+return rand<0.3?2:
+(rand<0.7?3:4);
+
+if(level<=20)
+return rand<0.3?3:
+(rand<0.7?4:5);
+
+if(level<=50)
+return Math.floor(
+Math.random()*8
+)+4;
+
+if(level<=100)
+return Math.floor(
+Math.random()*15
+)+8;
+
+return Math.floor(
+Math.random()*30
+)+20;
+
+}
+
+function getBrickColor(hp){
+
+if(hp<=1)
+return "#ff66cc";
+
+if(hp<=2)
+return "#ff9900";
+
+if(hp<=3)
+return "#ff3333";
+
+if(hp<=4)
+return "#cc00ff";
+
+if(hp<=5)
+return "#0066ff";
+
+if(hp<=6)
+return "#00ccff";
+
+if(hp<=7)
+return "#00cc66";
+
+if(hp<=8)
+return "#66ff00";
+
+if(hp<=10)
+return "#ffff00";
+
+if(hp<=12)
+return "#ffcc00";
+
+if(hp<=15)
+return "#ffffff";
+
+if(hp<=20)
+return "#bbbbbb";
+
+if(hp<=30)
+return "#888888";
+
+if(hp<=40)
+return "#555555";
+
+if(hp<=50)
+return "#333333";
+
+return "#000000";
+
+}
+
+function initBricks(){
+
+brickRowCount=3;
+
+if(level>=100)
+brickRowCount=4;
+
+if(level>=200)
+brickRowCount=5;
+
+if(level>=500)
+brickRowCount=6;
+
+bricks=[];
+
+for(
+let c=0;
+c<brickColumnCount;
+c++
+){
+
+bricks[c]=[];
+
+for(
+let r=0;
+r<brickRowCount;
+r++
+){
+
+let type="normal";
+let hp;
+
+const rand=
+Math.random();
+
+if(
+level>=3 &&
+rand<0.025
+){
+
+type="heal";
+hp=10;
+
+}
+else if(
+rand<0.035
+){
+
+type="diamond";
+hp=30;
+
+}
+else if(
+rand<0.045
+){
+
+type="speed";
+hp=12;
+
+}
+else if(
+rand<0.055
+){
+
+type="shield";
+hp=18;
+
+}
+else{
+
+hp=
+getRandomBrickHP(
+level
+);
+
+}
+
+bricks[c][r]={
+
+x:0,
+y:0,
+
+status:1,
+
+type:type,
+
+hp:hp
+
+};
+
+}
+
+}
+
+if(
+level%10===0
+){
+
+bricks[2][1]={
+
+x:0,
+y:0,
+
+status:1,
+
+type:"boss",
+
+hp:level*20
+
+};
+
+}
+
+}
+
+function resetGame(){
+
+score=0;
+level=1;
+lives=3;
+shield=0;
+
+balls=[];
+
+balls.push(
+
+new Ball(
+
+canvas.width/2,
+
+canvas.height-30,
+
+2,
+-2
+
+)
+
+);
+
+paddleX=
+(
+canvas.width-
+paddleWidth
+)/2;
+
+initBricks();
+
+}
+
+function drawBricks(){
+
+for(
+let c=0;
+c<brickColumnCount;
+c++
+){
+
+for(
+let r=0;
+r<brickRowCount;
+r++
+){
+
+const b=
+bricks[c][r];
+
+if(
+b.status!==1
+)
+continue;
+
+const brickX=
+(
+c*
+(
+brickWidth+
+brickPadding
+)
+)
++
+brickOffsetLeft;
+
+const brickY=
+(
+r*
+(
+brickHeight+
+brickPadding
+)
+)
++
+brickOffsetTop;
+
+b.x=brickX;
+b.y=brickY;
+
+let color;
+
+if(
+b.type==="heal"
+){
+
+color="#00ff00";
+
+}
+else if(
+b.type==="diamond"
+){
+
+color="#00ffff";
+
+}
+else if(
+b.type==="speed"
+){
+
+color="#ffff00";
+
+}
+else if(
+b.type==="shield"
+){
+
+color="#ffffff";
+
+}
+else if(
+b.type==="boss"
+){
+
+color="#000000";
+
+}
+else{
+
+color=
+getBrickColor(
+b.hp
+);
+
+}
+
+ctx.beginPath();
+
+ctx.rect(
+brickX,
+brickY,
+brickWidth,
+brickHeight
+);
+
+ctx.fillStyle=
+color;
+
+ctx.fill();
+
+ctx.closePath();
+
+if(
+
+b.type==="heal" ||
+b.type==="diamond" ||
+b.type==="speed" ||
+b.type==="shield"
+
+){
+
+ctx.fillStyle="#000";
+
+}
+else if(
+
+b.hp>=6 &&
+b.hp<30
+
+){
+
+ctx.fillStyle="#000";
+
+}
+else{
+
+ctx.fillStyle="#fff";
+
+}
+
+if(
+b.hp>=30
+){
+
+ctx.fillStyle="#fff";
+
+}
+
+ctx.font=
+"14px sans-serif";
+
+ctx.textAlign=
+"center";
+
+let text;
+
+if(
+b.type==="heal"
+){
+
+text=
+"♡"+b.hp;
+
+}
+else if(
+b.type==="diamond"
+){
+
+text=
+"💎"+b.hp;
+
+}
+else if(
+b.type==="speed"
+){
+
+text=
+"⚡"+b.hp;
+
+}
+else if(
+b.type==="shield"
+){
+
+text=
+"🛡"+b.hp;
+
+}
+else if(
+b.type==="boss"
+){
+
+text=
+"👑"+b.hp;
+
+}
+else{
+
+text=b.hp;
+
+}
+
+ctx.fillText(
+
+text,
+
+brickX+
+brickWidth/2,
+
+brickY+15
+
+);
+
+}
+
+}
+
+}
+
+function drawPaddle(){
+
+ctx.beginPath();
+
+ctx.rect(
+
+paddleX,
+
+canvas.height-
+paddleHeight,
+
+paddleWidth,
+
+paddleHeight
+
+);
+
+ctx.fillStyle=
+"#fff";
+
+ctx.fill();
+
+ctx.closePath();
+
+}
+
+function drawBall(ball){
+
+ctx.beginPath();
+
+ctx.arc(
+
+ball.x,
+ball.y,
+
+ball.radius,
+
+0,
+Math.PI*2
+
+);
+
+ctx.fillStyle=
+"#00ffff";
+
+ctx.fill();
+
+ctx.closePath();
+
+}
+
+function collisionDetection(
+ball
+){
+
+for(
+let c=0;
+c<brickColumnCount;
+c++
+){
+
+for(
+let r=0;
+r<brickRowCount;
+r++
+){
+
+let b=
+bricks[c][r];
+
+if(
+b.status!==1
+)
+continue;
+
+if(
+
+ball.x>b.x &&
+
+ball.x<
+b.x+brickWidth &&
+
+ball.y>b.y &&
+
+ball.y<
+b.y+brickHeight
+
+){
+
+ball.dy=
+-ball.dy;
+
+const hpBefore=
+b.hp;
+
+b.hp--;
+
+if(
+b.hp<=0
+){
+
+b.status=0;
+
+if(
+b.type==="heal"
+){
+
+lives++;
+
+}
+else if(
+b.type==="diamond"
+){
+
+score+=500;
+
+}
+else if(
+b.type==="speed"
+){
+
+balls.forEach(
+ball=>{
+
+ball.dx*=1.2;
+ball.dy*=1.2;
+
+}
+);
+
+}
+else if(
+b.type==="shield"
+){
+
+shield++;
+
+}
+else if(
+b.type==="boss"
+){
+
+score+=
+level*100;
+
+}
+else{
+
+score+=
+hpBefore*10;
+
+}
+
+}
+
+checkLevelClear();
+
+}
+
+}
+
+}
+
+}
+
+function checkLevelClear(){
+
+let allCleared=true;
+
+for(
+let c=0;
+c<brickColumnCount;
+c++
+){
+
+for(
+let r=0;
+r<brickRowCount;
+r++
+){
+
+if(
+bricks[c][r].status===1
+){
+
+allCleared=false;
+
+}
+
+}
+
+}
+
+if(allCleared){
+
+clearMessage=
+"🎉 LEVEL "+
+level+
+" CLEAR!";
+
+clearTimer=180;
+
+level++;
+
+if(
+level%100===0
+){
+
+alert(
+"🏆 LEVEL "+
+level+
+" 到達！"
+);
+
+}
+
+balls=[];
+
+balls.push(
+
+new Ball(
+
+canvas.width/2,
+
+canvas.height-30,
+
+2,
+-2
+
+)
+
+);
+
+paddleX=
+(
+canvas.width-
+paddleWidth
+)/2;
+
+initBricks();
+
+}
+
+}
+
+function healBoss(){
+
+bossTimer++;
+
+if(
+bossTimer<600
+)
+return;
+
+bossTimer=0;
+
+for(
+let c=0;
+c<brickColumnCount;
+c++
+){
+
+for(
+let r=0;
+r<brickRowCount;
+r++
+){
+
+const b=
+bricks[c][r];
+
+if(
+b.status===1 &&
+b.type==="boss"
+){
+
+b.hp+=5;
+
+}
+
+}
+
+}
+
+}
+
+function draw(){
+
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+healBoss();
+
+drawBricks();
+drawPaddle();
+
+balls.forEach(
+ball=>{
+
+drawBall(ball);
+
+collisionDetection(ball);
+
+if(
+ball.x+ball.dx >
+canvas.width-ball.radius ||
+ball.x+ball.dx <
+ball.radius
+){
+ball.dx=-ball.dx;
+}
+
+if(
+ball.y+ball.dy <
+ball.radius
+){
+
+ball.dy=-ball.dy;
+
+}
+else if(
+ball.y+ball.dy >
+canvas.height-ball.radius
+){
+
+if(
+ball.x>paddleX &&
+ball.x<
+paddleX+paddleWidth
+){
+
+const hitPos=
+
+(
+ball.x-
+(
+paddleX+
+paddleWidth/2
+)
+)
+/
+(
+paddleWidth/2
+);
+
+ball.dx=
+hitPos*4;
+
+ball.dy=
+-Math.abs(
+ball.dy
+);
+
+}
+else{
+
+balls=
+balls.filter(
+b=>b!==ball
+);
+
+}
+
+}
+
+ball.x+=ball.dx;
+ball.y+=ball.dy;
+
+}
+);
+
+if(
+balls.length===0
+){
+
+if(
+shield>0
+){
+
+shield--;
+
+balls.push(
+new Ball(
+canvas.width/2,
+canvas.height-30,
+2,
+-2
+)
+);
+
+}
+else{
+
+lives--;
+
+if(
+lives>0
+){
+
+balls.push(
+new Ball(
+canvas.width/2,
+canvas.height-30,
+2,
+-2
+)
+);
+
+}
+else{
+
+alert(
+"ゲームオーバー\nレベル:"+
+level+
+"\nスコア:"+
+score
+);
+
+cancelAnimationFrame(
+gameLoop
+);
+
+modeSelect.style.display=
+"block";
+
+canvas.style.display=
+"none";
+
+scorePanel.style.display=
+"none";
+
+return;
+
+}
+
+}
+
+}
+
+if(
+rightPressed &&
+paddleX<
+canvas.width-paddleWidth
+){
+paddleX+=5;
+}
+else if(
+leftPressed &&
+paddleX>0
+){
+paddleX-=5;
+}
+
+if(
+touchX!==null
+){
+
+paddleX=
+touchX-
+paddleWidth/2;
+
+if(
+paddleX<0
+){
+paddleX=0;
+}
+
+if(
+paddleX>
+canvas.width-
+paddleWidth
+){
+paddleX=
+canvas.width-
+paddleWidth;
+}
+
+}
+
+/* レベルクリア演出 */
+
+if(
+clearTimer>0
+){
+
+ctx.fillStyle=
+"rgba(0,0,0,0.6)";
+
+ctx.fillRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+ctx.fillStyle=
+"#FFD700";
+
+ctx.font=
+"bold 32px sans-serif";
+
+ctx.textAlign=
+"center";
+
+ctx.fillText(
+
+clearMessage,
+
+canvas.width/2,
+
+canvas.height/2
+
+);
+
+clearTimer--;
+
+}
+
+scorePanel.textContent=
+
+`スコア:${score}
+ | レベル:${level}
+ | ライフ:${lives}
+ | シールド:${shield}`;
+
+gameLoop=
+requestAnimationFrame(
+draw
+);
+
+}
+
+function startGame(){
+
+modeSelect.style.display=
+"none";
+
+canvas.style.display=
+"block";
+
+scorePanel.style.display=
+"block";
+
+cancelAnimationFrame(
+gameLoop
+);
+
+resetGame();
+
+draw();
+
+}
+
+document.addEventListener(
+"keydown",
+e=>{
+
+if(
+e.key==="ArrowRight"
+){
+rightPressed=true;
+}
+
+if(
+e.key==="ArrowLeft"
+){
+leftPressed=true;
+}
+
+}
+);
+
+document.addEventListener(
+"keyup",
+e=>{
+
+if(
+e.key==="ArrowRight"
+){
+rightPressed=false;
+}
+
+if(
+e.key==="ArrowLeft"
+){
+leftPressed=false;
+}
+
+}
+);
+
+canvas.addEventListener(
+"touchstart",
+e=>{
+
+touchX=
+e.touches[0].clientX-
+canvas
+.getBoundingClientRect()
+.left;
+
+}
+);
+
+canvas.addEventListener(
+"touchmove",
+e=>{
+
+e.preventDefault();
+
+touchX=
+e.touches[0].clientX-
+canvas
+.getBoundingClientRect()
+.left;
+
+}
+);
+
+canvas.addEventListener(
+"touchend",
+()=>{
+
+touchX=null;
+
+}
+);
+
+</script>
+
 </body>
 </html>
