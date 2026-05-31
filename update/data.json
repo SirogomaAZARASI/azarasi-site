@@ -1,7 +1,7 @@
 [
   {
     "site": "AZAtool",
-    "version": "1.2あ.0",
+    "version": "1.2.0(test)",
     "date": "2026-05-30",
     "title": "ダークモード追加",
     "tags": ["feature"],
@@ -9,7 +9,7 @@
   },
   {
     "site": "AZAgame",
-    "version": "3.1.0",
+    "version": "3.1.0(test)",
     "date": "2026-05-29",
     "title": "バグ修正",
     "tags": ["fix"],
