@@ -2034,6 +2034,309 @@ console.log(
 "ITA Corpus Recorder Pro Ready"
 );
 
+let mediaStream;
+let mediaRecorder;
+let audioChunks = [];
+
+let audioContext;
+let analyser;
+let waveformAnimation;
+
+let latestBlob = null;
+
+const waveformEl =
+document.getElementById("waveform");
+
+const playBtn =
+document.createElement("button");
+
+playBtn.textContent = "再生";
+playBtn.className = "btn btn-primary";
+
+document
+.querySelector(".actions")
+.appendChild(playBtn);
+
+const canvas =
+document.createElement("canvas");
+
+canvas.width = 800;
+canvas.height = 140;
+
+waveformEl.innerHTML = "";
+waveformEl.appendChild(canvas);
+
+const ctx = canvas.getContext("2d");
+
+async function startRecording(){
+
+audioChunks = [];
+
+mediaStream =
+await navigator.mediaDevices.getUserMedia({
+audio:true
+});
+
+audioContext =
+new AudioContext();
+
+const source =
+audioContext.createMediaStreamSource(
+mediaStream
+);
+
+analyser =
+audioContext.createAnalyser();
+
+analyser.fftSize = 2048;
+
+source.connect(analyser);
+
+drawRealtimeWaveform();
+
+mediaRecorder =
+new MediaRecorder(mediaStream);
+
+mediaRecorder.ondataavailable =
+e=>{
+
+if(e.data.size>0){
+
+audioChunks.push(e.data);
+
+}
+
+};
+
+mediaRecorder.onstop =
+()=>{
+
+latestBlob =
+new Blob(
+audioChunks,
+{
+type:"audio/webm"
+}
+);
+
+cancelAnimationFrame(
+waveformAnimation
+);
+
+drawStaticWave();
+
+};
+
+mediaRecorder.start();
+
+}
+
+function stopRecording(){
+
+if(
+mediaRecorder &&
+mediaRecorder.state==="recording"
+){
+
+mediaRecorder.stop();
+
+}
+
+if(mediaStream){
+
+mediaStream
+.getTracks()
+.forEach(
+track=>track.stop()
+);
+
+}
+
+}
+
+function drawRealtimeWaveform(){
+
+const data =
+new Uint8Array(
+analyser.fftSize
+);
+
+function draw(){
+
+waveformAnimation =
+requestAnimationFrame(draw);
+
+analyser.getByteTimeDomainData(
+data
+);
+
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+ctx.beginPath();
+
+const sliceWidth =
+canvas.width /
+data.length;
+
+let x = 0;
+
+for(
+let i=0;
+i<data.length;
+i++
+){
+
+const v =
+data[i] / 128.0;
+
+const y =
+v * canvas.height / 2;
+
+if(i===0){
+
+ctx.moveTo(x,y);
+
+}else{
+
+ctx.lineTo(x,y);
+
+}
+
+x += sliceWidth;
+
+}
+
+ctx.stroke();
+
+}
+
+draw();
+
+}
+
+async function drawStaticWave(){
+
+if(!latestBlob)return;
+
+const arrayBuffer =
+await latestBlob.arrayBuffer();
+
+const tempCtx =
+new AudioContext();
+
+const audioBuffer =
+await tempCtx.decodeAudioData(
+arrayBuffer
+);
+
+const data =
+audioBuffer.getChannelData(0);
+
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+ctx.beginPath();
+
+const step =
+Math.ceil(
+data.length /
+canvas.width
+);
+
+const amp =
+canvas.height / 2;
+
+for(
+let i=0;
+i<canvas.width;
+i++
+){
+
+let min = 1;
+let max = -1;
+
+for(
+let j=0;
+j<step;
+j++
+){
+
+const datum =
+data[
+(i*step)+j
+];
+
+if(datum<min)
+min=datum;
+
+if(datum>max)
+max=datum;
+
+}
+
+ctx.moveTo(
+i,
+(1+min)*amp
+);
+
+ctx.lineTo(
+i,
+(1+max)*amp
+);
+
+}
+
+ctx.stroke();
+
+}
+
+playBtn.addEventListener(
+"click",
+()=>{
+
+if(!latestBlob){
+
+alert("録音がありません");
+
+return;
+
+}
+
+const audio =
+new Audio(
+URL.createObjectURL(
+latestBlob
+)
+);
+
+audio.play();
+
+}
+);
+
+document
+.getElementById("recordBtn")
+.addEventListener(
+"click",
+startRecording
+);
+
+document
+.getElementById("stopBtn")
+.addEventListener(
+"click",
+stopRecording
+);
+
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
