@@ -1,0 +1,1181 @@
+/* ==================================================
+   POLYTYPE
+   STYLE.CSS PART 1
+   Cyber UI Core
+================================================== */
+
+:root{
+
+    --bg:#05070b;
+    --bg2:#0b1118;
+    --panel:#0f1722;
+
+    --cyan:#00e5ff;
+    --cyan2:#6ff7ff;
+
+    --blue:#009dff;
+
+    --green:#00ff88;
+
+    --purple:#a855ff;
+
+    --orange:#ff9900;
+
+    --red:#ff3b5c;
+
+    --text:#d9f7ff;
+
+    --border:rgba(0,229,255,.35);
+
+}
+
+/* =========================
+   RESET
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+}
+
+body{
+
+    background:
+    radial-gradient(circle at top,
+    #102338 0%,
+    #05070b 60%);
+
+    color:var(--text);
+
+    overflow:hidden;
+
+    font-family:
+    "Orbitron",
+    sans-serif;
+
+}
+
+/* =========================
+   GLOBAL
+========================= */
+
+.hidden{
+    display:none !important;
+}
+
+button{
+
+    border:none;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+}
+
+/* =========================
+   BOOT SCREEN
+========================= */
+
+#bootScreen{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:20px;
+
+    background:
+    linear-gradient(
+    180deg,
+    #020305,
+    #08111b);
+
+    z-index:9999;
+
+}
+
+.bootLogo{
+
+    font-size:clamp(48px,8vw,96px);
+
+    font-weight:900;
+
+    letter-spacing:8px;
+
+    color:var(--cyan);
+
+    text-shadow:
+    0 0 10px var(--cyan),
+    0 0 20px var(--cyan),
+    0 0 40px var(--cyan);
+
+}
+
+.bootSub{
+
+    color:#83e8ff;
+
+    letter-spacing:3px;
+
+    opacity:.8;
+
+}
+
+#startBtn{
+
+    margin-top:20px;
+
+    padding:16px 48px;
+
+    background:rgba(0,229,255,.08);
+
+    color:var(--cyan);
+
+    border:1px solid var(--cyan);
+
+    font-size:20px;
+
+    transition:.25s;
+
+    box-shadow:
+    0 0 10px rgba(0,229,255,.3);
+
+}
+
+#startBtn:hover{
+
+    transform:translateY(-2px);
+
+    background:rgba(0,229,255,.15);
+
+    box-shadow:
+    0 0 20px rgba(0,229,255,.7);
+
+}
+
+/* =========================
+   GAME ROOT
+========================= */
+
+#gameContainer{
+
+    width:100vw;
+
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+/* =========================
+   TOP BAR
+========================= */
+
+#topBar{
+
+    height:80px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 24px;
+
+    border-bottom:1px solid var(--border);
+
+    background:
+    rgba(6,12,18,.85);
+
+    backdrop-filter:blur(10px);
+
+}
+
+.logoArea{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+.logo{
+
+    color:var(--cyan);
+
+    font-size:28px;
+
+    font-weight:900;
+
+    letter-spacing:3px;
+
+    text-shadow:
+    0 0 10px var(--cyan);
+
+}
+
+.version{
+
+    font-size:11px;
+
+    opacity:.6;
+
+}
+
+.statsArea{
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+}
+
+.statBox{
+
+    min-width:90px;
+
+    height:50px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    border:1px solid var(--border);
+
+    background:
+    rgba(0,229,255,.05);
+
+    box-shadow:
+    inset 0 0 12px rgba(0,229,255,.1);
+
+}
+
+.statLabel{
+
+    font-size:10px;
+
+    opacity:.65;
+
+}
+
+.statBox span:last-child{
+
+    font-weight:700;
+
+}
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+
+#mainLayout{
+
+    flex:1;
+
+    display:grid;
+
+    grid-template-columns:
+    1.4fr
+    1fr
+    320px;
+
+    gap:16px;
+
+    padding:16px;
+
+    min-height:0;
+
+}
+
+/* =========================
+   PANELS
+========================= */
+
+#viewerPanel,
+#typingPanel,
+#databasePanel{
+
+    position:relative;
+
+    background:
+    linear-gradient(
+    180deg,
+    rgba(13,20,30,.95),
+    rgba(8,12,18,.95));
+
+    border:1px solid var(--border);
+
+    overflow:hidden;
+
+    box-shadow:
+    0 0 20px rgba(0,229,255,.08),
+    inset 0 0 30px rgba(0,229,255,.03);
+
+}
+
+.panelTitle{
+
+    padding:12px 16px;
+
+    border-bottom:1px solid var(--border);
+
+    color:var(--cyan);
+
+    letter-spacing:2px;
+
+    font-size:14px;
+
+}
+
+/* =========================
+   VIEWER
+========================= */
+
+#viewerPanel{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+#threeCanvas{
+
+    width:100%;
+
+    height:100%;
+
+    display:block;
+
+}
+
+#shapeInfo{
+
+    position:absolute;
+
+    left:16px;
+
+    bottom:16px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+#shapeName{
+
+    font-size:24px;
+
+    font-weight:700;
+
+    color:var(--cyan);
+
+}
+
+#shapeJP{
+
+    opacity:.8;
+
+}
+
+#shapeRarity{
+
+    display:inline-flex;
+
+    width:max-content;
+
+    padding:4px 10px;
+
+    border:1px solid var(--cyan);
+
+    color:var(--cyan);
+
+    font-size:12px;
+
+}
+
+#viewerControls{
+
+    position:absolute;
+
+    right:16px;
+
+    bottom:16px;
+
+    display:flex;
+
+    gap:8px;
+
+}
+
+#viewerControls button{
+
+    width:44px;
+
+    height:44px;
+
+    background:
+    rgba(0,229,255,.08);
+
+    border:1px solid var(--border);
+
+    color:var(--cyan);
+
+    font-size:18px;
+
+}
+
+/* =========================
+   TYPING PANEL
+========================= */
+
+#typingPanel{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+#questionType{
+
+    padding:12px 20px;
+
+    color:var(--green);
+
+    font-size:13px;
+
+}
+
+#jpText{
+
+    margin-top:20px;
+
+    text-align:center;
+
+    font-size:34px;
+
+    font-weight:700;
+
+    padding:0 20px;
+
+}
+
+#romaText{
+
+    margin-top:16px;
+
+    text-align:center;
+
+    font-size:22px;
+
+    color:#79dfff;
+
+    word-break:break-all;
+
+    padding:0 20px;
+
+}
+
+#typedText{
+
+    margin-top:24px;
+
+    text-align:center;
+
+    min-height:40px;
+
+    color:var(--green);
+
+    font-size:24px;
+
+    letter-spacing:2px;
+
+}
+
+#comboArea{
+
+    margin-top:auto;
+
+    padding:20px;
+
+    text-align:center;
+
+    font-size:18px;
+
+}
+
+#combo{
+
+    margin-left:8px;
+
+    color:var(--orange);
+
+    text-shadow:
+    0 0 10px var(--orange);
+
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+#progressArea{
+
+    padding:0 20px 20px;
+
+}
+
+#progressBar{
+
+    height:10px;
+
+    border:1px solid var(--border);
+
+    overflow:hidden;
+
+}
+
+#progressFill{
+
+    width:0%;
+
+    height:100%;
+
+    background:
+    linear-gradient(
+    90deg,
+    var(--cyan),
+    var(--cyan2));
+
+}
+
+/* ==================================================
+   POLYTYPE
+   STYLE.CSS PART 2
+   Database / Popup / Effects / Responsive
+================================================== */
+
+/* =========================
+   DATABASE PANEL
+========================= */
+
+#databasePanel{
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+#shapeList{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:10px;
+
+    scrollbar-width:thin;
+
+    scrollbar-color:
+    var(--cyan)
+    transparent;
+
+}
+
+#shapeList::-webkit-scrollbar{
+    width:8px;
+}
+
+#shapeList::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+#shapeList::-webkit-scrollbar-thumb{
+
+    background:var(--cyan);
+
+    border-radius:10px;
+
+}
+
+.shapeItem{
+
+    padding:10px;
+
+    margin-bottom:8px;
+
+    border:1px solid rgba(0,229,255,.15);
+
+    background:rgba(255,255,255,.02);
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.shapeItem:hover{
+
+    border-color:var(--cyan);
+
+    transform:translateX(4px);
+
+    box-shadow:
+    0 0 10px rgba(0,229,255,.25);
+
+}
+
+.shapeItem.locked{
+
+    opacity:.35;
+
+    filter:grayscale(1);
+
+}
+
+.shapeName{
+
+    font-size:14px;
+
+    margin-bottom:4px;
+
+}
+
+.shapeMeta{
+
+    font-size:11px;
+
+    opacity:.7;
+
+}
+
+/* =========================
+   XP BAR
+========================= */
+
+#xpBar{
+
+    position:fixed;
+
+    left:0;
+
+    bottom:0;
+
+    width:100%;
+
+    height:8px;
+
+    background:#071018;
+
+    z-index:100;
+
+}
+
+#xpFill{
+
+    width:0%;
+
+    height:100%;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00d9ff,
+        #7fffff
+    );
+
+    box-shadow:
+    0 0 12px var(--cyan),
+    0 0 24px var(--cyan);
+
+    transition:.3s;
+
+}
+
+/* =========================
+   BOTTOM BAR
+========================= */
+
+#bottomBar{
+
+    height:42px;
+
+    display:flex;
+
+    align-items:center;
+
+    padding:0 16px;
+
+    border-top:1px solid var(--border);
+
+    background:
+    rgba(5,10,15,.9);
+
+}
+
+#achievementArea{
+
+    color:var(--green);
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+}
+
+/* =========================
+   POPUP
+========================= */
+
+.popup{
+
+    position:fixed;
+
+    left:50%;
+
+    top:50%;
+
+    transform:
+    translate(-50%,-50%);
+
+    min-width:320px;
+
+    padding:24px;
+
+    border:1px solid var(--cyan);
+
+    background:
+    rgba(5,10,15,.96);
+
+    text-align:center;
+
+    z-index:9998;
+
+    box-shadow:
+    0 0 20px rgba(0,229,255,.4),
+    0 0 40px rgba(0,229,255,.2);
+
+    animation:
+    popupShow .4s ease;
+
+}
+
+.popupTitle{
+
+    font-size:13px;
+
+    color:var(--cyan);
+
+    letter-spacing:3px;
+
+    margin-bottom:12px;
+
+}
+
+#unlockShapeName,
+#achievementName,
+#levelupValue{
+
+    font-size:28px;
+
+    font-weight:900;
+
+    color:white;
+
+    text-shadow:
+    0 0 10px var(--cyan);
+
+}
+
+/* =========================
+   RARITY
+========================= */
+
+.rarity-n{
+
+    color:var(--cyan);
+
+}
+
+.rarity-r{
+
+    color:var(--green);
+
+}
+
+.rarity-sr{
+
+    color:var(--purple);
+
+}
+
+.rarity-ssr{
+
+    color:var(--orange);
+
+}
+
+.rarity-ur{
+
+    color:var(--red);
+
+}
+
+.rarity-lr{
+
+    background:
+    linear-gradient(
+        90deg,
+        #00e5ff,
+        #00ff88,
+        #a855ff,
+        #ff9900,
+        #ff3b5c
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+
+}
+
+/* =========================
+   PARTICLES
+========================= */
+
+#particles{
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:1;
+
+}
+
+.particle{
+
+    position:absolute;
+
+    width:2px;
+    height:2px;
+
+    border-radius:50%;
+
+    background:var(--cyan);
+
+    box-shadow:
+    0 0 10px var(--cyan);
+
+    animation:
+    floatParticle linear forwards;
+
+}
+
+/* =========================
+   SCANLINES
+========================= */
+
+#scanlines{
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:9997;
+
+    opacity:.12;
+
+    background:
+    repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(255,255,255,.08) 3px
+    );
+
+}
+
+/* =========================
+   GLITCH
+========================= */
+
+.glitch{
+
+    animation:
+    glitch .25s ease;
+
+}
+
+@keyframes glitch{
+
+    0%{
+        transform:translateX(0);
+    }
+
+    20%{
+        transform:translateX(-3px);
+    }
+
+    40%{
+        transform:translateX(3px);
+    }
+
+    60%{
+        transform:translateX(-2px);
+    }
+
+    80%{
+        transform:translateX(2px);
+    }
+
+    100%{
+        transform:translateX(0);
+    }
+
+}
+
+/* =========================
+   POPUP ANIMATION
+========================= */
+
+@keyframes popupShow{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translate(-50%,-50%)
+        scale(.8);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translate(-50%,-50%)
+        scale(1);
+
+    }
+
+}
+
+/* =========================
+   FLOAT PARTICLE
+========================= */
+
+@keyframes floatParticle{
+
+    from{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+    to{
+
+        opacity:0;
+
+        transform:
+        translateY(-120px);
+
+    }
+
+}
+
+/* =========================
+   CYBER PULSE
+========================= */
+
+@keyframes cyberPulse{
+
+    0%{
+
+        box-shadow:
+        0 0 5px rgba(0,229,255,.3);
+
+    }
+
+    50%{
+
+        box-shadow:
+        0 0 20px rgba(0,229,255,.8);
+
+    }
+
+    100%{
+
+        box-shadow:
+        0 0 5px rgba(0,229,255,.3);
+
+    }
+
+}
+
+.statBox{
+
+    animation:
+    cyberPulse 4s infinite;
+
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width:1200px){
+
+    #mainLayout{
+
+        grid-template-columns:
+        1fr
+        1fr;
+
+        grid-template-rows:
+        1fr
+        300px;
+
+    }
+
+    #databasePanel{
+
+        grid-column:
+        1 / span 2;
+
+    }
+
+}
+
+@media (max-width:900px){
+
+    #mainLayout{
+
+        display:flex;
+
+        flex-direction:column;
+
+        overflow:auto;
+
+    }
+
+    #viewerPanel{
+
+        min-height:320px;
+
+    }
+
+    #typingPanel{
+
+        min-height:320px;
+
+    }
+
+    #databasePanel{
+
+        min-height:250px;
+
+    }
+
+    .statsArea{
+
+        gap:6px;
+
+    }
+
+    .statBox{
+
+        min-width:70px;
+
+        height:42px;
+
+    }
+
+    #jpText{
+
+        font-size:26px;
+
+    }
+
+    #romaText{
+
+        font-size:18px;
+
+    }
+
+}
+
+@media (max-width:600px){
+
+    #topBar{
+
+        height:auto;
+
+        flex-direction:column;
+
+        gap:12px;
+
+        padding:12px;
+
+    }
+
+    .logo{
+
+        font-size:22px;
+
+    }
+
+    .bootLogo{
+
+        font-size:48px;
+
+    }
+
+    .popup{
+
+        min-width:90%;
+
+    }
+
+}
