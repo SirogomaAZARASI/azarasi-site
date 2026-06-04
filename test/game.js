@@ -892,3 +892,459 @@ setInterval(()=>{
 renderDatabase();
 
 updateShapeInfo();
+
+/* ==================================================
+   POLYTYPE
+   GAME.JS PART 3
+   THREE.JS
+================================================== */
+
+/* =========================
+   THREE
+========================= */
+
+let scene;
+let camera;
+let renderer;
+
+let polyMesh;
+
+let drag = false;
+
+let lastX = 0;
+let lastY = 0;
+
+const canvas =
+document.getElementById(
+    "threeCanvas"
+);
+
+/* =========================
+   INIT
+========================= */
+
+function initThree(){
+
+    scene =
+    new THREE.Scene();
+
+    camera =
+    new THREE.PerspectiveCamera(
+        60,
+        canvas.clientWidth /
+        canvas.clientHeight,
+        0.1,
+        1000
+    );
+
+    camera.position.z = 3;
+
+    renderer =
+    new THREE.WebGLRenderer({
+        canvas,
+        antialias:true,
+        alpha:true
+    });
+
+    renderer.setPixelRatio(
+        window.devicePixelRatio
+    );
+
+    renderer.setSize(
+        canvas.clientWidth,
+        canvas.clientHeight
+    );
+
+    createLights();
+
+    loadShapeGeometry(
+        game.selectedShape
+    );
+
+    animate();
+
+}
+
+/* =========================
+   LIGHTS
+========================= */
+
+function createLights(){
+
+    const ambient =
+    new THREE.AmbientLight(
+        0xffffff,
+        1.2
+    );
+
+    scene.add(
+        ambient
+    );
+
+    const light1 =
+    new THREE.PointLight(
+        0x00e5ff,
+        40
+    );
+
+    light1.position.set(
+        4,
+        4,
+        4
+    );
+
+    scene.add(
+        light1
+    );
+
+    const light2 =
+    new THREE.PointLight(
+        0x009dff,
+        30
+    );
+
+    light2.position.set(
+        -4,
+        -4,
+        3
+    );
+
+    scene.add(
+        light2
+    );
+
+}
+
+/* =========================
+   MATERIAL
+========================= */
+
+function createMaterial(){
+
+    return new THREE.MeshStandardMaterial({
+
+        color:0x00e5ff,
+
+        emissive:0x00bcd4,
+
+        emissiveIntensity:0.6,
+
+        metalness:0.7,
+
+        roughness:0.2,
+
+        wireframe:false
+
+    });
+
+}
+
+/* =========================
+   GEOMETRY
+========================= */
+
+function geometryFromShape(
+shape
+){
+
+    switch(
+        shape.geometry
+    ){
+
+        case "cube":
+            return new THREE.BoxGeometry(
+                1,
+                1,
+                1
+            );
+
+        case "tetrahedron":
+            return new THREE.TetrahedronGeometry(
+                1
+            );
+
+        case "octahedron":
+            return new THREE.OctahedronGeometry(
+                1
+            );
+
+        case "dodecahedron":
+            return new THREE.DodecahedronGeometry(
+                1
+            );
+
+        case "icosahedron":
+            return new THREE.IcosahedronGeometry(
+                1
+            );
+
+        case "sphere":
+            return new THREE.SphereGeometry(
+                1,
+                32,
+                32
+            );
+
+        case "cone":
+            return new THREE.ConeGeometry(
+                1,
+                2,
+                24
+            );
+
+        case "cylinder":
+            return new THREE.CylinderGeometry(
+                1,
+                1,
+                2,
+                24
+            );
+
+        case "torus":
+            return new THREE.TorusGeometry(
+                1,
+                0.3,
+                32,
+                64
+            );
+
+        case "torusknot":
+            return new THREE.TorusKnotGeometry(
+                1,
+                0.25,
+                128,
+                16
+            );
+
+        default:
+
+            return new THREE.IcosahedronGeometry(
+                1,
+                0
+            );
+
+    }
+
+}
+
+/* =========================
+   LOAD SHAPE
+========================= */
+
+function loadShapeGeometry(
+shapeId
+){
+
+    const shape =
+    getShapeById(
+        shapeId
+    );
+
+    if(
+        !shape
+    ) return;
+
+    if(
+        polyMesh
+    ){
+
+        scene.remove(
+            polyMesh
+        );
+
+        polyMesh.geometry.dispose();
+
+    }
+
+    const geometry =
+    geometryFromShape(
+        shape
+    );
+
+    const material =
+    createMaterial();
+
+    polyMesh =
+    new THREE.Mesh(
+        geometry,
+        material
+    );
+
+    scene.add(
+        polyMesh
+    );
+
+}
+
+/* =========================
+   PATCH
+========================= */
+
+const oldSelectShape =
+selectShape;
+
+selectShape = function(id){
+
+    oldSelectShape(id);
+
+    loadShapeGeometry(id);
+
+};
+
+/* =========================
+   RESIZE
+========================= */
+
+window.addEventListener(
+"resize",
+()=>{
+
+    if(
+        !renderer
+    ) return;
+
+    camera.aspect =
+    canvas.clientWidth /
+    canvas.clientHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        canvas.clientWidth,
+        canvas.clientHeight
+    );
+
+}
+);
+
+/* =========================
+   DRAG
+========================= */
+
+canvas.addEventListener(
+"pointerdown",
+e=>{
+
+    drag = true;
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+
+}
+);
+
+window.addEventListener(
+"pointerup",
+()=>{
+
+    drag = false;
+
+}
+);
+
+window.addEventListener(
+"pointermove",
+e=>{
+
+    if(
+        !drag
+    ) return;
+
+    const dx =
+    e.clientX - lastX;
+
+    const dy =
+    e.clientY - lastY;
+
+    lastX =
+    e.clientX;
+
+    lastY =
+    e.clientY;
+
+    if(
+        polyMesh
+    ){
+
+        polyMesh.rotation.y
+        += dx * 0.01;
+
+        polyMesh.rotation.x
+        += dy * 0.01;
+
+    }
+
+}
+);
+
+/* =========================
+   WHEEL
+========================= */
+
+canvas.addEventListener(
+"wheel",
+e=>{
+
+    e.preventDefault();
+
+    camera.position.z +=
+    e.deltaY * 0.003;
+
+    camera.position.z =
+    Math.max(
+        1.5,
+        Math.min(
+            10,
+            camera.position.z
+        )
+    );
+
+}
+);
+
+/* =========================
+   ANIMATE
+========================= */
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+    if(
+        polyMesh
+    ){
+
+        polyMesh.rotation.y
+        += 0.004;
+
+    }
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+/* =========================
+   START PATCH
+========================= */
+
+const oldStartGame =
+startGame;
+
+startGame = function(){
+
+    oldStartGame();
+
+    if(
+        !renderer
+    ){
+
+        initThree();
+
+    }
+
+};
