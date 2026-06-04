@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POLYTYPE FULL</title>
+
+<style>
+
+:root{
+    --bg:#05070b;
+    --panel:#0b1622;
+    --cyan:#00e5ff;
+    --green:#00ff88;
+    --text:#d9f7ff;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:system-ui;
+}
+
+body{
+    background:radial-gradient(circle at top,#0f1c2c,#05070b);
+    color:var(--text);
+    overflow:hidden;
+}
+
+#app{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+#top{
+    height:60px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 16px;
+    border-bottom:1px solid rgba(0,229,255,.2);
+}
+
+#title{
+    color:var(--cyan);
+    font-weight:900;
+}
+
+#stats{
+    display:flex;
+    gap:16px;
+    font-size:13px;
+}
+
+#main{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+#panel{
+    width:min(900px,92%);
+    text-align:center;
+}
+
+#jp{
+    font-size:42px;
+    margin-bottom:20px;
+}
+
+#roma{
+    font-size:26px;
+    color:#7fdfff;
+    margin-bottom:10px;
+}
+
+#typed{
+    font-size:26px;
+    color:var(--green);
+    min-height:40px;
+}
+
+#bottom{
+    height:70px;
+    border-top:1px solid rgba(0,229,255,.2);
+    padding:10px;
+}
+
+#xpbar{
+    height:10px;
+    background:#111;
+}
+
+#xpfill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--cyan),var(--green));
+}
+
+#timer{
+    text-align:right;
+    margin-top:6px;
+}
+
+button{
+    padding:10px 18px;
+    border:1px solid var(--cyan);
+    background:transparent;
+    color:var(--cyan);
+    cursor:pointer;
+}
+
+button:hover{
+    background:rgba(0,229,255,.1);
+}
+
+.glitch{
+    animation:glitch .15s infinite;
+}
+
+@keyframes glitch{
+    0%{transform:translate(0)}
+    25%{transform:translate(1px,-1px)}
+    50%{transform:translate(-1px,1px)}
+    75%{transform:translate(1px,1px)}
+    100%{transform:translate(0)}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="app">
+
+    <div id="top">
+        <div id="title">POLYTYPE</div>
+
+        <div id="stats">
+            <div>LV <span id="lv">1</span></div>
+            <div>Score <span id="score">0</span></div>
+            <div>Combo <span id="combo">0</span></div>
+        </div>
+    </div>
+
+    <div id="main">
+        <div id="panel">
+
+            <div id="jp">PRESS START</div>
+
+            <div id="roma"></div>
+
+            <div id="typed"></div>
+
+            <br><br>
+
+            <button onclick="startGame()">START</button>
+
+        </div>
+    </div>
+
+    <div id="bottom">
+        <div id="xpbar">
+            <div id="xpfill"></div>
+        </div>
+        <div id="timer">60</div>
+    </div>
+
+</div>
+
+<script>
+
+/* =========================
+   WORD DATA
+   （後で300語まで拡張可能）
+========================= */
+
+const WORDS = [
+["こんにちは","konnnichiwa"],
+["ありがとう","arigatou"],
+["さようなら","sayounara"],
+["おはよう","ohayou"],
+["こんばんは","konbanwa"],
+["タイピング","taipingu"],
+["プログラム","puroguramu"],
+["コンピュータ","konpyu-ta"],
+["アルゴリズム","arugorizumu"],
+["データ","de-ta"],
+["サイバー","saiba-"],
+["ネットワーク","nettowa-ku"],
+["インターネット","intaanetto"],
+["キーボード","ki-bo-do"],
+["マウス","mausu"]
+];
+
+/* =========================
+   GAME STATE
+========================= */
+
+let game = {
+
+    running:false,
+
+    word:"",
+    roma:"",
+    index:0,
+
+    score:0,
+    combo:0,
+    lv:1,
+    xp:0,
+
+    time:60
+
+};
+
+/* =========================
+   DOM
+========================= */
+
+const jp=document.getElementById("jp");
+const roma=document.getElementById("roma");
+const typed=document.getElementById("typed");
+
+const lv=document.getElementById("lv");
+const score=document.getElementById("score");
+const combo=document.getElementById("combo");
+
+const xpfill=document.getElementById("xpfill");
+const timer=document.getElementById("timer");
+
+/* =========================
+   START GAME
+========================= */
+
+function startGame(){
+
+    game.running=true;
+    game.time=60;
+
+    game.score=0;
+    game.combo=0;
+    game.lv=1;
+    game.xp=0;
+
+    nextWord();
+    tick();
+    updateUI();
+}
+
+/* =========================
+   NEXT WORD
+========================= */
+
+function nextWord(){
+
+    const w =
+    WORDS[Math.floor(Math.random()*WORDS.length)];
+
+    game.word = w[0];
+    game.roma = w[1];
+    game.index = 0;
+
+    jp.textContent = game.word;
+    roma.textContent = game.roma;
+    typed.textContent = "";
+}
+
+/* =========================
+   KEY INPUT
+========================= */
+
+document.addEventListener("keydown",e=>{
+
+    if(!game.running) return;
+
+    const key = e.key.toLowerCase();
+    const target = game.roma[game.index];
+
+    if(key === target){
+
+        game.index++;
+        game.combo++;
+        game.score += 10 + game.combo;
+        game.xp += 5;
+
+        typed.textContent =
+        game.roma.slice(0,game.index);
+
+        if(game.index >= game.roma.length){
+
+            game.xp += 20;
+            nextWord();
+
+        }
+
+        levelUp();
+        updateUI();
+
+    }else{
+
+        game.combo = 0;
+
+        document.body.classList.add("glitch");
+
+        setTimeout(()=>{
+            document.body.classList.remove("glitch");
+        },120);
+    }
+
+});
+
+/* =========================
+   LEVEL SYSTEM
+========================= */
+
+function levelUp(){
+
+    const need = game.lv * 120;
+
+    if(game.xp >= need){
+
+        game.xp -= need;
+        game.lv++;
+
+    }
+
+}
+
+/* =========================
+   UI UPDATE
+========================= */
+
+function updateUI(){
+
+    lv.textContent = game.lv;
+    score.textContent = game.score;
+    combo.textContent = game.combo;
+
+    xpfill.style.width =
+    (game.xp / (game.lv * 120)) * 100 + "%";
+
+}
+
+/* =========================
+   TIMER
+========================= */
+
+function tick(){
+
+    const t = setInterval(()=>{
+
+        if(!game.running) return;
+
+        game.time--;
+        timer.textContent = game.time;
+
+        if(game.time <= 0){
+
+            game.running = false;
+            clearInterval(t);
+            endGame();
+
+        }
+
+    },1000);
+
+}
+
+/* =========================
+   END
+========================= */
+
+function endGame(){
+
+    alert(
+        "RESULT\n" +
+        "SCORE:" + game.score + "\n" +
+        "LV:" + game.lv + "\n" +
+        "COMBO:" + game.combo
+    );
+
+}
+
+</script>
+
+</body>
+</html>
