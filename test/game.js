@@ -1348,3 +1348,458 @@ startGame = function(){
     }
 
 };
+
+
+
+/* ==================================================
+   POLYTYPE
+   GAME.JS PART 4 FINAL
+================================================== */
+
+/* =========================
+   RARITY COLORS
+========================= */
+
+const RARITY_COLORS = {
+
+    N:0x00e5ff,
+    R:0x00ff88,
+    SR:0xaa66ff,
+    SSR:0xffaa00,
+    UR:0xff3366,
+    LR:0xffffff
+
+};
+
+/* =========================
+   APPLY COLOR
+========================= */
+
+function applyShapeColor(){
+
+    if(!polyMesh) return;
+
+    const shape =
+    getShapeById(
+        game.selectedShape
+    );
+
+    if(!shape) return;
+
+    const color =
+    RARITY_COLORS[
+        shape.rarity
+    ] || 0x00e5ff;
+
+    polyMesh.material.color.setHex(
+        color
+    );
+
+    polyMesh.material.emissive.setHex(
+        color
+    );
+
+}
+
+/* =========================
+   PATCH
+========================= */
+
+const oldLoadShape =
+loadShapeGeometry;
+
+loadShapeGeometry =
+function(id){
+
+    oldLoadShape(id);
+
+    applyShapeColor();
+
+};
+
+/* =========================
+   PARTICLES
+========================= */
+
+function spawnParticle(
+x,
+y
+){
+
+    const p =
+    document.createElement(
+        "div"
+    );
+
+    p.className =
+    "particle";
+
+    p.style.left =
+    x + "px";
+
+    p.style.top =
+    y + "px";
+
+    document
+    .getElementById(
+        "particles"
+    )
+    .appendChild(p);
+
+    setTimeout(()=>{
+
+        p.remove();
+
+    },2500);
+
+}
+
+/* =========================
+   BURST
+========================= */
+
+function particleBurst(){
+
+    const rect =
+    canvas.getBoundingClientRect();
+
+    for(
+        let i=0;
+        i<50;
+        i++
+    ){
+
+        spawnParticle(
+
+            rect.left +
+            Math.random()
+            *
+            rect.width,
+
+            rect.top +
+            Math.random()
+            *
+            rect.height
+
+        );
+
+    }
+
+}
+
+/* =========================
+   UNLOCK FX
+========================= */
+
+const oldUnlock =
+showUnlock;
+
+showUnlock =
+function(shape){
+
+    oldUnlock(shape);
+
+    particleBurst();
+
+};
+
+/* =========================
+   PERFECT EFFECT
+========================= */
+
+function successPulse(){
+
+    if(!polyMesh) return;
+
+    polyMesh.scale.set(
+        1.15,
+        1.15,
+        1.15
+    );
+
+    setTimeout(()=>{
+
+        if(!polyMesh) return;
+
+        polyMesh.scale.set(
+            1,
+            1,
+            1
+        );
+
+    },120);
+
+}
+
+/* =========================
+   PATCH INPUT
+========================= */
+
+const originalKeydown =
+document.onkeydown;
+
+document.addEventListener(
+"keydown",
+e=>{
+
+    if(
+        !game.running
+    ) return;
+
+    const target =
+    game.currentRoma[
+        game.inputIndex
+    ];
+
+    if(
+        e.key.toLowerCase()
+        === target
+    ){
+
+        successPulse();
+
+    }
+
+}
+);
+
+/* =========================
+   ACHIEVEMENT FX
+========================= */
+
+const oldAchievement =
+showAchievement;
+
+showAchievement =
+function(name){
+
+    oldAchievement(
+        name
+    );
+
+    particleBurst();
+
+};
+
+/* =========================
+   LEVELUP FX
+========================= */
+
+const oldLevelUp =
+showLevelUp;
+
+showLevelUp =
+function(level){
+
+    oldLevelUp(
+        level
+    );
+
+    particleBurst();
+
+};
+
+/* =========================
+   ROTATION SPEED
+========================= */
+
+let autoRotateSpeed =
+0.004;
+
+function setRotationSpeed(
+speed
+){
+
+    autoRotateSpeed =
+    speed;
+
+}
+
+/* =========================
+   PATCH ANIMATE
+========================= */
+
+const oldAnimate =
+animate;
+
+animate =
+function(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+    if(polyMesh){
+
+        polyMesh.rotation.y
+        += autoRotateSpeed;
+
+        polyMesh.rotation.x
+        += autoRotateSpeed
+        * 0.25;
+
+    }
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+};
+
+/* =========================
+   DEBUG
+========================= */
+
+window.polyDebug = {
+
+    unlockAll(){
+
+        game.unlockedShapes =
+        SHAPES.map(
+            s=>s.id
+        );
+
+        renderDatabase();
+
+        saveGame();
+
+    },
+
+    maxLevel(){
+
+        game.level = 999;
+
+        updateUI();
+
+    },
+
+    addXP(v){
+
+        addXP(v);
+
+        updateUI();
+
+    },
+
+    addTypes(v){
+
+        game.totalTyped += v;
+
+        checkShapeUnlocks();
+
+        updateUI();
+
+    },
+
+    reset(){
+
+        localStorage.removeItem(
+            SAVE_KEY
+        );
+
+        location.reload();
+
+    }
+
+};
+
+/* =========================
+   AUTO SAVE
+========================= */
+
+window.addEventListener(
+"beforeunload",
+()=>{
+
+    saveGame();
+
+}
+);
+
+/* =========================
+   FPS COUNTER
+========================= */
+
+let fps = 0;
+let frameCount = 0;
+let lastTime = performance.now();
+
+function updateFPS(){
+
+    frameCount++;
+
+    const now =
+    performance.now();
+
+    if(
+        now - lastTime
+        >= 1000
+    ){
+
+        fps =
+        frameCount;
+
+        frameCount = 0;
+
+        lastTime = now;
+
+    }
+
+    requestAnimationFrame(
+        updateFPS
+    );
+
+}
+
+updateFPS();
+
+/* =========================
+   PARTICLE LOOP
+========================= */
+
+setInterval(()=>{
+
+    if(
+        !game.running
+    ) return;
+
+    if(
+        Math.random()
+        > 0.65
+    ){
+
+        const rect =
+        canvas.getBoundingClientRect();
+
+        spawnParticle(
+
+            rect.left +
+            Math.random()
+            * rect.width,
+
+            rect.top +
+            rect.height
+
+        );
+
+    }
+
+},120);
+
+/* =========================
+   COMPLETE INIT
+========================= */
+
+renderDatabase();
+
+updateShapeInfo();
+
+updateUI();
+
+saveGame();
+
+console.log(
+"%cPOLYTYPE READY",
+"color:#00e5ff;font-size:24px"
+);
