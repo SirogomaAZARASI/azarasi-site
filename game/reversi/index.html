@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>リバーシ | AZAgame</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
 <script>
 window.dataLayer=window.dataLayer||[];
@@ -12,6 +12,7 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js',new Date());
 gtag('config','G-DK3VQGQTWC');
 </script>
+
 <style>
 
 body{
@@ -106,35 +107,14 @@ h1{
   width:14px;
   height:14px;
   border-radius:50%;
-  background:rgba(255,255,0,0.75);
-}
-
-.flip{
-  animation:flip .35s ease;
-}
-
-@keyframes flip{
-
-  0%{
-    transform:rotateY(0deg) scale(1);
-  }
-
-  50%{
-    transform:rotateY(90deg) scale(1.15);
-  }
-
-  100%{
-    transform:rotateY(180deg) scale(1);
-  }
+  background:rgba(255,255,0,.75);
 }
 
 @keyframes drop{
-
   0%{
     transform:scale(0);
     opacity:0;
   }
-
   100%{
     transform:scale(1);
     opacity:1;
@@ -143,7 +123,6 @@ h1{
 
 button,
 select{
-
   padding:10px 20px;
   margin-top:10px;
   border:none;
@@ -164,7 +143,7 @@ button:hover{
 #overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.92);
+  background:rgba(0,0,0,.92);
   display:none;
   justify-content:center;
   align-items:center;
@@ -175,7 +154,6 @@ button:hover{
 .result{
   font-size:3em;
   margin-bottom:20px;
-  animation:pop .5s ease;
 }
 
 .score{
@@ -193,19 +171,6 @@ button:hover{
 
 .draw{
   color:white;
-}
-
-@keyframes pop{
-
-  from{
-    transform:scale(0.5);
-    opacity:0;
-  }
-
-  to{
-    transform:scale(1);
-    opacity:1;
-  }
 }
 
 .footer{
@@ -247,6 +212,8 @@ button:hover{
   text-shadow:0 1px 2px rgba(0,0,0,0.6);
 }
 
+body{padding-bottom:80px;}
+
 </style>
 </head>
 
@@ -257,7 +224,9 @@ button:hover{
 <div id="menu">
 
 <label>
-<input type="checkbox" id="modeToggle" checked>
+<input type="checkbox"
+id="modeToggle"
+checked>
 CPU対戦
 </label>
 
@@ -325,19 +294,18 @@ CPU対戦
 
 </div>
 
-<div id="board" class="board"></div>
-
-<button id="restart" onclick="return confirm('本当にゲームを終了しますか？')">
-最初の画面へ戻る
-</button>
+<div id="board"
+class="board"></div>
 
 </div>
 
 <div id="overlay">
 
-<div id="resultText" class="result"></div>
+<div id="resultText"
+class="result"></div>
 
-<div id="scoreResult" class="score"></div>
+<div id="scoreResult"
+class="score"></div>
 
 <button onclick="backToMenu()">
 もう一度遊ぶ
@@ -346,25 +314,15 @@ CPU対戦
 </div>
 
 <div class="footer">
-
-<a href="../" onclick="return confirm('本当にゲームを終了しますか？')">
-← ゲーム一覧に戻る
-</a>
-
-<br>
-
-<div class="copyright">
-Copyright © 2026
-SirogomaAZARASI
-All Rights Reserved.
-</div>
-
+  <a href="../">← ツール一覧に戻る</a><br>
+  <div class="copyright">
+    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+  </div>
 </div>
 
 <script>
 
 const SIZE=8;
-
 const EMPTY=0;
 const BLACK=1;
 const WHITE=2;
@@ -399,15 +357,17 @@ const toggle=
 document.getElementById("modeToggle");
 
 const difficultyWrap=
-document.getElementById("difficultyWrap");
+document.getElementById(
+"difficultyWrap"
+);
 
 toggle.onchange=()=>{
 
-  difficultyWrap.style.display=
+difficultyWrap.style.display=
+toggle.checked
+?"block"
+:"none";
 
-  toggle.checked
-  ?"block"
-  :"none";
 };
 
 toggle.onchange();
@@ -431,18 +391,18 @@ document.getElementById(
 "startBtn"
 ).onclick=()=>{
 
-  vsCPU=toggle.checked;
+vsCPU=toggle.checked;
 
-  difficulty=
-  document.getElementById(
-  "difficulty"
-  ).value;
+difficulty=
+document.getElementById(
+"difficulty"
+).value;
 
-  menu.style.display="none";
+menu.style.display="none";
+gameUI.style.display="block";
 
-  gameUI.style.display="block";
+initGame();
 
-  initGame();
 };
 
 document.getElementById(
@@ -451,31 +411,29 @@ document.getElementById(
 
 function backToMenu(){
 
-  overlay.style.display="none";
+overlay.style.display="none";
+gameUI.style.display="none";
+menu.style.display="block";
 
-  gameUI.style.display="none";
-
-  menu.style.display="block";
 }
 
 function initGame(){
 
-  board=Array.from(
-    {length:SIZE},
-    ()=>Array(SIZE).fill(EMPTY)
-  );
+board=Array.from(
+{length:SIZE},
+()=>Array(SIZE).fill(EMPTY)
+);
 
-  board[3][3]=WHITE;
-  board[3][4]=BLACK;
+board[3][3]=WHITE;
+board[3][4]=BLACK;
+board[4][3]=BLACK;
+board[4][4]=WHITE;
 
-  board[4][3]=BLACK;
-  board[4][4]=WHITE;
+currentPlayer=BLACK;
 
-  currentPlayer=BLACK;
+updateTurn();
+render();
 
-  updateTurn();
-
-  render();
 }
 
 function updateTurn(){
@@ -483,7 +441,6 @@ function updateTurn(){
   if(vsCPU){
 
     turnDisplay.textContent=
-
     currentPlayer===BLACK
     ?"ターン: ● あなた"
     :"ターン: ○ CPU";
@@ -491,20 +448,23 @@ function updateTurn(){
   }else{
 
     turnDisplay.textContent=
-
     currentPlayer===BLACK
     ?"ターン: ● 黒"
     :"ターン: ○ 白";
+
   }
+
 }
 
 function isValid(x,y,p){
 
   if(board[y][x]!==EMPTY)
-  return false;
+    return false;
 
   const o=
-  p===BLACK?WHITE:BLACK;
+  p===BLACK
+  ?WHITE
+  :BLACK;
 
   for(const[dX,dY]of dirs){
 
@@ -514,10 +474,8 @@ function isValid(x,y,p){
     let found=false;
 
     while(
-
       nx>=0&&nx<8&&
       ny>=0&&ny<8
-
     ){
 
       if(board[ny][nx]===o){
@@ -528,20 +486,26 @@ function isValid(x,y,p){
         board[ny][nx]===p
       ){
 
-        if(found)return true;
+        if(found)
+          return true;
 
         break;
 
       }else{
+
         break;
+
       }
 
       nx+=dX;
       ny+=dY;
+
     }
+
   }
 
   return false;
+
 }
 
 function apply(x,y,p){
@@ -549,7 +513,9 @@ function apply(x,y,p){
   board[y][x]=p;
 
   const o=
-  p===BLACK?WHITE:BLACK;
+  p===BLACK
+  ?WHITE
+  :BLACK;
 
   for(const[dX,dY]of dirs){
 
@@ -559,10 +525,8 @@ function apply(x,y,p){
     let path=[];
 
     while(
-
       nx>=0&&nx<8&&
       ny>=0&&ny<8
-
     ){
 
       if(board[ny][nx]===o){
@@ -576,18 +540,24 @@ function apply(x,y,p){
         for(const[px,py]of path){
 
           board[py][px]=p;
+
         }
 
         break;
 
       }else{
+
         break;
+
       }
 
       nx+=dX;
       ny+=dY;
+
     }
+
   }
+
 }
 
 function moves(p){
@@ -598,14 +568,20 @@ function moves(p){
 
     for(let x=0;x<8;x++){
 
-      if(isValid(x,y,p)){
+      if(
+        isValid(x,y,p)
+      ){
 
         m.push([x,y]);
+
       }
+
     }
+
   }
 
   return m;
+
 }
 
 function render(){
@@ -621,28 +597,40 @@ function render(){
     for(let x=0;x<8;x++){
 
       const cell=
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
       cell.className="cell";
 
-      if(board[y][x]===BLACK){
+      if(
+        board[y][x]===BLACK
+      ){
 
         const d=
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
         d.className="black";
 
         cell.appendChild(d);
+
       }
 
-      if(board[y][x]===WHITE){
+      if(
+        board[y][x]===WHITE
+      ){
 
         const d=
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
         d.className="white";
 
         cell.appendChild(d);
+
       }
 
       if(
@@ -655,7 +643,9 @@ function render(){
       ){
 
         const hint=
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
         hint.className="hint";
 
@@ -670,14 +660,21 @@ function render(){
           );
 
           next();
+
         };
+
       }
 
-      boardElem.appendChild(cell);
+      boardElem.appendChild(
+        cell
+      );
+
     }
+
   }
 
   updateStatus();
+
 }
 
 function updateStatus(){
@@ -693,14 +690,19 @@ function updateStatus(){
   ).length;
 
   document.getElementById(
-  "scoreText"
+    "scoreText"
   ).textContent=
   `● 黒:${black} ○ 白:${white}`;
 
   document.getElementById(
-  "moveText"
+    "moveText"
   ).textContent=
-  `置けるマス:${moves(currentPlayer).length}`;
+  `置けるマス:${
+    moves(
+      currentPlayer
+    ).length
+  }`;
+
 }
 
 function next(){
@@ -710,18 +712,28 @@ function next(){
   ?WHITE
   :BLACK;
 
-  if(!moves(currentPlayer).length){
+  if(
+    !moves(
+      currentPlayer
+    ).length
+  ){
 
     currentPlayer=
     currentPlayer===BLACK
     ?WHITE
     :BLACK;
 
-    if(!moves(currentPlayer).length){
+    if(
+      !moves(
+        currentPlayer
+      ).length
+    ){
 
       endGame();
       return;
+
     }
+
   }
 
   updateTurn();
@@ -737,22 +749,35 @@ function next(){
     const loading=
     setInterval(()=>{
 
-      dots=(dots+1)%4;
+      dots=
+      (dots+1)%4;
 
       turnDisplay.textContent=
       "CPU思考中"+
       ".".repeat(dots);
 
-    },350);
+    },150);
 
     setTimeout(()=>{
 
-      clearInterval(loading);
+      clearInterval(
+        loading
+      );
 
       cpuMove();
 
-    },1800);
+    },300);
+
   }
+
+}
+
+function cloneBoard(b){
+
+  return b.map(
+    row=>[...row]
+  );
+
 }
 
 function cpuMove(){
@@ -761,33 +786,34 @@ function cpuMove(){
 
   switch(difficulty){
 
-    case"baby2":
+    case "baby2":
+      move=helpPlayerMove();
+      break;
+
+    case "baby":
       move=superWorstMove();
       break;
 
-    case"baby":
+    case "easy":
       move=randomMove();
       break;
 
-    case"easy":
-      move=randomMove();
+    case "normal":
+      move=bestMove(2);
       break;
 
-    case"normal":
-      move=randomMove();
-      break;
-
-    case"hard":
+    case "hard":
       move=bestMove(4);
       break;
 
-    case"god":
+    case "god":
       move=bestMove(7);
       break;
 
-    case"god2":
-      move=bestMove(11);
+    case "god2":
+      move=perfectMove();
       break;
+
   }
 
   if(move){
@@ -799,69 +825,144 @@ function cpuMove(){
     );
 
     next();
+
   }
+
 }
 
 function randomMove(){
 
   const m=moves(WHITE);
 
-  if(!m.length)return null;
+  if(!m.length)
+    return null;
 
-  const[x,y]=
+  const [x,y]=
   m[Math.floor(
     Math.random()*m.length
   )];
 
-  return{x,y};
+  return {x,y};
+
 }
 
 function superWorstMove(){
 
   const m=moves(WHITE);
 
-  if(!m.length)return null;
+  if(!m.length)
+    return null;
 
-  const ultraBadPriority=[
+  const badSquares=[
 
-    [1,1],
-    [6,1],
-    [1,6],
-    [6,6],
+    [1,1],[6,1],
+    [1,6],[6,6],
 
-    [0,1],
-    [1,0],
+    [0,1],[1,0],
+    [6,0],[7,1],
 
-    [6,0],
-    [7,1],
-
-    [0,6],
-    [1,7],
-
-    [6,7],
-    [7,6]
+    [0,6],[1,7],
+    [6,7],[7,6]
 
   ];
 
-  for(const[bx,by]of ultraBadPriority){
+  for(const [bx,by] of badSquares){
 
-    for(const[x,y]of m){
+    for(const [x,y] of m){
 
       if(x===bx&&y===by){
 
-        return{x,y};
+        return {x,y};
+
       }
+
     }
+
   }
 
   return randomMove();
+
 }
 
-function cloneBoard(b){
+function helpPlayerMove(){
 
-  return b.map(
-    r=>[...r]
-  );
+  const valid=
+  moves(WHITE);
+
+  if(!valid.length)
+    return null;
+
+  let best=null;
+  let worstScore=Infinity;
+
+  for(const [x,y] of valid){
+
+    const temp=
+    cloneBoard(board);
+
+    apply(x,y,WHITE);
+
+    const score=
+    evaluateBoard();
+
+    board=temp;
+
+    if(score<worstScore){
+
+      worstScore=score;
+
+      best={x,y};
+
+    }
+
+  }
+
+  return best;
+
+}
+
+function perfectMove(){
+
+  const valid=
+  moves(WHITE);
+
+  if(!valid.length)
+    return null;
+
+  const corners=[
+
+    [0,0],[7,0],
+    [0,7],[7,7]
+
+  ];
+
+  for(const [cx,cy] of corners){
+
+    for(const [x,y] of valid){
+
+      if(x===cx&&y===cy){
+
+        return {x,y};
+
+      }
+
+    }
+
+  }
+
+  const empty=
+  board.flat().filter(
+    v=>v===EMPTY
+  ).length;
+
+  const depth=
+
+    empty<=10 ? 14 :
+    empty<=20 ? 10 :
+    8;
+
+  return bestMove(depth);
+
 }
 
 function bestMove(depth){
@@ -869,10 +970,12 @@ function bestMove(depth){
   const valid=
   moves(WHITE);
 
-  let bestScore=-Infinity;
+  let bestScore=
+  -Infinity;
+
   let best=null;
 
-  for(const[x,y]of valid){
+  for(const [x,y] of valid){
 
     const temp=
     cloneBoard(board);
@@ -894,26 +997,32 @@ function bestMove(depth){
       bestScore=score;
 
       best={x,y};
+
     }
+
   }
 
   return best;
+
 }
 
 function alphabeta(
   depth,
   alpha,
   beta,
-  max
+  maximizing
 ){
 
   if(depth===0){
 
     return evaluateBoard();
+
   }
 
   const player=
-  max?WHITE:BLACK;
+  maximizing
+  ?WHITE
+  :BLACK;
 
   const valid=
   moves(player);
@@ -921,13 +1030,15 @@ function alphabeta(
   if(!valid.length){
 
     return evaluateBoard();
+
   }
 
-  if(max){
+  if(maximizing){
 
-    let value=-Infinity;
+    let value=
+    -Infinity;
 
-    for(const[x,y]of valid){
+    for(const [x,y] of valid){
 
       const temp=
       cloneBoard(board);
@@ -950,47 +1061,57 @@ function alphabeta(
       board=temp;
 
       alpha=
-      Math.max(alpha,value);
-
-      if(alpha>=beta)break;
-    }
-
-    return value;
-
-  }else{
-
-    let value=Infinity;
-
-    for(const[x,y]of valid){
-
-      const temp=
-      cloneBoard(board);
-
-      apply(x,y,BLACK);
-
-      value=Math.min(
-
-        value,
-
-        alphabeta(
-          depth-1,
-          alpha,
-          beta,
-          true
-        )
-
+      Math.max(
+        alpha,
+        value
       );
 
-      board=temp;
+      if(alpha>=beta)
+        break;
 
-      beta=
-      Math.min(beta,value);
-
-      if(beta<=alpha)break;
     }
 
     return value;
+
   }
+
+  let value=Infinity;
+
+  for(const [x,y] of valid){
+
+    const temp=
+    cloneBoard(board);
+
+    apply(x,y,BLACK);
+
+    value=Math.min(
+
+      value,
+
+      alphabeta(
+        depth-1,
+        alpha,
+        beta,
+        true
+      )
+
+    );
+
+    board=temp;
+
+    beta=
+    Math.min(
+      beta,
+      value
+    );
+
+    if(beta<=alpha)
+      break;
+
+  }
+
+  return value;
+
 }
 
 function evaluateBoard(){
@@ -1014,19 +1135,58 @@ function evaluateBoard(){
 
     for(let x=0;x<8;x++){
 
-      if(board[y][x]===WHITE){
-
+      if(board[y][x]===WHITE)
         score+=weights[y][x];
-      }
 
-      if(board[y][x]===BLACK){
-
+      if(board[y][x]===BLACK)
         score-=weights[y][x];
-      }
+
     }
+
+  }
+
+  score+=
+  (
+    moves(WHITE).length-
+    moves(BLACK).length
+  )*20;
+
+  const corners=[
+
+    [0,0],[7,0],
+    [0,7],[7,7]
+
+  ];
+
+  for(const [x,y] of corners){
+
+    if(board[y][x]===WHITE)
+      score+=1000;
+
+    if(board[y][x]===BLACK)
+      score-=1000;
+
+  }
+
+  const xSquares=[
+
+    [1,1],[6,1],
+    [1,6],[6,6]
+
+  ];
+
+  for(const [x,y] of xSquares){
+
+    if(board[y][x]===WHITE)
+      score-=150;
+
+    if(board[y][x]===BLACK)
+      score+=150;
+
   }
 
   return score;
+
 }
 
 function endGame(){
@@ -1048,40 +1208,60 @@ function endGame(){
 
     if(black>white){
 
-      text="あなたの勝ち！🎉";
+      text=
+      "あなたの勝ち！🎉";
+
       cls="win";
 
-    }else if(white>black){
+    }else if(
+      white>black
+    ){
 
-      text="CPUの勝ち";
+      text=
+      "CPUの勝ち";
+
       cls="lose";
 
     }else{
 
-      text="引き分け";
+      text=
+      "引き分け";
+
       cls="draw";
+
     }
 
   }else{
 
     if(black>white){
 
-      text="黒の勝ち！";
+      text=
+      "黒の勝ち！";
+
       cls="win";
 
-    }else if(white>black){
+    }else if(
+      white>black
+    ){
 
-      text="白の勝ち！";
+      text=
+      "白の勝ち！";
+
       cls="win";
 
     }else{
 
-      text="引き分け";
+      text=
+      "引き分け";
+
       cls="draw";
+
     }
+
   }
 
-  resultText.textContent=text;
+  resultText.textContent=
+  text;
 
   resultText.className=
   "result "+cls;
@@ -1089,10 +1269,11 @@ function endGame(){
   scoreResult.textContent=
   `● 黒:${black} ○ 白:${white}`;
 
-  overlay.style.display="flex";
+  overlay.style.display=
+  "flex";
+
 }
 
 </script>
-
 </body>
 </html>
