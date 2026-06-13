@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GPSロガー KML版</title>
-<meta name="robots" content="noindex, nofollow">
+<title>GPSロガー Pro</title>
 
 <style>
 *{
@@ -13,18 +12,18 @@
 
 body{
     margin:0;
-    padding:20px;
-    background:#f4f4f4;
     font-family:sans-serif;
+    background:#f3f4f6;
+    padding:15px;
 }
 
 .container{
-    max-width:800px;
+    max-width:900px;
     margin:auto;
     background:white;
+    border-radius:20px;
     padding:20px;
-    border-radius:16px;
-    box-shadow:0 4px 15px rgba(0,0,0,.15);
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
 }
 
 h1{
@@ -36,65 +35,127 @@ h1{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:10px;
-    margin-bottom:20px;
+    margin-bottom:15px;
 }
 
 button{
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     padding:14px;
-    font-size:15px;
     cursor:pointer;
+    font-size:15px;
 }
 
-.start{background:#4caf50;color:white;}
-.pause{background:#ff9800;color:white;}
-.resume{background:#2196f3;color:white;}
-.stop{background:#f44336;color:white;}
-.save{background:#673ab7;color:white;}
-.clear{background:#555;color:white;}
+.start{
+    background:#22c55e;
+    color:white;
+}
+
+.pause{
+    background:#f59e0b;
+    color:white;
+}
+
+.resume{
+    background:#3b82f6;
+    color:white;
+}
+
+.stop{
+    background:#ef4444;
+    color:white;
+}
+
+.save{
+    background:#8b5cf6;
+    color:white;
+}
+
+.clear{
+    background:#555;
+    color:white;
+}
 
 .info{
-    background:#f0f0f0;
+    background:#f1f5f9;
+    border-radius:12px;
     padding:15px;
-    border-radius:10px;
-    margin-bottom:15px;
     line-height:1.8;
+    margin-bottom:15px;
 }
 
 #log{
     background:#111;
-    color:#00ff66;
-    padding:10px;
-    border-radius:10px;
-    height:250px;
+    color:#00ff88;
+    height:300px;
     overflow:auto;
+    border-radius:12px;
+    padding:10px;
     font-size:12px;
     white-space:pre-wrap;
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
-<h1>GPSロガー</h1>
+<h1>GPSロガー Pro</h1>
 
 <div class="buttons">
-<button class="start" id="startBtn">開始</button>
-<button class="pause" id="pauseBtn">一時停止</button>
-<button class="resume" id="resumeBtn">再開</button>
-<button class="stop" id="stopBtn">停止</button>
-<button class="save" id="saveBtn">KML保存</button>
-<button class="clear" id="clearBtn">履歴削除</button>
+
+<button id="startBtn" class="start">
+開始
+</button>
+
+<button id="pauseBtn" class="pause">
+一時停止
+</button>
+
+<button id="resumeBtn" class="resume">
+再開
+</button>
+
+<button id="stopBtn" class="stop">
+停止
+</button>
+
+<button id="saveBtn" class="save">
+KML保存
+</button>
+
+<button id="clearBtn" class="clear">
+履歴削除
+</button>
+
 </div>
 
 <div class="info">
-状態：<span id="state">待機中</span><br>
-記録点数：<span id="count">0</span><br>
-緯度：<span id="lat">-</span><br>
-経度：<span id="lon">-</span><br>
-高度：<span id="alt">-</span>
+
+状態：
+<span id="state">待機中</span>
+
+<br>
+
+記録点数：
+<span id="count">0</span>
+
+<br>
+
+緯度：
+<span id="lat">-</span>
+
+<br>
+
+経度：
+<span id="lon">-</span>
+
+<br>
+
+高度：
+<span id="alt">-</span>
+
 </div>
 
 <div id="log"></div>
@@ -103,31 +164,15 @@ button{
 
 <script>
 
+let db;
+
 let watchId=null;
+
 let paused=false;
 
-let points=JSON.parse(
-localStorage.getItem("gpslog") || "[]"
-);
+const DB_NAME="GPSLoggerDB";
 
-updateCount();
-
-function saveStorage(){
-    localStorage.setItem(
-        "gpslog",
-        JSON.stringify(points)
-    );
-}
-
-function updateCount(){
-    document.getElementById("count").textContent=
-    points.length;
-}
-
-function updateState(text){
-    document.getElementById("state").textContent=
-    text;
-}
+const STORE_NAME="points";
 
 function addLog(text){
 
@@ -140,114 +185,348 @@ function addLog(text){
     log.scrollHeight;
 }
 
-function startLogging(){
+function updateState(text){
 
-    if(!navigator.geolocation){
-        alert("位置情報に対応していません");
+    document
+    .getElementById("state")
+    .textContent=text;
+}
+
+function updateCount(value){
+
+    document
+    .getElementById("count")
+    .textContent=value;
+}
+
+function openDatabase(){
+
+    return new Promise(
+        (resolve,reject)=>{
+
+        const request=
+        indexedDB.open(
+            DB_NAME,
+            1
+        );
+
+        request.onupgradeneeded=
+        event=>{
+
+            db=
+            event.target.result;
+
+            if(
+                !db.objectStoreNames
+                .contains(STORE_NAME)
+            ){
+
+                db.createObjectStore(
+                    STORE_NAME,
+                    {
+                        keyPath:"id",
+                        autoIncrement:true
+                    }
+                );
+
+            }
+        };
+
+        request.onsuccess=
+        event=>{
+
+            db=
+            event.target.result;
+
+            resolve();
+        };
+
+        request.onerror=
+        ()=>reject();
+    });
+}
+
+function savePoint(point){
+
+    return new Promise(
+        (resolve,reject)=>{
+
+        const tx=
+        db.transaction(
+            STORE_NAME,
+            "readwrite"
+        );
+
+        const store=
+        tx.objectStore(
+            STORE_NAME
+        );
+
+        const req=
+        store.add(point);
+
+        req.onsuccess=
+        ()=>resolve();
+
+        req.onerror=
+        ()=>reject();
+    });
+}
+
+function getAllPoints(){
+
+    return new Promise(
+        (resolve,reject)=>{
+
+        const tx=
+        db.transaction(
+            STORE_NAME,
+            "readonly"
+        );
+
+        const store=
+        tx.objectStore(
+            STORE_NAME
+        );
+
+        const req=
+        store.getAll();
+
+        req.onsuccess=
+        ()=>resolve(req.result);
+
+        req.onerror=
+        ()=>reject();
+    });
+}
+
+function clearAllPoints(){
+
+    return new Promise(
+        (resolve,reject)=>{
+
+        const tx=
+        db.transaction(
+            STORE_NAME,
+            "readwrite"
+        );
+
+        const store=
+        tx.objectStore(
+            STORE_NAME
+        );
+
+        const req=
+        store.clear();
+
+        req.onsuccess=
+        ()=>resolve();
+
+        req.onerror=
+        ()=>reject();
+    });
+}
+
+async function refreshCount(){
+
+    const points=
+    await getAllPoints();
+
+    updateCount(
+        points.length
+    );
+}
+
+async function startLogging(){
+
+    if(
+        !navigator.geolocation
+    ){
+        alert(
+            "GPS未対応"
+        );
         return;
     }
 
-    if(watchId!==null){
+    if(
+        watchId!==null
+    ){
         return;
     }
 
-    updateState("記録中");
+    paused=false;
+
+    updateState(
+        "記録中"
+    );
 
     watchId=
-    navigator.geolocation.watchPosition(
+    navigator.geolocation
+    .watchPosition(
 
-        position=>{
+    async position=>{
 
-            if(paused) return;
-
-            const point={
-
-                lat:position.coords.latitude,
-                lon:position.coords.longitude,
-                alt:position.coords.altitude || 0,
-                time:new Date().toISOString()
-
-            };
-
-            points.push(point);
-
-            saveStorage();
-
-            updateCount();
-
-            document.getElementById("lat")
-            .textContent=point.lat.toFixed(6);
-
-            document.getElementById("lon")
-            .textContent=point.lon.toFixed(6);
-
-            document.getElementById("alt")
-            .textContent=point.alt.toFixed(1);
-
-            addLog(
-                `[${point.time}]
-Lat ${point.lat}
-Lon ${point.lon}`
-            );
-
-        },
-
-        error=>{
-            addLog(
-                "GPSエラー: "+
-                error.message
-            );
-        },
-
-        {
-            enableHighAccuracy:true,
-            maximumAge:0,
-            timeout:10000
+        if(paused){
+            return;
         }
+
+        const point={
+
+            lat:Number(
+                position.coords
+                .latitude
+                .toFixed(6)
+            ),
+
+            lon:Number(
+                position.coords
+                .longitude
+                .toFixed(6)
+            ),
+
+            alt:Number(
+                (
+                    position.coords
+                    .altitude || 0
+                )
+                .toFixed(1)
+            ),
+
+            accuracy:Number(
+                position.coords
+                .accuracy
+                .toFixed(1)
+            ),
+
+            time:
+            new Date()
+            .toISOString()
+        };
+
+        await savePoint(
+            point
+        );
+
+        document
+        .getElementById("lat")
+        .textContent=
+        point.lat;
+
+        document
+        .getElementById("lon")
+        .textContent=
+        point.lon;
+
+        document
+        .getElementById("alt")
+        .textContent=
+        point.alt;
+
+        addLog(
+            "[" +
+            point.time +
+            "]\n" +
+            point.lat +
+            "," +
+            point.lon
+        );
+
+        refreshCount();
+
+    },
+
+    error=>{
+
+        addLog(
+            "GPSエラー: " +
+            error.message
+        );
+
+    },
+
+    {
+        enableHighAccuracy:true,
+        maximumAge:0,
+        timeout:10000
+    }
+
     );
 }
 
 function pauseLogging(){
+
     paused=true;
-    updateState("一時停止");
+
+    updateState(
+        "一時停止"
+    );
+
+    addLog(
+        "=== 一時停止 ==="
+    );
 }
 
 function resumeLogging(){
+
     paused=false;
-    updateState("記録中");
+
+    updateState(
+        "記録中"
+    );
+
+    addLog(
+        "=== 再開 ==="
+    );
 }
 
 function stopLogging(){
 
-    if(watchId!==null){
+    if(
+        watchId!==null
+    ){
 
-        navigator.geolocation.clearWatch(
+        navigator
+        .geolocation
+        .clearWatch(
             watchId
         );
 
         watchId=null;
     }
 
-    updateState("停止");
+    updateState(
+        "停止"
+    );
+
+    addLog(
+        "=== 停止 ==="
+    );
 }
 
-function generateKML(){
+function generateKML(points){
 
     if(points.length===0){
         return "";
     }
 
-    const start=points[0];
-    const end=points[points.length-1];
+    const start=
+    points[0];
+
+    const end=
+    points[
+        points.length-1
+    ];
 
     let coordinates="";
 
-    points.forEach(p=>{
+    for(
+        const p of points
+    ){
 
         coordinates+=
         `${p.lon},${p.lat},${p.alt}\n`;
 
-    });
+    }
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
@@ -276,7 +555,7 @@ ${end.lon},${end.lat},${end.alt}
 <Placemark>
 <name>移動軌跡</name>
 <LineString>
-<tessellate>5</tessellate>
+<tessellate>1</tessellate>
 <coordinates>
 ${coordinates}
 </coordinates>
@@ -287,18 +566,30 @@ ${coordinates}
 </kml>`;
 }
 
-function saveKML(){
+async function saveKML(){
 
-    if(points.length===0){
+    const points=
+    await getAllPoints();
 
-        alert("記録データがありません");
+    if(
+        points.length===0
+    ){
+
+        alert(
+            "保存するデータがありません"
+        );
 
         return;
     }
 
+    const kml=
+    generateKML(
+        points
+    );
+
     const blob=
     new Blob(
-        [generateKML()],
+        [kml],
         {
             type:
             "application/vnd.google-earth.kml+xml"
@@ -306,10 +597,14 @@ function saveKML(){
     );
 
     const url=
-    URL.createObjectURL(blob);
+    URL.createObjectURL(
+        blob
+    );
 
     const a=
-    document.createElement("a");
+    document.createElement(
+        "a"
+    );
 
     a.href=url;
 
@@ -318,63 +613,146 @@ function saveKML(){
     Date.now() +
     ".kml";
 
+    document.body
+    .appendChild(a);
+
     a.click();
 
-    URL.revokeObjectURL(url);
+    a.remove();
+
+    URL.revokeObjectURL(
+        url
+    );
+
+    addLog(
+        "KML保存完了"
+    );
 }
 
-function clearLogs(){
+async function clearLogs(){
 
     if(
         !confirm(
-            "保存データを削除しますか？"
+            "記録を削除しますか？"
         )
     ){
         return;
     }
 
-    points=[];
+    await clearAllPoints();
 
-    localStorage.removeItem(
-        "gpslog"
-    );
+    updateCount(0);
 
-    document.getElementById("log")
+    document
+    .getElementById("lat")
+    .textContent="-";
+
+    document
+    .getElementById("lon")
+    .textContent="-";
+
+    document
+    .getElementById("alt")
+    .textContent="-";
+
+    document
+    .getElementById("log")
     .textContent="";
 
-    updateCount();
+    addLog(
+        "履歴削除"
+    );
+}
 
-    addLog("履歴削除");
+async function initialize(){
+
+    await openDatabase();
+
+    const points=
+    await getAllPoints();
+
+    updateCount(
+        points.length
+    );
+
+    addLog(
+        "IndexedDB接続完了"
+    );
+
+    addLog(
+        "保存済み地点数: " +
+        points.length
+    );
+
+    if(
+        points.length>0
+    ){
+
+        const last=
+        points[
+            points.length-1
+        ];
+
+        document
+        .getElementById("lat")
+        .textContent=
+        last.lat;
+
+        document
+        .getElementById("lon")
+        .textContent=
+        last.lon;
+
+        document
+        .getElementById("alt")
+        .textContent=
+        last.alt;
+    }
 }
 
 document
-.getElementById("startBtn")
-.onclick=startLogging;
+.getElementById(
+    "startBtn"
+)
+.onclick=
+startLogging;
 
 document
-.getElementById("pauseBtn")
-.onclick=pauseLogging;
+.getElementById(
+    "pauseBtn"
+)
+.onclick=
+pauseLogging;
 
 document
-.getElementById("resumeBtn")
-.onclick=resumeLogging;
+.getElementById(
+    "resumeBtn"
+)
+.onclick=
+resumeLogging;
 
 document
-.getElementById("stopBtn")
-.onclick=stopLogging;
+.getElementById(
+    "stopBtn"
+)
+.onclick=
+stopLogging;
 
 document
-.getElementById("saveBtn")
-.onclick=saveKML;
+.getElementById(
+    "saveBtn"
+)
+.onclick=
+saveKML;
 
 document
-.getElementById("clearBtn")
-.onclick=clearLogs;
+.getElementById(
+    "clearBtn"
+)
+.onclick=
+clearLogs;
 
-addLog(
-`保存済みデータを復元
-記録点数: ${points.length}`
-);
+initialize();
 
 </script>
 
