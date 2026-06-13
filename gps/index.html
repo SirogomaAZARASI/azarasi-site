@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GPSロガー</title>
+
+<style>
+body{
+    font-family:sans-serif;
+    margin:20px;
+    text-align:center;
+}
+
+button{
+    padding:12px 24px;
+    font-size:16px;
+    margin:5px;
+}
+
+#status{
+    margin-top:20px;
+    white-space:pre-wrap;
+}
+</style>
+</head>
+<body>
+
+<h1>GPSロガー</h1>
+
+<button id="startBtn">記録開始</button>
+<button id="stopBtn" disabled>記録停止</button>
+<button id="saveBtn" disabled>GPX保存</button>
+
+<div id="status">待機中</div>
+
+<script>
+let watchId = null;
+let points = [];
+
+const status = document.getElementById("status");
+
+function updateStatus(text){
+    status.textContent = text;
+}
+
+document.getElementById("startBtn").onclick = () => {
+
+    if(!navigator.geolocation){
+        alert("位置情報に対応していません");
+        return;
+    }
+
+    points = [];
+
+    watchId = navigator.geolocation.watchPosition(
+        pos => {
+
+            const point = {
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude,
+                ele: pos.coords.altitude || 0,
+                time: new Date().toISOString()
+            };
+
+            points.push(point);
+
+            updateStatus(
+                `記録中\n\n` +
+                `緯度: ${point.lat}\n` +
+                `経度: ${point.lon}\n` +
+                `記録点数: ${points.length}`
+            );
+
+        },
+        err => {
+            alert("GPS取得失敗: " + err.message);
+        },
+        {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 10000
+        }
+    );
+
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+};
+
+document.getElementById("stopBtn").onclick = () => {
+
+    if(watchId !== null){
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+    }
+
+    updateStatus(
+        `記録終了\n\n記録点数: ${points.length}`
+    );
+
+    stopBtn.disabled = true;
+    saveBtn.disabled = points.length === 0;
+    startBtn.disabled = false;
+};
+
+document.getElementById("saveBtn").onclick = () => {
+
+    let gpx =
+`<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="HTML GPS Logger"
+xmlns="http://www.topografix.com/GPX/1/1">
+<trk>
+<name>GPS Log</name>
+<trkseg>
+`;
+
+    points.forEach(p => {
+        gpx +=
+`<trkpt lat="${p.lat}" lon="${p.lon}">
+<ele>${p.ele}</ele>
+<time>${p.time}</time>
+</trkpt>
+`;
+    });
+
+    gpx += `
+</trkseg>
+</trk>
+</gpx>`;
+
+    const blob = new Blob([gpx], {
+        type: "application/gpx+xml"
+    });
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+
+    const now = new Date();
+    const filename =
+        "gpslog_" +
+        now.getFullYear() +
+        String(now.getMonth()+1).padStart(2,"0") +
+        String(now.getDate()).padStart(2,"0") +
+        "_" +
+        String(now.getHours()).padStart(2,"0") +
+        String(now.getMinutes()).padStart(2,"0") +
+        ".gpx";
+
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(a.href);
+};
+</script>
+
+</body>
+</html>
