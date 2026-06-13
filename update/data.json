@@ -23,5 +23,53 @@
     "tags": ["new"],
     "content": "AZAsite | あざらしサイトを公開しました!!!",
     "images": ["images/azasite1.0.png"]
-  }
+  },
+  {
+    "site": "DotCamera",
+    "version": "1.0",
+    "date": "不明",
+    "title": "dotcamera公開",
+    "tags": ["new"],
+    "content": "dotcameraを公開しました!!!"
+  },
+  {
+    "site": "RGBColorCopy",
+    "version": "1.0",
+    "date": "不明",
+    "title": "RGBColorCopy公開",
+    "tags": ["new"],
+    "content": "RGBColorCopyを公開しました!!!"
+  },
+  {
+    "site": "ColorPaletteGenerator",
+    "version": "1.0",
+    "date": "不明",
+    "title": "ColorPaletteGenerator公開",
+    "tags": ["new"],
+    "content": "ColorPaletteGeneratorを公開しました!!!"
+  },
+  {
+    "site": "HexDecOctBinConverter",
+    "version": "1.0",
+    "date": "不明",
+    "title": "HexDecOctBinConverter公開",
+    "tags": ["new"],
+    "content": "HexDecOctBinConverterを公開しました!!!"
+  },
+  {
+    "site": "TextWidthChecker",
+    "version": "1.0",
+    "date": "不明",
+    "title": "TextWidthChecker公開",
+    "tags": ["new"],
+    "content": "TextWidthCheckerを公開しました!!!"
+  },
+  {
+    "site": "HTMLRunner",
+    "version": "1.0",
+    "date": "不明",
+    "title": "HTMLRunner公開",
+    "tags": ["new"],
+    "content": "HTMLRunnerを公開しました!!!"
+  },
 ]
