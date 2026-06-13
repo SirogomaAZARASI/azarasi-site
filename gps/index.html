@@ -3,47 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GPSロガー</title>
+<title>GPSロガー KML版</title>
 
 <style>
 *{
     box-sizing:border-box;
-    margin:0;
-    padding:0;
 }
 
 body{
-    font-family:sans-serif;
-    background:#f5f5f5;
+    margin:0;
     padding:20px;
+    background:#f4f4f4;
+    font-family:sans-serif;
 }
 
 .container{
-    max-width:700px;
+    max-width:800px;
     margin:auto;
-    background:#fff;
-    border-radius:16px;
+    background:white;
     padding:20px;
-    box-shadow:0 4px 15px rgba(0,0,0,.1);
+    border-radius:16px;
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
 }
 
 h1{
     text-align:center;
-    margin-bottom:20px;
+    margin-top:0;
 }
 
 .buttons{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(3,1fr);
     gap:10px;
     margin-bottom:20px;
 }
 
 button{
-    padding:14px;
-    font-size:16px;
     border:none;
     border-radius:10px;
+    padding:14px;
+    font-size:15px;
     cursor:pointer;
 }
 
@@ -63,12 +62,12 @@ button{
 }
 
 #log{
-    max-height:300px;
-    overflow:auto;
     background:#111;
-    color:#0f0;
+    color:#00ff66;
     padding:10px;
     border-radius:10px;
+    height:250px;
+    overflow:auto;
     font-size:12px;
     white-space:pre-wrap;
 }
@@ -81,11 +80,11 @@ button{
 <h1>GPSロガー</h1>
 
 <div class="buttons">
-<button class="start" id="startBtn">記録開始</button>
+<button class="start" id="startBtn">開始</button>
 <button class="pause" id="pauseBtn">一時停止</button>
 <button class="resume" id="resumeBtn">再開</button>
 <button class="stop" id="stopBtn">停止</button>
-<button class="save" id="saveBtn">XML保存</button>
+<button class="save" id="saveBtn">KML保存</button>
 <button class="clear" id="clearBtn">履歴削除</button>
 </div>
 
@@ -102,11 +101,13 @@ button{
 </div>
 
 <script>
+
 let watchId=null;
 let paused=false;
 
-let points=
-JSON.parse(localStorage.getItem("gpslog")||"[]");
+let points=JSON.parse(
+localStorage.getItem("gpslog") || "[]"
+);
 
 updateCount();
 
@@ -122,23 +123,26 @@ function updateCount(){
     points.length;
 }
 
+function updateState(text){
+    document.getElementById("state").textContent=
+    text;
+}
+
 function addLog(text){
 
-    const log=document.getElementById("log");
+    const log=
+    document.getElementById("log");
 
     log.textContent+=text+"\n";
 
-    log.scrollTop=log.scrollHeight;
-}
-
-function updateState(text){
-    document.getElementById("state").textContent=text;
+    log.scrollTop=
+    log.scrollHeight;
 }
 
 function startLogging(){
 
     if(!navigator.geolocation){
-        alert("GPS未対応");
+        alert("位置情報に対応していません");
         return;
     }
 
@@ -153,17 +157,15 @@ function startLogging(){
 
         position=>{
 
-            if(paused)return;
+            if(paused) return;
 
             const point={
 
                 lat:position.coords.latitude,
-
                 lon:position.coords.longitude,
-
-                alt:position.coords.altitude||0,
-
+                alt:position.coords.altitude || 0,
                 time:new Date().toISOString()
+
             };
 
             points.push(point);
@@ -183,13 +185,17 @@ function startLogging(){
 
             addLog(
                 `[${point.time}]
-Lat:${point.lat}
-Lon:${point.lon}`
+Lat ${point.lat}
+Lon ${point.lon}`
             );
+
         },
 
         error=>{
-            addLog("GPSエラー:"+error.message);
+            addLog(
+                "GPSエラー: "+
+                error.message
+            );
         },
 
         {
@@ -197,21 +203,16 @@ Lon:${point.lon}`
             maximumAge:0,
             timeout:10000
         }
-
     );
 }
 
 function pauseLogging(){
-
     paused=true;
-
     updateState("一時停止");
 }
 
 function resumeLogging(){
-
     paused=false;
-
     updateState("記録中");
 }
 
@@ -229,39 +230,77 @@ function stopLogging(){
     updateState("停止");
 }
 
-function generateXML(){
+function generateKML(){
 
-    let xml=
-`<?xml version="1.0" encoding="UTF-8"?>
-<gpslog>
-`;
+    if(points.length===0){
+        return "";
+    }
+
+    const start=points[0];
+    const end=points[points.length-1];
+
+    let coordinates="";
 
     points.forEach(p=>{
 
-        xml+=`
-  <point>
-    <lat>${p.lat}</lat>
-    <lon>${p.lon}</lon>
-    <alt>${p.alt}</alt>
-    <time>${p.time}</time>
-  </point>
-`;
+        coordinates+=
+        `${p.lon},${p.lat},${p.alt}\n`;
 
     });
 
-    xml+=`
-</gpslog>`;
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
 
-    return xml;
+<name>GPS Log</name>
+
+<Placemark>
+<name>開始地点</name>
+<Point>
+<coordinates>
+${start.lon},${start.lat},${start.alt}
+</coordinates>
+</Point>
+</Placemark>
+
+<Placemark>
+<name>終了地点</name>
+<Point>
+<coordinates>
+${end.lon},${end.lat},${end.alt}
+</coordinates>
+</Point>
+</Placemark>
+
+<Placemark>
+<name>移動軌跡</name>
+<LineString>
+<tessellate>1</tessellate>
+<coordinates>
+${coordinates}
+</coordinates>
+</LineString>
+</Placemark>
+
+</Document>
+</kml>`;
 }
 
-function saveXML(){
+function saveKML(){
+
+    if(points.length===0){
+
+        alert("記録データがありません");
+
+        return;
+    }
 
     const blob=
     new Blob(
-        [generateXML()],
+        [generateKML()],
         {
-            type:"application/xml"
+            type:
+            "application/vnd.google-earth.kml+xml"
         }
     );
 
@@ -274,7 +313,9 @@ function saveXML(){
     a.href=url;
 
     a.download=
-    "gpslog_"+Date.now()+".xml";
+    "gpslog_" +
+    Date.now() +
+    ".kml";
 
     a.click();
 
@@ -283,42 +324,57 @@ function saveXML(){
 
 function clearLogs(){
 
-    if(!confirm("履歴を削除しますか？"))
-    return;
+    if(
+        !confirm(
+            "保存データを削除しますか？"
+        )
+    ){
+        return;
+    }
 
     points=[];
 
-    localStorage.removeItem("gpslog");
-
-    updateCount();
+    localStorage.removeItem(
+        "gpslog"
+    );
 
     document.getElementById("log")
     .textContent="";
 
+    updateCount();
+
     addLog("履歴削除");
 }
 
-document.getElementById("startBtn")
+document
+.getElementById("startBtn")
 .onclick=startLogging;
 
-document.getElementById("pauseBtn")
+document
+.getElementById("pauseBtn")
 .onclick=pauseLogging;
 
-document.getElementById("resumeBtn")
+document
+.getElementById("resumeBtn")
 .onclick=resumeLogging;
 
-document.getElementById("stopBtn")
+document
+.getElementById("stopBtn")
 .onclick=stopLogging;
 
-document.getElementById("saveBtn")
-.onclick=saveXML;
+document
+.getElementById("saveBtn")
+.onclick=saveKML;
 
-document.getElementById("clearBtn")
+document
+.getElementById("clearBtn")
 .onclick=clearLogs;
 
 addLog(
-`保存済みログ ${points.length} 件を復元`
+`保存済みデータを復元
+記録点数: ${points.length}`
 );
+
 </script>
 
 </body>
