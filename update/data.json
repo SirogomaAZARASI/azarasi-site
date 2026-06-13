@@ -121,12 +121,20 @@
     "content": "Block崩しを公開しました!!!"
   },
   {
-    "site": "Typing",
+    "site": "AZAtype",
     "version": "1.0",
     "date": "不明",
-    "title": "Typing公開",
+    "title": "AZAtype公開",
     "tags": ["new"],
-    "content": "Typingを公開しました!!!"
-    "images" : ["images/typing1.0.png"]
+    "content": "AZAtypeを公開しました!!!",
+    "images" : ["images/AZAtype1.0.png"]
+  },
+  {
+    "site": "アップデート履歴",
+    "version": "1.0",
+    "date": "不明",
+    "title": "アップデート履歴公開",
+    "tags": ["new"],
+    "content": "アップデート履歴を公開しました!!!"
   }
 ]
