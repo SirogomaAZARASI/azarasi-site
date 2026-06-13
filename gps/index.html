@@ -6,151 +6,319 @@
 <title>GPSロガー</title>
 
 <style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
 body{
     font-family:sans-serif;
-    margin:20px;
+    background:#f5f5f5;
+    padding:20px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+
+h1{
     text-align:center;
+    margin-bottom:20px;
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-bottom:20px;
 }
 
 button{
-    padding:12px 24px;
+    padding:14px;
     font-size:16px;
-    margin:5px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
 }
 
-#status{
-    margin-top:20px;
+.start{background:#4caf50;color:white;}
+.pause{background:#ff9800;color:white;}
+.resume{background:#2196f3;color:white;}
+.stop{background:#f44336;color:white;}
+.save{background:#673ab7;color:white;}
+.clear{background:#555;color:white;}
+
+.info{
+    background:#f0f0f0;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:15px;
+    line-height:1.8;
+}
+
+#log{
+    max-height:300px;
+    overflow:auto;
+    background:#111;
+    color:#0f0;
+    padding:10px;
+    border-radius:10px;
+    font-size:12px;
     white-space:pre-wrap;
 }
 </style>
 </head>
 <body>
 
+<div class="container">
+
 <h1>GPSロガー</h1>
 
-<button id="startBtn">記録開始</button>
-<button id="stopBtn" disabled>記録停止</button>
-<button id="saveBtn" disabled>GPX保存</button>
+<div class="buttons">
+<button class="start" id="startBtn">記録開始</button>
+<button class="pause" id="pauseBtn">一時停止</button>
+<button class="resume" id="resumeBtn">再開</button>
+<button class="stop" id="stopBtn">停止</button>
+<button class="save" id="saveBtn">XML保存</button>
+<button class="clear" id="clearBtn">履歴削除</button>
+</div>
 
-<div id="status">待機中</div>
+<div class="info">
+状態：<span id="state">待機中</span><br>
+記録点数：<span id="count">0</span><br>
+緯度：<span id="lat">-</span><br>
+経度：<span id="lon">-</span><br>
+高度：<span id="alt">-</span>
+</div>
+
+<div id="log"></div>
+
+</div>
 
 <script>
-let watchId = null;
-let points = [];
+let watchId=null;
+let paused=false;
 
-const status = document.getElementById("status");
+let points=
+JSON.parse(localStorage.getItem("gpslog")||"[]");
 
-function updateStatus(text){
-    status.textContent = text;
+updateCount();
+
+function saveStorage(){
+    localStorage.setItem(
+        "gpslog",
+        JSON.stringify(points)
+    );
 }
 
-document.getElementById("startBtn").onclick = () => {
+function updateCount(){
+    document.getElementById("count").textContent=
+    points.length;
+}
+
+function addLog(text){
+
+    const log=document.getElementById("log");
+
+    log.textContent+=text+"\n";
+
+    log.scrollTop=log.scrollHeight;
+}
+
+function updateState(text){
+    document.getElementById("state").textContent=text;
+}
+
+function startLogging(){
 
     if(!navigator.geolocation){
-        alert("位置情報に対応していません");
+        alert("GPS未対応");
         return;
     }
 
-    points = [];
+    if(watchId!==null){
+        return;
+    }
 
-    watchId = navigator.geolocation.watchPosition(
-        pos => {
+    updateState("記録中");
 
-            const point = {
-                lat: pos.coords.latitude,
-                lon: pos.coords.longitude,
-                ele: pos.coords.altitude || 0,
-                time: new Date().toISOString()
+    watchId=
+    navigator.geolocation.watchPosition(
+
+        position=>{
+
+            if(paused)return;
+
+            const point={
+
+                lat:position.coords.latitude,
+
+                lon:position.coords.longitude,
+
+                alt:position.coords.altitude||0,
+
+                time:new Date().toISOString()
             };
 
             points.push(point);
 
-            updateStatus(
-                `記録中\n\n` +
-                `緯度: ${point.lat}\n` +
-                `経度: ${point.lon}\n` +
-                `記録点数: ${points.length}`
-            );
+            saveStorage();
 
+            updateCount();
+
+            document.getElementById("lat")
+            .textContent=point.lat.toFixed(6);
+
+            document.getElementById("lon")
+            .textContent=point.lon.toFixed(6);
+
+            document.getElementById("alt")
+            .textContent=point.alt.toFixed(1);
+
+            addLog(
+                `[${point.time}]
+Lat:${point.lat}
+Lon:${point.lon}`
+            );
         },
-        err => {
-            alert("GPS取得失敗: " + err.message);
+
+        error=>{
+            addLog("GPSエラー:"+error.message);
         },
+
         {
-            enableHighAccuracy: true,
-            maximumAge: 0,
-            timeout: 10000
+            enableHighAccuracy:true,
+            maximumAge:0,
+            timeout:10000
+        }
+
+    );
+}
+
+function pauseLogging(){
+
+    paused=true;
+
+    updateState("一時停止");
+}
+
+function resumeLogging(){
+
+    paused=false;
+
+    updateState("記録中");
+}
+
+function stopLogging(){
+
+    if(watchId!==null){
+
+        navigator.geolocation.clearWatch(
+            watchId
+        );
+
+        watchId=null;
+    }
+
+    updateState("停止");
+}
+
+function generateXML(){
+
+    let xml=
+`<?xml version="1.0" encoding="UTF-8"?>
+<gpslog>
+`;
+
+    points.forEach(p=>{
+
+        xml+=`
+  <point>
+    <lat>${p.lat}</lat>
+    <lon>${p.lon}</lon>
+    <alt>${p.alt}</alt>
+    <time>${p.time}</time>
+  </point>
+`;
+
+    });
+
+    xml+=`
+</gpslog>`;
+
+    return xml;
+}
+
+function saveXML(){
+
+    const blob=
+    new Blob(
+        [generateXML()],
+        {
+            type:"application/xml"
         }
     );
 
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-};
+    const url=
+    URL.createObjectURL(blob);
 
-document.getElementById("stopBtn").onclick = () => {
+    const a=
+    document.createElement("a");
 
-    if(watchId !== null){
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-    }
+    a.href=url;
 
-    updateStatus(
-        `記録終了\n\n記録点数: ${points.length}`
-    );
+    a.download=
+    "gpslog_"+Date.now()+".xml";
 
-    stopBtn.disabled = true;
-    saveBtn.disabled = points.length === 0;
-    startBtn.disabled = false;
-};
-
-document.getElementById("saveBtn").onclick = () => {
-
-    let gpx =
-`<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="HTML GPS Logger"
-xmlns="http://www.topografix.com/GPX/1/1">
-<trk>
-<name>GPS Log</name>
-<trkseg>
-`;
-
-    points.forEach(p => {
-        gpx +=
-`<trkpt lat="${p.lat}" lon="${p.lon}">
-<ele>${p.ele}</ele>
-<time>${p.time}</time>
-</trkpt>
-`;
-    });
-
-    gpx += `
-</trkseg>
-</trk>
-</gpx>`;
-
-    const blob = new Blob([gpx], {
-        type: "application/gpx+xml"
-    });
-
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-
-    const now = new Date();
-    const filename =
-        "gpslog_" +
-        now.getFullYear() +
-        String(now.getMonth()+1).padStart(2,"0") +
-        String(now.getDate()).padStart(2,"0") +
-        "_" +
-        String(now.getHours()).padStart(2,"0") +
-        String(now.getMinutes()).padStart(2,"0") +
-        ".gpx";
-
-    a.download = filename;
     a.click();
 
-    URL.revokeObjectURL(a.href);
-};
+    URL.revokeObjectURL(url);
+}
+
+function clearLogs(){
+
+    if(!confirm("履歴を削除しますか？"))
+    return;
+
+    points=[];
+
+    localStorage.removeItem("gpslog");
+
+    updateCount();
+
+    document.getElementById("log")
+    .textContent="";
+
+    addLog("履歴削除");
+}
+
+document.getElementById("startBtn")
+.onclick=startLogging;
+
+document.getElementById("pauseBtn")
+.onclick=pauseLogging;
+
+document.getElementById("resumeBtn")
+.onclick=resumeLogging;
+
+document.getElementById("stopBtn")
+.onclick=stopLogging;
+
+document.getElementById("saveBtn")
+.onclick=saveXML;
+
+document.getElementById("clearBtn")
+.onclick=clearLogs;
+
+addLog(
+`保存済みログ ${points.length} 件を復元`
+);
 </script>
 
 </body>
