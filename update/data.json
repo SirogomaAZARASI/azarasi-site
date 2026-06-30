@@ -1,5 +1,29 @@
 [
   {
+    "site": "AZAtype",
+    "version": "1.1",
+    "date": "2026/6/30",
+    "title": "AZAtype単語更新",
+    "tags": ["update"],
+    "content": "AZAtypeの単語を更新しました。(200単語ぐらい足しました)"
+  },
+	{
+    "site": "アップデート履歴",
+    "version": "1.1",
+    "date": "2026/6/30",
+    "title": "アップデート履歴更新",
+    "tags": ["update"],
+    "content": "アップデート履歴を更新しました。"
+  },
+  {
+    "site": "iframeツール",
+    "version": "1.0",
+    "date": "2026/6/30",
+    "title": "iframeツール公開",
+    "tags": ["new"],
+    "content": "iframeツールを公開しました。"
+  },
+  {
     "site": "AZAtool",
     "version": "1.0",
     "date": "不明",
