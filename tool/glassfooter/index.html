@@ -32,41 +32,63 @@ body{
         "Segoe UI",
         sans-serif;
 
-    min-height:100vh;
+    height:100vh;
+
+    overflow:hidden;
 
     display:flex;
 
-    gap:32px;
-
-    flex-wrap:wrap;
-
-    padding:32px;
-
 }
+
+/*======================
+左パネル
+======================*/
 
 .panel{
 
-    width:380px;
+    width:400px;
 
-    padding:20px;
+    height:100vh;
 
-    border-radius:18px;
+    overflow-y:auto;
+
+    flex-shrink:0;
+
+    padding:24px;
 
     background:
+
         rgba(255,255,255,.05);
 
     backdrop-filter:blur(20px);
 
-    border:
+    border-right:
+
         1px solid rgba(255,255,255,.08);
 
 }
 
 .panel h2{
 
-    margin-bottom:20px;
+    font-size:26px;
 
-    font-size:24px;
+    margin-bottom:24px;
+
+}
+
+.panel::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+.panel::-webkit-scrollbar-thumb{
+
+    background:
+
+    rgba(255,255,255,.2);
+
+    border-radius:999px;
 
 }
 
@@ -107,6 +129,8 @@ button{
 
     padding:12px;
 
+    margin-top:10px;
+
     border:none;
 
     border-radius:10px;
@@ -115,7 +139,13 @@ button{
 
     color:white;
 
-    margin-top:10px;
+    transition:.2s;
+
+}
+
+button:hover{
+
+    opacity:.9;
 
 }
 
@@ -131,9 +161,29 @@ button{
 
 }
 
+.delete{
+
+    background:#dc2626;
+
+}
+
+.align{
+
+    background:#334155;
+
+    font-size:13px;
+
+}
+
+/*======================
+右側プレビュー
+======================*/
+
 .preview{
 
     flex:1;
+
+    height:100vh;
 
     display:flex;
 
@@ -141,7 +191,15 @@ button{
 
     justify-content:center;
 
+    overflow:hidden;
+
+    position:relative;
+
 }
+
+/*======================
+本家フッター
+======================*/
 
 .footer{
 
@@ -177,13 +235,13 @@ button{
 
     border:
 
-        1px solid rgba(255,255,255,0.15);
+        1px solid rgba(255,255,255,.15);
 
     box-shadow:
 
         0 5px 20px
 
-        rgba(0,0,0,0.3);
+        rgba(0,0,0,.3);
 
 }
 
@@ -193,7 +251,7 @@ button{
 
     white-space:nowrap;
 
-    z-index:1000;
+    z-index:9999;
 
 }
 
@@ -211,12 +269,6 @@ button{
 
 }
 
-.delete{
-
-    background:#dc2626;
-
-}
-
 .alignGrid{
 
     margin-top:12px;
@@ -231,21 +283,10 @@ button{
 
 }
 
-.align{
-
-    background:#334155;
-
-    padding:8px;
-
-    border-radius:8px;
-
-    font-size:13px;
-
-}
-
 </style>
 
 </head>
+
 <body>
 
 <div class="panel">
@@ -317,9 +358,7 @@ button{
 </label>
 
 <input
-
 id="width"
-
 type="number">
 
 
@@ -330,9 +369,7 @@ type="number">
 </label>
 
 <input
-
 id="height"
-
 type="number">
 
 
@@ -343,15 +380,12 @@ border-radius
 </label>
 
 <input
-
 id="radius">
 
 
 <button
-
 class="add"
-
-id="addText">
+id="addTextBtn">
 
 テキスト追加
 
@@ -359,9 +393,7 @@ id="addText">
 
 
 <button
-
 class="save"
-
 id="save">
 
 PNG保存
@@ -376,13 +408,10 @@ PNG保存
 </div>
 
 
-
 <div class="preview">
 
 <div
-
 id="footer"
-
 class="footer">
 
 </div>
@@ -394,18 +423,23 @@ class="footer">
 
 const footer =
 document.getElementById(
-
 "footer"
-
 );
 
 const controls =
 document.getElementById(
-
 "controls"
-
 );
 
+const addTextBtn =
+document.getElementById(
+"addTextBtn"
+);
+
+const save =
+document.getElementById(
+"save"
+);
 
 const presets = {
 
@@ -475,14 +509,11 @@ width:600,
 
 height:220,
 
-radius:
-
-"50% 20% 50% 20%"
+radius:"50% 20% 50% 20%"
 
 }
 
 };
-
 
 function render(){
 
@@ -500,10 +531,18 @@ footer.style.borderRadius =
 
 radius.value;
 
+
+document
+.querySelectorAll(".text")
+.forEach(t=>{
+
+footer.appendChild(t);
+
+});
+
 }
 
-
-preset.oninput=()=>{
+preset.oninput = ()=>{
 
 const p =
 
@@ -511,24 +550,20 @@ presets[preset.value];
 
 
 width.value =
-
 p.width;
 
 
 height.value =
-
 p.height;
 
 
 radius.value =
-
 p.radius;
 
 
 render();
 
 };
-
 
 width.oninput =
 render;
@@ -539,17 +574,17 @@ render;
 radius.oninput =
 render;
 
-function addText(
+function createText(
 
-txt="テキスト",
+txt = "テキスト",
 
-x=50,
+x = 50,
 
-y=50,
+y = 50,
 
-size=14,
+size = 14,
 
-color="#ffffff"
+color = "#ffffff"
 
 ){
 
@@ -657,7 +692,7 @@ type="button"
 class="align"
 data-align="centerX">
 
-中央
+横中央
 
 </button>
 
@@ -712,9 +747,7 @@ data-align="center">
 
 
 <button
-
 type="button"
-
 class="delete">
 
 削除
@@ -770,7 +803,7 @@ control.querySelector(
 
 ).value
 
-+"px";
++ "px";
 
 
 element.style.top =
@@ -781,7 +814,7 @@ control.querySelector(
 
 ).value
 
-+"px";
++ "px";
 
 
 element.style.fontSize =
@@ -792,7 +825,7 @@ control.querySelector(
 
 ).value
 
-+"px";
++ "px";
 
 
 element.style.color =
@@ -802,6 +835,20 @@ control.querySelector(
 ".color"
 
 ).value;
+
+
+element.style.zIndex =
+
+9999;
+
+
+/* 常に最前面 */
+
+footer.appendChild(
+
+element
+
+);
 
 }
 
@@ -851,10 +898,6 @@ control.remove();
 
 
 
-update();
-
-
-
 control
 
 .querySelectorAll(
@@ -885,13 +928,17 @@ element
 
 );
 
+
+
+update();
+
 }
 
 
 
-addText.onclick = ()=>{
+addTextBtn.onclick = ()=>{
 
-addText();
+createText();
 
 };
 
@@ -909,6 +956,7 @@ const fw =
 
 footer.clientWidth;
 
+
 const fh =
 
 footer.clientHeight;
@@ -917,6 +965,7 @@ footer.clientHeight;
 const tw =
 
 element.offsetWidth;
+
 
 const th =
 
@@ -930,9 +979,7 @@ switch(type){
 case "left":
 
 control
-
 .querySelector(".x")
-
 .value = 0;
 
 break;
@@ -942,16 +989,16 @@ break;
 case "centerX":
 
 control
-
 .querySelector(".x")
-
 .value =
 
 Math.round(
 
 (fw - tw)
 
-/ 2
+/
+
+2
 
 );
 
@@ -962,9 +1009,7 @@ break;
 case "right":
 
 control
-
 .querySelector(".x")
-
 .value =
 
 Math.round(
@@ -980,9 +1025,7 @@ break;
 case "top":
 
 control
-
 .querySelector(".y")
-
 .value = 0;
 
 break;
@@ -992,16 +1035,16 @@ break;
 case "centerY":
 
 control
-
 .querySelector(".y")
-
 .value =
 
 Math.round(
 
 (fh - th)
 
-/ 2
+/
+
+2
 
 );
 
@@ -1012,9 +1055,7 @@ break;
 case "bottom":
 
 control
-
 .querySelector(".y")
-
 .value =
 
 Math.round(
@@ -1030,36 +1071,35 @@ break;
 case "center":
 
 control
-
 .querySelector(".x")
-
 .value =
 
 Math.round(
 
 (fw - tw)
 
-/ 2
+/
+
+2
 
 );
 
 
 control
-
 .querySelector(".y")
-
 .value =
 
 Math.round(
 
 (fh - th)
 
-/ 2
+/
+
+2
 
 );
 
 break;
-
 
 }
 
@@ -1067,62 +1107,28 @@ break;
 element.style.left =
 
 control
-
 .querySelector(".x")
-
 .value + "px";
 
 
 element.style.top =
 
 control
-
 .querySelector(".y")
-
 .value + "px";
+
+
+/* 常に最前面へ */
+
+footer.appendChild(
+
+element
+
+);
 
 }
 
 
-
-preset.value =
-
-"round";
-
-
-preset.oninput();
-
-
-
-addText(
-
-"← ツール一覧に戻る",
-
-250,
-
-15,
-
-13,
-
-"#66ccff"
-
-);
-
-
-
-addText(
-
-"Copyright © 2026 SirogomaAZARASI All Rights Reserved.",
-
-120,
-
-40,
-
-13,
-
-"#ffffff"
-
-);
 
 save.onclick = ()=>{
 
@@ -1143,6 +1149,7 @@ useCORS:true
 )
 
 .then(canvas=>{
+
 
 const a =
 
@@ -1172,6 +1179,47 @@ a.click();
 });
 
 };
+
+
+
+preset.value =
+
+"round";
+
+
+preset.oninput();
+
+
+
+createText(
+
+"← ツール一覧に戻る",
+
+250,
+
+15,
+
+13,
+
+"#66ccff"
+
+);
+
+
+
+createText(
+
+"Copyright © 2026 SirogomaAZARASI All Rights Reserved.",
+
+120,
+
+40,
+
+13,
+
+"#ffffff"
+
+);
 
 
 
