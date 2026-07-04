@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>ガラス風フッター作成サイト | AZAtool</title>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+
+:root{
+    --bg:#0f172a;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    background:var(--bg);
+
+    color:white;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    min-height:100vh;
+
+    display:flex;
+
+    gap:32px;
+
+    flex-wrap:wrap;
+
+    padding:32px;
+
+}
+
+.panel{
+
+    width:380px;
+
+    padding:20px;
+
+    border-radius:18px;
+
+    background:
+        rgba(255,255,255,.05);
+
+    backdrop-filter:blur(20px);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+}
+
+.panel h2{
+
+    margin-bottom:20px;
+
+    font-size:24px;
+
+}
+
+label{
+
+    display:block;
+
+    margin-top:12px;
+
+    margin-bottom:6px;
+
+    font-size:14px;
+
+}
+
+input,
+select{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#1e293b;
+
+    color:white;
+
+    outline:none;
+
+}
+
+button{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    color:white;
+
+    margin-top:10px;
+
+}
+
+.add{
+
+    background:#2563eb;
+
+}
+
+.save{
+
+    background:#0ea5e9;
+
+}
+
+.preview{
+
+    flex:1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.footer{
+
+    position:relative;
+
+    overflow:hidden;
+
+    width:700px;
+
+    height:80px;
+
+    background:
+
+    linear-gradient(
+
+        to right,
+
+        rgba(0,0,0,0.2),
+
+        rgba(0,0,0,0.85)
+
+    );
+
+    backdrop-filter:blur(10px);
+
+    border-radius:12px;
+
+    padding:10px;
+
+    text-align:center;
+
+    font-size:13px;
+
+    border:
+
+        1px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+
+        0 5px 20px
+
+        rgba(0,0,0,0.3);
+
+}
+
+.text{
+
+    position:absolute;
+
+    white-space:nowrap;
+
+    z-index:1000;
+
+}
+
+.control{
+
+    margin-top:18px;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    background:
+
+        rgba(255,255,255,.04);
+
+}
+
+.delete{
+
+    background:#dc2626;
+
+}
+
+.alignGrid{
+
+    margin-top:12px;
+
+    display:grid;
+
+    grid-template-columns:
+
+        repeat(3,1fr);
+
+    gap:6px;
+
+}
+
+.align{
+
+    background:#334155;
+
+    padding:8px;
+
+    border-radius:8px;
+
+    font-size:13px;
+
+}
+
+.footer{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  background:linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+  backdrop-filter:blur(10px);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  z-index:999;
+}
+
+.footer a{
+  color:#66ccff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.footer a:hover{
+  text-decoration:underline;
+}
+
+.footer .copyright{
+  font-size:13px;
+  font-weight:500;
+  background:linear-gradient(90deg,#ffffff,#bbbbbb);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:0.3px;
+  text-shadow:0 1px 2px rgba(0,0,0,0.6);
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="panel">
+
+<h2>
+
+ガラス風フッター作成サイト
+
+</h2>
+
+
+<label>
+
+プリセット
+
+</label>
+
+<select id="preset">
+
+<option value="square">
+
+四角
+
+</option>
+
+<option value="round">
+
+角丸
+
+</option>
+
+<option value="capsule">
+
+カプセル
+
+</option>
+
+<option value="ellipse">
+
+楕円
+
+</option>
+
+<option value="circle">
+
+円
+
+</option>
+
+<option value="oval">
+
+横楕円
+
+</option>
+
+<option value="organic">
+
+変形
+
+</option>
+
+</select>
+
+
+<label>
+
+横幅
+
+</label>
+
+<input
+
+id="width"
+
+type="number">
+
+
+<label>
+
+高さ
+
+</label>
+
+<input
+
+id="height"
+
+type="number">
+
+
+<label>
+
+border-radius
+
+</label>
+
+<input
+
+id="radius">
+
+
+<button
+
+class="add"
+
+id="addText">
+
+テキスト追加
+
+</button>
+
+
+<button
+
+class="save"
+
+id="save">
+
+PNG保存
+
+</button>
+
+
+<div id="controls">
+
+</div>
+
+</div>
+
+
+
+<div class="preview">
+
+<div
+
+id="footer"
+
+class="footer">
+
+</div>
+
+</div>
+
+<div class="footer">
+  <a href="index.html">← ツール一覧に戻る</a><br>
+  <div class="copyright">
+    Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+  </div>
+</div>
+
+<script>
+
+const footer =
+document.getElementById(
+
+"footer"
+
+);
+
+const controls =
+document.getElementById(
+
+"controls"
+
+);
+
+
+const presets = {
+
+square:{
+
+width:700,
+
+height:80,
+
+radius:"0"
+
+},
+
+round:{
+
+width:700,
+
+height:80,
+
+radius:"12px"
+
+},
+
+capsule:{
+
+width:700,
+
+height:80,
+
+radius:"999px"
+
+},
+
+ellipse:{
+
+width:500,
+
+height:250,
+
+radius:"50%"
+
+},
+
+circle:{
+
+width:300,
+
+height:300,
+
+radius:"50%"
+
+},
+
+oval:{
+
+width:600,
+
+height:220,
+
+radius:"50% / 25%"
+
+},
+
+organic:{
+
+width:600,
+
+height:220,
+
+radius:
+
+"50% 20% 50% 20%"
+
+}
+
+};
+
+
+function render(){
+
+footer.style.width =
+
+width.value + "px";
+
+
+footer.style.height =
+
+height.value + "px";
+
+
+footer.style.borderRadius =
+
+radius.value;
+
+}
+
+
+preset.oninput=()=>{
+
+const p =
+
+presets[preset.value];
+
+
+width.value =
+
+p.width;
+
+
+height.value =
+
+p.height;
+
+
+radius.value =
+
+p.radius;
+
+
+render();
+
+};
+
+
+width.oninput =
+render;
+
+height.oninput =
+render;
+
+radius.oninput =
+render;
+
+function addText(
+
+txt="テキスト",
+
+x=50,
+
+y=50,
+
+size=14,
+
+color="#ffffff"
+
+){
+
+const control =
+
+document.createElement(
+
+"div"
+
+);
+
+control.className =
+
+"control";
+
+
+control.innerHTML = `
+
+<label>
+
+文字
+
+</label>
+
+<input
+
+class="txt"
+
+value="${txt}">
+
+
+<label>
+
+X座標
+
+</label>
+
+<input
+
+class="x"
+
+type="number"
+
+value="${x}">
+
+
+<label>
+
+Y座標
+
+</label>
+
+<input
+
+class="y"
+
+type="number"
+
+value="${y}">
+
+
+<label>
+
+文字サイズ
+
+</label>
+
+<input
+
+class="size"
+
+type="number"
+
+value="${size}">
+
+
+<label>
+
+文字色
+
+</label>
+
+<input
+
+class="color"
+
+type="color"
+
+value="${color}">
+
+
+<div class="alignGrid">
+
+<button
+type="button"
+class="align"
+data-align="left">
+
+左
+
+</button>
+
+<button
+type="button"
+class="align"
+data-align="centerX">
+
+中央
+
+</button>
+
+<button
+type="button"
+class="align"
+data-align="right">
+
+右
+
+</button>
+
+
+<button
+type="button"
+class="align"
+data-align="top">
+
+上
+
+</button>
+
+<button
+type="button"
+class="align"
+data-align="centerY">
+
+縦中央
+
+</button>
+
+<button
+type="button"
+class="align"
+data-align="bottom">
+
+下
+
+</button>
+
+
+<button
+type="button"
+class="align"
+data-align="center">
+
+完全中央
+
+</button>
+
+</div>
+
+
+<button
+
+type="button"
+
+class="delete">
+
+削除
+
+</button>
+
+`;
+
+
+controls.appendChild(
+
+control
+
+);
+
+
+const element =
+
+document.createElement(
+
+"div"
+
+);
+
+element.className =
+
+"text";
+
+footer.appendChild(
+
+element
+
+);
+
+
+
+function update(){
+
+element.textContent =
+
+control.querySelector(
+
+".txt"
+
+).value;
+
+
+element.style.left =
+
+control.querySelector(
+
+".x"
+
+).value
+
++"px";
+
+
+element.style.top =
+
+control.querySelector(
+
+".y"
+
+).value
+
++"px";
+
+
+element.style.fontSize =
+
+control.querySelector(
+
+".size"
+
+).value
+
++"px";
+
+
+element.style.color =
+
+control.querySelector(
+
+".color"
+
+).value;
+
+}
+
+
+
+control
+
+.querySelectorAll(
+
+"input"
+
+)
+
+.forEach(
+
+e=>{
+
+e.addEventListener(
+
+"input",
+
+update
+
+);
+
+}
+
+);
+
+
+
+control
+
+.querySelector(
+
+".delete"
+
+)
+
+.onclick = ()=>{
+
+element.remove();
+
+control.remove();
+
+};
+
+
+
+update();
+
+
+
+control
+
+.querySelectorAll(
+
+".align"
+
+)
+
+.forEach(
+
+btn=>{
+
+btn.onclick = ()=>{
+
+alignText(
+
+btn.dataset.align,
+
+control,
+
+element
+
+);
+
+};
+
+}
+
+);
+
+}
+
+
+
+addText.onclick = ()=>{
+
+addText();
+
+};
+
+function alignText(
+
+type,
+
+control,
+
+element
+
+){
+
+const fw =
+
+footer.clientWidth;
+
+const fh =
+
+footer.clientHeight;
+
+
+const tw =
+
+element.offsetWidth;
+
+const th =
+
+element.offsetHeight;
+
+
+
+switch(type){
+
+
+case "left":
+
+control
+
+.querySelector(".x")
+
+.value = 0;
+
+break;
+
+
+
+case "centerX":
+
+control
+
+.querySelector(".x")
+
+.value =
+
+Math.round(
+
+(fw - tw)
+
+/ 2
+
+);
+
+break;
+
+
+
+case "right":
+
+control
+
+.querySelector(".x")
+
+.value =
+
+Math.round(
+
+fw - tw
+
+);
+
+break;
+
+
+
+case "top":
+
+control
+
+.querySelector(".y")
+
+.value = 0;
+
+break;
+
+
+
+case "centerY":
+
+control
+
+.querySelector(".y")
+
+.value =
+
+Math.round(
+
+(fh - th)
+
+/ 2
+
+);
+
+break;
+
+
+
+case "bottom":
+
+control
+
+.querySelector(".y")
+
+.value =
+
+Math.round(
+
+fh - th
+
+);
+
+break;
+
+
+
+case "center":
+
+control
+
+.querySelector(".x")
+
+.value =
+
+Math.round(
+
+(fw - tw)
+
+/ 2
+
+);
+
+
+control
+
+.querySelector(".y")
+
+.value =
+
+Math.round(
+
+(fh - th)
+
+/ 2
+
+);
+
+break;
+
+
+}
+
+
+element.style.left =
+
+control
+
+.querySelector(".x")
+
+.value + "px";
+
+
+element.style.top =
+
+control
+
+.querySelector(".y")
+
+.value + "px";
+
+}
+
+
+
+preset.value =
+
+"round";
+
+
+preset.oninput();
+
+
+
+addText(
+
+"← ツール一覧に戻る",
+
+250,
+
+15,
+
+13,
+
+"#66ccff"
+
+);
+
+
+
+addText(
+
+"Copyright © 2026 SirogomaAZARASI All Rights Reserved.",
+
+120,
+
+40,
+
+13,
+
+"#ffffff"
+
+);
+
+save.onclick = ()=>{
+
+html2canvas(
+
+footer,
+
+{
+
+backgroundColor:null,
+
+scale:3,
+
+useCORS:true
+
+}
+
+)
+
+.then(canvas=>{
+
+const a =
+
+document.createElement(
+
+"a"
+
+);
+
+
+a.download =
+
+"footer.png";
+
+
+a.href =
+
+canvas.toDataURL(
+
+"image/png"
+
+);
+
+
+a.click();
+
+});
+
+};
+
+
+
+render();
+
+</script>
+
+</body>
+</html>
