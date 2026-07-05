@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Tunable Stress Test</title>
+<style>
+body {
+    margin: 0;
+    background: #070707;
+    color: #00ff99;
+    font-family: monospace;
+}
+
+.box {
+    max-width: 750px;
+    margin: 30px auto;
+    padding: 20px;
+    border: 1px solid #00ff99;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    width: 100%;
+}
+
+button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background: #111;
+    color: #00ff99;
+    border: 1px solid #00ff99;
+}
+
+canvas {
+    width: 100%;
+    height: 250px;
+    margin-top: 10px;
+    background: black;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>CPU / GPU / Memory Stress Control</h2>
+
+<label>CPU負荷（1〜100）</label>
+<input type="range" id="cpu" min="1" max="100" value="60">
+
+<label>GPU負荷（1〜100）</label>
+<input type="range" id="gpu" min="1" max="100" value="60">
+
+<label>Memory負荷（MB）</label>
+<input type="range" id="mem" min="10" max="500" value="100">
+
+<button onclick="start()">START</button>
+<button onclick="stop()">STOP</button>
+
+<canvas id="gl"></canvas>
+<div id="status">IDLE</div>
+</div>
+
+<script>
+let workers = [];
+let gl;
+let program;
+let memory = [];
+let running = false;
+
+/* ---------------- CPU ---------------- */
+function makeWorker(cpuLevel) {
+    const blob = new Blob([`
+        let running = false;
+
+        function heavy(level) {
+            let x = 0.1;
+            const size = 15000;
+            const arr = new Array(size).fill(0);
+
+            const loops = 50000 + level * 5000;
+
+            while (running) {
+                for (let i = 0; i < loops; i++) {
+                    x = Math.sin(x + i) * Math.cos(x - i);
+
+                    arr[i % size] = (arr[i % size] ^ i) & 255;
+                }
+            }
+        }
+
+        onmessage = (e) => {
+            if (e.data.type === "start") {
+                running = true;
+                heavy(e.data.level);
+            }
+            if (e.data.type === "stop") {
+                running = false;
+            }
+        };
+    `], { type: "application/javascript" });
+
+    const w = new Worker(URL.createObjectURL(blob));
+    w.postMessage({ type: "start", level: cpuLevel });
+    return w;
+}
+
+/* ---------------- GPU ---------------- */
+function initGPU(gpuLevel) {
+    const canvas = document.getElementById("gl");
+    gl = canvas.getContext("webgl");
+
+    const vs = `
+        attribute vec4 pos;
+        void main() {
+            gl_Position = pos;
+        }
+    `;
+
+    const fs = `
+        precision highp float;
+        uniform float t;
+        uniform float level;
+
+        void main() {
+            float v = 0.0;
+
+            for (int i = 0; i < 50; i++) {
+                v += sin(float(i) * t * level) * cos(v + float(i));
+            }
+
+            gl_FragColor = vec4(vec3(v * 0.02), 1.0);
+        }
+    `;
+
+    function compile(type, src) {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        return s;
+    }
+
+    program = gl.createProgram();
+    gl.attachShader(program, compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(program);
+    gl.useProgram(program);
+
+    const vertices = new Float32Array([
+        -1,-1, 1,-1, -1,1,
+        -1,1, 1,-1, 1,1
+    ]);
+
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    const loc = gl.getAttribLocation(program, "pos");
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    const uLevel = gl.getUniformLocation(program, "level");
+
+    function loop(t) {
+        if (!running) return;
+
+        gl.uniform1f(uLevel, gpuLevel / 50);
+        gl.uniform1f(gl.getUniformLocation(program, "t"), t * 0.001);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        requestAnimationFrame(loop);
+    }
+
+    loop(performance.now());
+}
+
+/* ---------------- Memory ---------------- */
+function allocateMemory(memMB) {
+    memory = [];
+
+    const bytes = memMB * 1024 * 1024;
+
+    const blockSize = 20 * 1024 * 1024;
+    const count = Math.max(1, Math.floor(bytes / blockSize));
+
+    for (let i = 0; i < count; i++) {
+        const arr = new Uint8Array(blockSize);
+        for (let j = 0; j < blockSize; j++) {
+            arr[j] = (j * i) % 255;
+        }
+        memory.push(arr);
+    }
+}
+
+/* ---------------- Control ---------------- */
+function start() {
+    stop();
+
+    running = true;
+
+    const cpu = parseInt(document.getElementById("cpu").value);
+    const gpu = parseInt(document.getElementById("gpu").value);
+    const mem = parseInt(document.getElementById("mem").value);
+
+    document.getElementById("status").innerText =
+        `RUNNING | CPU:${cpu} GPU:${gpu} MEM:${mem}MB`;
+
+    /* CPU */
+    const cores = navigator.hardwareConcurrency || 4;
+    const cpuLevel = Math.floor(cpu / 10);
+
+    for (let i = 0; i < cores; i++) {
+        workers.push(makeWorker(cpuLevel));
+    }
+
+    /* GPU */
+    initGPU(gpu);
+
+    /* MEMORY */
+    allocateMemory(mem);
+}
+
+function stop() {
+    running = false;
+
+    workers.forEach(w => w.terminate());
+    workers = [];
+
+    memory = [];
+
+    document.getElementById("status").innerText = "STOPPED";
+}
+</script>
+
+</body>
+</html>
