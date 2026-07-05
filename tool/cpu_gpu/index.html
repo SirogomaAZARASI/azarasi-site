@@ -2,239 +2,1715 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Tunable Stress Test</title>
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Ultimate Stress Benchmark</title>
+
 <style>
-body {
-    margin: 0;
-    background: #070707;
-    color: #00ff99;
-    font-family: monospace;
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
 }
 
-.box {
-    max-width: 750px;
-    margin: 30px auto;
-    padding: 20px;
-    border: 1px solid #00ff99;
+body{
+
+background:#070707;
+color:#00ff88;
+
+font-family:
+system-ui,
+sans-serif;
+
+padding:24px;
+
 }
 
-label {
-    display: block;
-    margin-top: 10px;
+.container{
+
+max-width:1200px;
+
+margin:auto;
+
+display:grid;
+
+grid-template-columns:
+
+380px
+1fr;
+
+gap:20px;
+
 }
 
-input {
-    width: 100%;
+.panel{
+
+background:#111;
+
+border:
+
+1px solid #1f1f1f;
+
+border-radius:16px;
+
+padding:20px;
+
 }
 
-button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    background: #111;
-    color: #00ff99;
-    border: 1px solid #00ff99;
+h1{
+
+font-size:28px;
+
+margin-bottom:16px;
+
 }
 
-canvas {
-    width: 100%;
-    height: 250px;
-    margin-top: 10px;
-    background: black;
+h2{
+
+font-size:18px;
+
+margin-bottom:12px;
+
 }
+
+label{
+
+display:block;
+
+margin-top:14px;
+
+margin-bottom:8px;
+
+font-size:14px;
+
+}
+
+input[type=range]{
+
+width:100%;
+
+}
+
+select{
+
+width:100%;
+
+padding:10px;
+
+background:#181818;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+}
+
+button{
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+border-radius:10px;
+
+cursor:pointer;
+
+margin-top:12px;
+
+font-size:15px;
+
+}
+
+.start{
+
+background:#00ff88;
+
+color:black;
+
+font-weight:bold;
+
+}
+
+.stop{
+
+background:#ff4444;
+
+color:white;
+
+font-weight:bold;
+
+}
+
+.card{
+
+background:#181818;
+
+padding:16px;
+
+border-radius:12px;
+
+margin-top:14px;
+
+}
+
+.stat{
+
+display:flex;
+
+justify-content:space-between;
+
+margin-top:10px;
+
+font-size:14px;
+
+}
+
+.big{
+
+font-size:24px;
+
+font-weight:bold;
+
+}
+
+canvas{
+
+width:100%;
+height:100%;
+
+display:block;
+
+background:black;
+
+border-radius:12px;
+
+}
+
+.viewer{
+
+height:700px;
+
+}
+
+.bar{
+
+height:12px;
+
+background:#222;
+
+border-radius:999px;
+
+overflow:hidden;
+
+margin-top:6px;
+
+}
+
+.fill{
+
+height:100%;
+
+width:0%;
+
+background:#00ff88;
+
+transition:0.2s;
+
+}
+
+.status{
+
+margin-top:14px;
+
+font-size:14px;
+
+}
+
 </style>
 </head>
 <body>
 
-<div class="box">
-<h2>CPU / GPU / Memory Stress Control</h2>
+<div class="container">
 
-<label>CPU負荷（1〜100）</label>
-<input type="range" id="cpu" min="1" max="100" value="60">
+<div class="panel">
 
-<label>GPU負荷（1〜100）</label>
-<input type="range" id="gpu" min="1" max="100" value="60">
+<h1>
 
-<label>Memory負荷（MB）</label>
-<input type="range" id="mem" min="10" max="500" value="100">
+Ultimate Benchmark
 
-<button onclick="start()">START</button>
-<button onclick="stop()">STOP</button>
+</h1>
 
-<canvas id="gl"></canvas>
-<div id="status">IDLE</div>
+<h2>
+
+Preset
+
+</h2>
+
+<select id="preset">
+
+<option value="light">
+
+Light
+
+</option>
+
+<option value="heavy">
+
+Heavy
+
+</option>
+
+<option value="extreme">
+
+Extreme
+
+</option>
+
+<option value="benchmark">
+
+Benchmark
+
+</option>
+
+<option selected value="custom">
+
+Custom
+
+</option>
+
+</select>
+
+<label>
+
+CPU Load
+
+<span id="cpuLabel">
+
+70%
+
+</span>
+
+</label>
+
+<input
+
+id="cpu"
+
+type="range"
+
+min="1"
+
+max="100"
+
+value="70">
+
+<label>
+
+GPU Load
+
+<span id="gpuLabel">
+
+70%
+
+</span>
+
+</label>
+
+<input
+
+id="gpu"
+
+type="range"
+
+min="1"
+
+max="100"
+
+value="70">
+
+<label>
+
+Memory
+
+<span id="memLabel">
+
+512 MB
+
+</span>
+
+</label>
+
+<input
+
+id="memory"
+
+type="range"
+
+min="128"
+
+max="4096"
+
+value="512">
+
+<label>
+
+Duration
+
+</label>
+
+<select id="duration">
+
+<option value="30">
+
+30 sec
+
+</option>
+
+<option value="60">
+
+1 minute
+
+</option>
+
+<option value="180">
+
+3 minutes
+
+</option>
+
+<option value="300">
+
+5 minutes
+
+</option>
+
+<option value="600">
+
+10 minutes
+
+</option>
+
+</select>
+
+<button
+
+class="start"
+
+id="startBtn">
+
+START
+
+</button>
+
+<button
+
+class="stop"
+
+id="stopBtn">
+
+STOP
+
+</button>
+
+<div class="card">
+
+<div class="stat">
+
+<div>
+
+CPU
+
+</div>
+
+<div id="cpuValue">
+
+0%
+
+</div>
+
+</div>
+
+<div class="bar">
+
+<div
+
+class="fill"
+
+id="cpuBar">
+
+</div>
+
+</div>
+
+<div class="stat">
+
+<div>
+
+GPU
+
+</div>
+
+<div id="gpuValue">
+
+0%
+
+</div>
+
+</div>
+
+<div class="bar">
+
+<div
+
+class="fill"
+
+id="gpuBar">
+
+</div>
+
+</div>
+
+<div class="stat">
+
+<div>
+
+Memory
+
+</div>
+
+<div id="memValue">
+
+0 MB
+
+</div>
+
+</div>
+
+<div class="bar">
+
+<div
+
+class="fill"
+
+id="memBar">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="stat">
+
+<div>
+
+FPS
+
+</div>
+
+<div
+
+class="big"
+
+id="fps">
+
+0
+
+</div>
+
+</div>
+
+<div class="stat">
+
+<div>
+
+Elapsed
+
+</div>
+
+<div
+
+class="big"
+
+id="elapsed">
+
+00:00
+
+</div>
+
+</div>
+
+<div class="stat">
+
+<div>
+
+Score
+
+</div>
+
+<div
+
+class="big"
+
+id="score">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+<div
+
+class="status"
+
+id="status">
+
+Idle
+
+</div>
+
+</div>
+
+<div class="panel viewer">
+
+<canvas id="canvas"></canvas>
+
+</div>
+
 </div>
 
 <script>
-let workers = [];
-let gl;
-let program;
-let memory = [];
-let running = false;
 
-/* ---------------- CPU ---------------- */
-function makeWorker(cpuLevel) {
-    const blob = new Blob([`
-        let running = false;
+const cpuSlider=
 
-        function heavy(level) {
-            let x = 0.1;
-            const size = 15000;
-            const arr = new Array(size).fill(0);
+document.getElementById(
+"cpu"
+);
 
-            const loops = 50000 + level * 5000;
+const gpuSlider=
 
-            while (running) {
-                for (let i = 0; i < loops; i++) {
-                    x = Math.sin(x + i) * Math.cos(x - i);
+document.getElementById(
+"gpu"
+);
 
-                    arr[i % size] = (arr[i % size] ^ i) & 255;
-                }
-            }
-        }
+const memSlider=
 
-        onmessage = (e) => {
-            if (e.data.type === "start") {
-                running = true;
-                heavy(e.data.level);
-            }
-            if (e.data.type === "stop") {
-                running = false;
-            }
-        };
-    `], { type: "application/javascript" });
+document.getElementById(
+"memory"
+);
 
-    const w = new Worker(URL.createObjectURL(blob));
-    w.postMessage({ type: "start", level: cpuLevel });
-    return w;
+const cpuLabel=
+
+document.getElementById(
+"cpuLabel"
+);
+
+const gpuLabel=
+
+document.getElementById(
+"gpuLabel"
+);
+
+const memLabel=
+
+document.getElementById(
+"memLabel"
+);
+
+cpuSlider.oninput=()=>{
+
+cpuLabel.textContent=
+
+cpuSlider.value+
+
+"%";
+
+};
+
+gpuSlider.oninput=()=>{
+
+gpuLabel.textContent=
+
+gpuSlider.value+
+
+"%";
+
+};
+
+memSlider.oninput=()=>{
+
+memLabel.textContent=
+
+memSlider.value+
+
+" MB";
+
+};
+
+let workers=[];
+
+let running=false;
+
+let memoryBlocks=[];
+
+let startTime=0;
+
+let frameCount=0;
+
+let fps=0;
+
+let score=0;
+
+let animationId;
+
+const canvas=
+
+document.getElementById(
+"canvas"
+);
+
+const gl=
+
+canvas.getContext(
+"webgl"
+);
+
+canvas.width=
+
+1200;
+
+canvas.height=
+
+700;
+
+const vertexShaderSource = `
+attribute vec2 position;
+
+void main(){
+
+    gl_Position = vec4(
+        position,
+        0.0,
+        1.0
+    );
+
+}
+`;
+
+const fragmentShaderSource = `
+
+precision highp float;
+
+uniform float time;
+uniform float load;
+uniform vec2 resolution;
+
+float hash(vec2 p){
+
+    return fract(
+        sin(
+            dot(
+                p,
+                vec2(
+                    127.1,
+                    311.7
+                )
+            )
+        ) * 43758.5453123
+    );
+
 }
 
-/* ---------------- GPU ---------------- */
-function initGPU(gpuLevel) {
-    const canvas = document.getElementById("gl");
-    gl = canvas.getContext("webgl");
+void main(){
 
-    const vs = `
-        attribute vec4 pos;
-        void main() {
-            gl_Position = pos;
+    vec2 uv =
+
+        gl_FragCoord.xy
+
+        /
+
+        resolution.xy;
+
+    float v = 0.0;
+
+    int loops =
+
+        int(
+
+            50.0 +
+
+            load *
+
+            4.0
+
+        );
+
+    for(
+
+        int i = 0;
+
+        i < 450;
+
+        i++
+
+    ){
+
+        if(
+
+            i > loops
+
+        ){
+
+            break;
+
         }
-    `;
 
-    const fs = `
-        precision highp float;
-        uniform float t;
-        uniform float level;
+        float t =
 
-        void main() {
-            float v = 0.0;
+            float(i)
 
-            for (int i = 0; i < 50; i++) {
-                v += sin(float(i) * t * level) * cos(v + float(i));
-            }
+            *
 
-            gl_FragColor = vec4(vec3(v * 0.02), 1.0);
-        }
-    `;
+            0.01
 
-    function compile(type, src) {
-        const s = gl.createShader(type);
-        gl.shaderSource(s, src);
-        gl.compileShader(s);
-        return s;
+            +
+
+            time;
+
+        v +=
+
+            sin(
+
+                uv.x *
+
+                30.0 *
+
+                t
+
+            )
+
+            *
+
+            cos(
+
+                uv.y *
+
+                30.0 *
+
+                t
+
+            );
+
+        v +=
+
+            hash(
+
+                uv +
+
+                vec2(
+
+                    t
+
+                )
+
+            );
+
     }
 
-    program = gl.createProgram();
-    gl.attachShader(program, compile(gl.VERTEX_SHADER, vs));
-    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fs));
-    gl.linkProgram(program);
-    gl.useProgram(program);
+    vec3 c =
 
-    const vertices = new Float32Array([
-        -1,-1, 1,-1, -1,1,
-        -1,1, 1,-1, 1,1
-    ]);
+        vec3(
 
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            abs(v)
 
-    const loc = gl.getAttribLocation(program, "pos");
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        );
 
-    const uLevel = gl.getUniformLocation(program, "level");
+    gl_FragColor =
 
-    function loop(t) {
-        if (!running) return;
+        vec4(
 
-        gl.uniform1f(uLevel, gpuLevel / 50);
-        gl.uniform1f(gl.getUniformLocation(program, "t"), t * 0.001);
+            c,
 
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+            1.0
 
-        requestAnimationFrame(loop);
-    }
+        );
 
-    loop(performance.now());
 }
 
-/* ---------------- Memory ---------------- */
-function allocateMemory(memMB) {
-    memory = [];
+`;
 
-    const bytes = memMB * 1024 * 1024;
+function compile(type, src){
 
-    const blockSize = 20 * 1024 * 1024;
-    const count = Math.max(1, Math.floor(bytes / blockSize));
+    const shader =
 
-    for (let i = 0; i < count; i++) {
-        const arr = new Uint8Array(blockSize);
-        for (let j = 0; j < blockSize; j++) {
-            arr[j] = (j * i) % 255;
-        }
-        memory.push(arr);
-    }
+        gl.createShader(type);
+
+    gl.shaderSource(
+
+        shader,
+
+        src
+
+    );
+
+    gl.compileShader(
+
+        shader
+
+    );
+
+    return shader;
+
 }
 
-/* ---------------- Control ---------------- */
-function start() {
-    stop();
+const vs = compile(
+
+    gl.VERTEX_SHADER,
+
+    vertexShaderSource
+
+);
+
+const fs = compile(
+
+    gl.FRAGMENT_SHADER,
+
+    fragmentShaderSource
+
+);
+
+const program =
+
+    gl.createProgram();
+
+gl.attachShader(
+
+    program,
+
+    vs
+
+);
+
+gl.attachShader(
+
+    program,
+
+    fs
+
+);
+
+gl.linkProgram(
+
+    program
+
+);
+
+gl.useProgram(
+
+    program
+
+);
+
+const vertices =
+
+new Float32Array([
+
+-1,-1,
+
+1,-1,
+
+-1,1,
+
+1,1
+
+]);
+
+const buffer =
+
+gl.createBuffer();
+
+gl.bindBuffer(
+
+    gl.ARRAY_BUFFER,
+
+    buffer
+
+);
+
+gl.bufferData(
+
+    gl.ARRAY_BUFFER,
+
+    vertices,
+
+    gl.STATIC_DRAW
+
+);
+
+const pos =
+
+gl.getAttribLocation(
+
+program,
+
+"position"
+
+);
+
+gl.enableVertexAttribArray(
+
+pos
+
+);
+
+gl.vertexAttribPointer(
+
+pos,
+
+2,
+
+gl.FLOAT,
+
+false,
+
+0,
+
+0
+
+);
+
+const timeUniform =
+
+gl.getUniformLocation(
+
+program,
+
+"time"
+
+);
+
+const loadUniform =
+
+gl.getUniformLocation(
+
+program,
+
+"load"
+
+);
+
+const resUniform =
+
+gl.getUniformLocation(
+
+program,
+
+"resolution"
+
+);
+
+function makeWorker(load){
+
+const blob =
+
+new Blob([`
+
+let running=true;
+
+onmessage=function(e){
+
+const power=e.data;
+
+let x=0;
+
+while(running){
+
+for(
+
+let i=0;
+
+i<power;
+
+i++
+
+){
+
+x+=
+
+Math.sin(i)
+
+*
+
+Math.cos(i);
+
+}
+
+}
+
+}
+
+`],
+
+{
+
+type:
+
+"application/javascript"
+
+}
+
+);
+
+const url=
+
+URL.createObjectURL(
+
+blob
+
+);
+
+const w=
+
+new Worker(url);
+
+w.postMessage(load);
+
+return w;
+
+}
+
+function allocateMemory(){
+
+memoryBlocks=[];
+
+const mb=
+
+parseInt(
+
+memSlider.value
+
+);
+
+const total =
+
+mb *
+
+1024 *
+
+1024;
+
+const part=
+
+32 *
+
+1024 *
+
+1024;
+
+let used=0;
+
+while(
+
+used<total
+
+){
+
+memoryBlocks.push(
+
+new Uint8Array(
+
+part
+
+)
+
+);
+
+used+=part;
+
+}
+
+}
+
+function applyPreset(){
+
+const p=
+
+document.getElementById(
+
+"preset"
+
+).value;
+
+if(
+
+p==="light"
+
+){
+
+cpuSlider.value=30;
+
+gpuSlider.value=30;
+
+memSlider.value=256;
+
+}
+
+if(
+
+p==="heavy"
+
+){
+
+cpuSlider.value=70;
+
+gpuSlider.value=70;
+
+memSlider.value=1024;
+
+}
+
+if(
+
+p==="extreme"
+
+){
+
+cpuSlider.value=100;
+
+gpuSlider.value=100;
+
+memSlider.value=2048;
+
+}
+
+if(
+
+p==="benchmark"
+
+){
+
+cpuSlider.value=100;
+
+gpuSlider.value=100;
+
+memSlider.value=4096;
+
+}
+
+cpuLabel.textContent=
+
+cpuSlider.value+
+
+"%";
+
+gpuLabel.textContent=
+
+gpuSlider.value+
+
+"%";
+
+memLabel.textContent=
+
+memSlider.value+
+
+" MB";
+
+}
+
+document
+
+.getElementById(
+
+"preset"
+
+)
+
+.onchange=
+
+applyPreset;
+
+function updateBars(){
+
+cpuBar.style.width=
+
+cpuSlider.value+
+
+"%";
+
+gpuBar.style.width=
+
+gpuSlider.value+
+
+"%";
+
+memBar.style.width=
+
+(
+
+memSlider.value
+
+/
+
+4096
+
+)
+
+*
+
+100
+
++
+
+"%";
+
+cpuValue.textContent=
+
+cpuSlider.value+
+
+"%";
+
+gpuValue.textContent=
+
+gpuSlider.value+
+
+"%";
+
+memValue.textContent=
+
+memSlider.value+
+
+" MB";
+
+}
+
+function startBenchmark(){
+
+    stopBenchmark();
 
     running = true;
 
-    const cpu = parseInt(document.getElementById("cpu").value);
-    const gpu = parseInt(document.getElementById("gpu").value);
-    const mem = parseInt(document.getElementById("mem").value);
+    startTime = performance.now();
 
-    document.getElementById("status").innerText =
-        `RUNNING | CPU:${cpu} GPU:${gpu} MEM:${mem}MB`;
+    frameCount = 0;
+
+    score = 0;
+
+    status.textContent =
+        "Running";
+
+    updateBars();
 
     /* CPU */
-    const cores = navigator.hardwareConcurrency || 4;
-    const cpuLevel = Math.floor(cpu / 10);
 
-    for (let i = 0; i < cores; i++) {
-        workers.push(makeWorker(cpuLevel));
+    const cpuLoad =
+
+        parseInt(
+            cpuSlider.value
+        );
+
+    const threads =
+
+        navigator.hardwareConcurrency
+        || 4;
+
+    const iterations =
+
+        cpuLoad
+        *
+        100000;
+
+    for(
+
+        let i=0;
+
+        i<threads;
+
+        i++
+
+    ){
+
+        workers.push(
+
+            makeWorker(
+
+                iterations
+
+            )
+
+        );
+
     }
 
-    /* GPU */
-    initGPU(gpu);
+    /* Memory */
 
-    /* MEMORY */
-    allocateMemory(mem);
+    allocateMemory();
+
+    /* GPU */
+
+    render();
+
 }
 
-function stop() {
+function stopBenchmark(){
+
     running = false;
 
-    workers.forEach(w => w.terminate());
-    workers = [];
+    cancelAnimationFrame(
 
-    memory = [];
+        animationId
 
-    document.getElementById("status").innerText = "STOPPED";
+    );
+
+    workers.forEach(
+
+        w=>{
+
+            w.terminate();
+
+        }
+
+    );
+
+    workers=[];
+
+    memoryBlocks=[];
+
+    score = 0;
+
+    status.textContent =
+        "Stopped";
+
 }
+
+document
+
+.getElementById(
+
+"startBtn"
+
+)
+
+.onclick=
+
+startBenchmark;
+
+document
+
+.getElementById(
+
+"stopBtn"
+
+)
+
+.onclick=
+
+stopBenchmark;
+
+function render(){
+
+    if(
+
+        !running
+
+    ){
+
+        return;
+
+    }
+
+    animationId=
+
+    requestAnimationFrame(
+
+        render
+
+    );
+
+    frameCount++;
+
+    const now =
+
+        performance.now();
+
+    const elapsed =
+
+        (
+
+            now
+
+            -
+
+            startTime
+
+        )
+
+        /
+
+        1000;
+
+    const gpuLoad =
+
+        parseFloat(
+
+            gpuSlider.value
+
+        );
+
+    gl.viewport(
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+    gl.uniform1f(
+
+        timeUniform,
+
+        elapsed
+
+    );
+
+    gl.uniform1f(
+
+        loadUniform,
+
+        gpuLoad
+
+    );
+
+    gl.uniform2f(
+
+        resUniform,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+    gl.drawArrays(
+
+        gl.TRIANGLE_STRIP,
+
+        0,
+
+        4
+
+    );
+
+    fps =
+
+        frameCount
+
+        /
+
+        elapsed;
+
+    document
+
+    .getElementById(
+
+        "fps"
+
+    )
+
+    .textContent=
+
+    fps.toFixed(
+
+        1
+
+    );
+
+    const mins=
+
+    Math.floor(
+
+        elapsed
+
+        /
+
+        60
+
+    );
+
+    const secs=
+
+    Math.floor(
+
+        elapsed
+
+        %
+
+        60
+
+    );
+
+    elapsedLabel
+
+    .textContent=
+
+    String(
+
+        mins
+
+    )
+
+    .padStart(
+
+        2,
+
+        "0"
+
+    )
+
+    +
+
+    ":"
+
+    +
+
+    String(
+
+        secs
+
+    )
+
+    .padStart(
+
+        2,
+
+        "0"
+
+    );
+
+    score =
+
+        Math.floor(
+
+            (
+
+                fps
+
+                *
+
+                parseInt(
+
+                    cpuSlider.value
+
+                )
+
+            )
+
+            +
+
+            (
+
+                parseInt(
+
+                    gpuSlider.value
+
+                )
+
+                *
+
+                100
+
+            )
+
+            +
+
+            (
+
+                parseInt(
+
+                    memSlider.value
+
+                )
+
+                /
+
+                2
+
+            )
+
+        );
+
+    scoreLabel
+
+    .textContent=
+
+    score;
+
+    const limit =
+
+        parseInt(
+
+            duration.value
+
+        );
+
+    if(
+
+        elapsed
+
+        >=
+
+        limit
+
+    ){
+
+        stopBenchmark();
+
+        status.textContent=
+
+        "Completed";
+
+    }
+
+}
+
+setInterval(
+
+()=>{
+
+    if(
+
+        !running
+
+    ){
+
+        return;
+
+    }
+
+    updateBars();
+
+},
+
+250
+
+);
+
+updateBars();
+
 </script>
 
 </body>
