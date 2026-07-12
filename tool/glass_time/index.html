@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ガラス時計 | AZAtool</title>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-DK3VQGQTWC');
+</script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+height:100vh;
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+font-family:Arial, Helvetica, sans-serif;
+background:radial-gradient(circle at top,#ffffff,#dfe7ef);
+}
+
+.app{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:28px;
+}
+
+/* =======================
+   時計盤
+======================= */
+
+.clock{
+position:relative;
+width:540px;
+height:540px;
+border-radius:50%;
+overflow:hidden;
+
+background:rgba(255,255,255,.72);
+border:1px solid rgba(255,255,255,.5);
+
+backdrop-filter:blur(24px);
+-webkit-backdrop-filter:blur(24px);
+
+box-shadow:
+0 25px 60px rgba(0,0,0,.12),
+inset 0 2px 3px rgba(255,255,255,.95),
+inset 0 -4px 10px rgba(0,0,0,.04);
+}
+
+/* =======================
+   液体リング
+======================= */
+
+.liquidRing{
+position:absolute;
+inset:0;
+z-index:2;
+pointer-events:none;
+}
+
+#liquid{
+fill:none;
+stroke:rgba(0,220,255,0.75);
+stroke-width:14;
+stroke-linecap:round;
+filter:drop-shadow(0 0 10px rgba(0,220,255,0.7));
+
+stroke-dasharray:1539;
+stroke-dashoffset:1539;
+opacity:0;
+transition:stroke-dashoffset .1s linear;
+}
+
+/* =======================
+   目盛り
+======================= */
+
+.tick{
+position:absolute;
+left:50%;
+top:50%;
+z-index:3;
+}
+
+.hourTick{
+width:4px;
+height:24px;
+border-radius:99px;
+background:rgba(0,0,0,.55);
+}
+
+.minuteTick{
+width:2px;
+height:10px;
+border-radius:99px;
+background:rgba(0,0,0,.18);
+}
+
+/* =======================
+   ガラス玉針
+======================= */
+
+.hand{
+position:absolute;
+left:50%;
+top:50%;
+width:0;
+height:0;
+z-index:20;
+}
+
+.ball{
+position:absolute;
+border-radius:50%;
+backdrop-filter:blur(18px) saturate(260%);
+border:1px solid rgba(255,255,255,0.45);
+box-shadow:
+inset 0 1px 2px rgba(255,255,255,0.8),
+inset 8px 8px 18px rgba(255,255,255,0.2),
+inset -8px -8px 18px rgba(255,255,255,0.08),
+0 12px 24px rgba(0,0,0,0.15);
+}
+
+.hourBall{
+width:48px;height:48px;
+left:-24px;top:-175px;
+background:linear-gradient(135deg,#7abeff,#3a7dff);
+}
+
+.minuteBall{
+width:36px;height:36px;
+left:-18px;top:-225px;
+background:linear-gradient(135deg,#00ffb4,#00aa77);
+}
+
+.secondBall{
+width:24px;height:24px;
+left:-12px;top:-250px;
+background:linear-gradient(135deg,#ff8080,#ff3030);
+}
+
+/* =======================
+   中央表示
+======================= */
+
+.display{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+z-index:30;
+
+padding:18px 26px;
+border-radius:18px;
+
+background:rgba(255,255,255,0.10);
+border:1px solid rgba(255,255,255,0.35);
+
+backdrop-filter:blur(18px);
+
+box-shadow:
+inset 0 1px 2px rgba(255,255,255,0.35),
+0 5px 20px rgba(0,0,0,0.08);
+}
+
+.display span{
+font-family:monospace;
+font-size:38px;
+font-weight:700;
+letter-spacing:3px;
+color:#5fd0ff;
+text-shadow:0 0 8px rgba(95,208,255,0.8);
+}
+
+/* =======================
+   MODE
+======================= */
+
+.mode{
+position:absolute;
+top:82%;
+left:50%;
+transform:translateX(-50%);
+font-size:14px;
+color:rgba(0,0,0,0.45);
+letter-spacing:2px;
+}
+
+/* =======================
+   CONTROLS
+======================= */
+
+.controls{
+display:flex;
+gap:14px;
+}
+
+button{
+border:none;
+padding:14px 24px;
+border-radius:16px;
+cursor:pointer;
+background:rgba(255,255,255,0.16);
+backdrop-filter:blur(16px);
+border:1px solid rgba(255,255,255,0.35);
+transition:.25s;
+}
+
+button:hover{ transform:translateY(-2px); }
+
+button.active{
+background:rgba(90,190,255,0.22);
+}
+
+/* TIMER INPUT */
+.timerInput{
+width:90px;
+padding:12px;
+border:none;
+outline:none;
+text-align:center;
+border-radius:14px;
+background:rgba(255,255,255,0.18);
+}
+
+.hidden{ display:none; }
+
+/* ★追加（約500行目付近） */
+.hidden{
+  display:none;
+}
+
+.panel{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
+/*=====================
+ タイマー終了画面
+=====================*/
+
+#finishScreen{
+
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+
+background:rgba(255,255,255,.88);
+backdrop-filter:blur(25px);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+z-index:999;
+}
+
+#finishScreen.hidden{
+display:none;
+}
+
+.finishBox{
+
+display:flex;
+flex-direction:column;
+gap:20px;
+align-items:center;
+
+padding:50px;
+
+background:white;
+
+border-radius:30px;
+
+box-shadow:
+0 20px 60px rgba(0,0,0,.2);
+
+}
+
+.finishBox h1{
+
+font-size:60px;
+color:#00bfff;
+
+}
+
+.finishBox button{
+
+font-size:24px;
+padding:18px 45px;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="clock" id="clock">
+
+<div class="liquidRing">
+<svg viewBox="0 0 540 540">
+<circle id="liquid" cx="270" cy="270" r="245"/>
+</svg>
+</div>
+
+<div class="display"><span id="display">00:00:00</span></div>
+<div class="mode" id="modeLabel">CLOCK</div>
+
+<div class="hand" id="hour"><div class="ball hourBall"></div></div>
+<div class="hand" id="minute"><div class="ball minuteBall"></div></div>
+<div class="hand" id="second"><div class="ball secondBall"></div></div>
+
+</div>
+
+<!-- ★ここに挿入（削除したcontrols1の位置） -->
+<div class="controls">
+  <button id="clockBtn">時計</button>
+  <button id="timerBtn">タイマー</button>
+  <button id="swBtn">ストップウォッチ</button>
+</div>
+
+<!-- ★ここに挿入（削除したcontrols2の位置） -->
+<div class="controls hidden" id="timerPanel">
+
+  <button id="tStartBtn">開始</button>
+  <button id="tPauseBtn">停止</button>
+  <button id="tResetBtn">リセット(更新)</button>
+
+  <div style="display:flex; gap:10px; margin-top:10px;">
+    <input id="timerHour" class="timerInput" type="number" min="0" value="0">
+    <input id="timerMin" class="timerInput" type="number" min="0" value="5">
+    <input id="timerSec" class="timerInput" type="number" min="0" value="0">
+  </div>
+
+</div>
+
+<!-- ★ここに挿入（削除したcontrols3の位置） -->
+<div class="controls hidden" id="swPanel">
+
+  <button id="swStartBtn">開始</button>
+  <button id="swPauseBtn">停止</button>
+  <button id="swResetBtn">リセット</button>
+
+</div>
+
+</div>
+
+<!-- タイマー終了画面 -->
+<div id="finishScreen" class="hidden">
+
+    <div class="finishBox">
+
+        <h1>⏰ TIME UP</h1>
+
+        <button id="stopAlarmBtn">
+            停止
+        </button>
+
+        <button id="againBtn">
+            もう一度
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+/* ======================
+   要素取得
+====================== */
+
+const display = document.getElementById("display");
+const modeLabel = document.getElementById("modeLabel");
+
+const hour = document.getElementById("hour");
+const minute = document.getElementById("minute");
+const second = document.getElementById("second");
+
+const liquid = document.getElementById("liquid");
+
+const timerHour = document.getElementById("timerHour");
+const timerMin = document.getElementById("timerMin");
+const timerSec = document.getElementById("timerSec");
+
+const clockBtn = document.getElementById("clockBtn");
+const timerBtn = document.getElementById("timerBtn");
+const swBtn = document.getElementById("swBtn");
+
+const tStartBtn = document.getElementById("tStartBtn");
+const tPauseBtn = document.getElementById("tPauseBtn");
+const tResetBtn = document.getElementById("tResetBtn");
+
+const swStartBtn = document.getElementById("swStartBtn");
+const swPauseBtn = document.getElementById("swPauseBtn");
+const swResetBtn = document.getElementById("swResetBtn");
+
+const finishScreen = document.getElementById("finishScreen");
+const stopAlarmBtn = document.getElementById("stopAlarmBtn");
+const againBtn = document.getElementById("againBtn");
+
+/* ======================
+   状態
+====================== */
+
+let mode = "clock";
+let running = false;
+
+let timerDuration = 0;
+let timerRemain = 0;
+let timerStart = 0;
+
+let swElapsed = 0;
+let swStart = 0;
+
+let alarmPlaying=false;
+
+const audioCtx =
+new (window.AudioContext||window.webkitAudioContext)();
+
+let oscillator;
+
+/* ======================
+   リング
+====================== */
+
+const CIRC = 1539;
+liquid.style.strokeDasharray = CIRC;
+liquid.style.strokeDashoffset = CIRC;
+
+/* ======================
+   目盛り生成（完全復元）
+====================== */
+
+const radius = 236;
+
+for (let i = 0; i < 60; i++) {
+
+  const tick = document.createElement("div");
+  tick.className = "tick";
+
+  const mark = document.createElement("div");
+  mark.className = i % 5 === 0 ? "hourTick" : "minuteTick";
+
+  const angle = i * 6 * Math.PI / 180;
+
+  const x = Math.sin(angle) * radius;
+  const y = -Math.cos(angle) * radius;
+
+  tick.style.left = `calc(50% + ${x}px)`;
+  tick.style.top = `calc(50% + ${y}px)`;
+  tick.style.transform = `translate(-50%,-50%) rotate(${i*6}deg)`;
+
+  tick.appendChild(mark);
+  document.getElementById("clock").appendChild(tick);
+}
+
+/* ======================
+   ユーティリティ
+====================== */
+
+function pad(n){
+  return String(Math.floor(n)).padStart(2,"0");
+}
+
+function startAlarm(){
+
+if(alarmPlaying)return;
+
+alarmPlaying=true;
+
+oscillator=audioCtx.createOscillator();
+
+const gain=audioCtx.createGain();
+
+oscillator.type="sine";
+
+oscillator.frequency.value=880;
+
+gain.gain.value=0.2;
+
+oscillator.connect(gain);
+gain.connect(audioCtx.destination);
+
+oscillator.start();
+
+oscillator.frequency.setValueAtTime(
+880,
+audioCtx.currentTime
+);
+
+oscillator.frequency.setValueAtTime(
+660,
+audioCtx.currentTime+0.4
+);
+
+oscillator.frequency.setValueAtTime(
+880,
+audioCtx.currentTime+0.8
+);
+
+oscillator.frequency.setValueAtTime(
+660,
+audioCtx.currentTime+1.2
+);
+
+oscillator.frequency.setValueAtTime(
+880,
+audioCtx.currentTime+1.6
+);
+
+oscillator.loop=true;
+
+finishScreen.classList.remove("hidden");
+
+}
+
+function stopAlarm(){
+
+if(!alarmPlaying)return;
+
+alarmPlaying=false;
+
+oscillator.stop();
+
+finishScreen.classList.add("hidden");
+
+}
+
+/* ======================
+   針更新（常時CLOCK）
+====================== */
+
+function updateHands(){
+
+  const now = new Date();
+
+  const sec = now.getSeconds() + now.getMilliseconds()/1000;
+  const min = now.getMinutes() + sec/60;
+  const hr = (now.getHours()%12) + min/60;
+
+  hour.style.transform =
+    `translate(-50%,-50%) rotate(${hr*30}deg)`;
+
+  minute.style.transform =
+    `translate(-50%,-50%) rotate(${min*6}deg)`;
+
+  second.style.transform =
+    `translate(-50%,-50%) rotate(${sec*6}deg)`;
+}
+
+/* ======================
+   タイマー取得
+====================== */
+
+function getTimer(){
+  return (
+    (+timerHour.value)*3600 +
+    (+timerMin.value)*60 +
+    (+timerSec.value)
+  );
+}
+
+/* ======================
+   表示更新ループ（次Part3）
+====================== */
+
+function update(){
+
+/* ======================
+   CLOCK
+====================== */
+if(mode==="clock"){
+
+  const now = new Date();
+
+  display.textContent =
+    pad(now.getHours()) + ":" +
+    pad(now.getMinutes()) + ":" +
+    pad(now.getSeconds());
+
+  modeLabel.textContent = "CLOCK";
+
+  liquid.style.opacity = 0;
+}
+
+/* ======================
+   TIMER
+====================== */
+if(mode==="timer"){
+
+  if(running){
+
+    const elapsed = (Date.now() - timerStart) / 1000;
+    timerRemain = Math.max(0, timerDuration - elapsed);
+
+  }
+
+  const h = Math.floor(timerRemain / 3600);
+  const m = Math.floor((timerRemain % 3600) / 60);
+  const s = Math.floor(timerRemain % 60);
+
+  display.textContent =
+    pad(h) + ":" + pad(m) + ":" + pad(s);
+
+  modeLabel.textContent = "TIMER";
+
+  const progress = 1 - (timerRemain / timerDuration);
+
+  liquid.style.opacity = 1;
+  liquid.style.strokeDashoffset =
+    CIRC - (progress * CIRC);
+
+if(timerRemain<=0 && running){
+
+running=false;
+
+liquid.style.filter=
+"drop-shadow(0 0 25px cyan) drop-shadow(0 0 40px cyan)";
+
+startAlarm();
+
+}
+
+}
+
+/* ======================
+   STOPWATCH
+====================== */
+if(mode==="stopwatch"){
+
+  let t = swElapsed;
+
+  if(running){
+    t += (Date.now() - swStart) / 1000;
+  }
+
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60);
+  const ms = Math.floor((t % 1) * 100);
+
+  display.textContent =
+    pad(m) + ":" + pad(s) + "." + pad(ms);
+
+  modeLabel.textContent = "STOPWATCH";
+
+  liquid.style.opacity = 0;
+}
+
+/* ======================
+   HANDS（常時）
+====================== */
+updateHands();
+
+/* ======================
+   LOOP
+====================== */
+requestAnimationFrame(update);
+}
+
+const timerPanel = document.getElementById("timerPanel");
+const swPanel = document.getElementById("swPanel");
+
+function updatePanels(){
+
+  timerPanel.classList.add("hidden");
+  swPanel.classList.add("hidden");
+
+  if(mode === "timer"){
+    timerPanel.classList.remove("hidden");
+  }
+
+  if(mode === "stopwatch"){
+    swPanel.classList.remove("hidden");
+  }
+}
+
+/* ======================
+   モード切替
+====================== */
+
+clockBtn.onclick = () => {
+  mode = "clock";
+  running = false;
+  updatePanels();
+};
+
+timerBtn.onclick = () => {
+  mode = "timer";
+  running = false;
+  timerDuration = getTimer();
+  timerRemain = timerDuration;
+  updatePanels();
+};
+
+swBtn.onclick = () => {
+  mode = "stopwatch";
+  running = false;
+  swElapsed = 0;
+  updatePanels();
+};
+
+tStartBtn.onclick = () => {
+  tDuration = getTimer();
+  if(timerRemain <= 0) timerRemain = timerDuration;
+
+  timerStart =
+    Date.now() - (timerDuration - timerRemain) * 1000;
+
+  running = true;
+};
+
+tPauseBtn.onclick = () => {
+  const elapsed = (Date.now() - timerStart) / 1000;
+  timerRemain = Math.max(0, timerDuration - elapsed);
+  running = false;
+};
+
+tResetBtn.onclick = () => {
+  running = false;
+  timerDuration = getTimer();
+  timerRemain = timerDuration;
+  liquid.style.strokeDashoffset = CIRC;
+};
+
+swStartBtn.onclick = () => {
+  swStart = Date.now();
+  running = true;
+};
+
+swPauseBtn.onclick = () => {
+  if(running){
+    swElapsed += (Date.now() - swStart) / 1000;
+  }
+  running = false;
+};
+
+swResetBtn.onclick = () => {
+  swElapsed = 0;
+  running = false;
+};
+
+stopAlarmBtn.onclick=()=>{
+
+stopAlarm();
+
+};
+
+againBtn.onclick=()=>{
+
+stopAlarm();
+
+timerDuration=getTimer();
+timerRemain=timerDuration;
+
+mode="timer";
+
+};
+
+/* ======================
+   INIT
+====================== */
+
+update();
+updatePanels();
+</script>
+
+</body>
+</html>
