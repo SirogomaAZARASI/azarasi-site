@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>抽選ツール | AZAtool</title>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-DK3VQGQTWC');
+</script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#eef3f8;
+    --card:#ffffff;
+    --border:#d6dde5;
+    --accent:#2563eb;
+    --accent2:#1d4ed8;
+    --green:#22c55e;
+    --orange:#f59e0b;
+    --red:#ef4444;
+    --gray:#9ca3af;
+    --text:#222;
+}
+
+body{
+    background:var(--bg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--text);
+    padding:20px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+    font-size:38px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:380px 1fr;
+    gap:20px;
+}
+
+@media(max-width:900px){
+.grid{
+grid-template-columns:1fr;
+}
+}
+
+.card{
+    background:var(--card);
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+}
+
+.sectionTitle{
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+input[type=number],
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    font-size:17px;
+}
+
+textarea{
+    resize:vertical;
+    min-height:90px;
+}
+
+.check{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:18px;
+}
+
+button{
+    width:100%;
+    border:none;
+    border-radius:14px;
+    padding:15px;
+    margin-top:12px;
+    font-size:18px;
+    cursor:pointer;
+    transition:.25s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+#drawBtn{
+    background:var(--accent);
+    color:white;
+}
+
+#drawBtn:hover{
+    background:var(--accent2);
+}
+
+#resetBtn{
+    background:#e5e7eb;
+}
+
+#csvBtn{
+    background:var(--green);
+    color:white;
+}
+
+#saveBtn{
+    background:#7c3aed;
+    color:white;
+}
+
+.resultArea{
+    text-align:center;
+}
+
+#result{
+    margin:20px 0;
+    font-size:90px;
+    font-weight:bold;
+    color:var(--accent);
+    min-height:120px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.info{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.infoBox{
+    background:#f8fafc;
+    border-radius:14px;
+    padding:15px;
+    text-align:center;
+}
+
+.infoBox h2{
+    font-size:15px;
+    color:#666;
+    margin-bottom:10px;
+}
+
+.infoBox span{
+    font-size:34px;
+    font-weight:bold;
+}
+
+.columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-top:20px;
+}
+
+@media(max-width:700px){
+.columns{
+grid-template-columns:1fr;
+}
+}
+
+.list{
+    background:#f8fafc;
+    border-radius:12px;
+    padding:10px;
+    height:420px;
+    overflow:auto;
+}
+
+.list h3{
+    text-align:center;
+    margin-bottom:10px;
+}
+
+#history{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.historyItem{
+    background:white;
+    border-radius:8px;
+    padding:8px 12px;
+}
+
+#countList{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.countItem{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 12px;
+    border-radius:8px;
+    color:white;
+}
+
+.green{
+    background:var(--green);
+}
+
+.orange{
+    background:var(--orange);
+}
+
+.red{
+    background:var(--red);
+}
+
+.gray{
+    background:var(--gray);
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#666;
+}
+
+.progress{
+    width:100%;
+    height:18px;
+    background:#dbe4ee;
+    border-radius:999px;
+    overflow:hidden;
+    margin-top:15px;
+}
+
+.progressBar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#2563eb,#06b6d4);
+    transition:.3s;
+}
+
+.small{
+    margin-top:10px;
+    text-align:center;
+    color:#666;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>抽選ツール</h1>
+
+<div class="grid">
+
+<div class="card">
+
+<div class="sectionTitle">
+設定
+</div>
+
+<label>最小値</label>
+<input type="number" id="min" value="1">
+
+<label>最大値</label>
+<input type="number" id="max" value="100">
+
+<label>1つの数字の最大出現回数</label>
+<input type="number" id="maxCount" value="1" min="1">
+
+<label>除外する数字（カンマ・改行どちらでも可）</label>
+
+<textarea id="exclude"
+placeholder="5,8,10
+25
+80"></textarea>
+
+<div class="check">
+<input type="checkbox" id="unique">
+<label for="unique">
+重複禁止（1回出たら終了）
+</label>
+</div>
+
+<button id="drawBtn">
+🎲 抽選
+</button>
+
+<button id="resetBtn">
+🔄 リセット
+</button>
+
+</div>
+
+<div class="card">
+
+<div class="resultArea">
+
+<div id="result">
+-
+</div>
+
+<div class="info">
+
+<div class="infoBox">
+<h2>抽選回数</h2>
+<span id="drawCount">
+0
+</span>
+</div>
+
+</div>
+
+</div>
+
+<div class="columns">
+
+<div class="list">
+
+<h3>
+抽選履歴
+</h3>
+
+<div id="history">
+
+</div>
+
+</div>
+
+<div class="list">
+
+<h3>
+数字ごとの出現回数
+</h3>
+
+<div id="countList">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="footer">
+	Copyright © 2026 SirogomaAZARASI All Rights Reserved.
+</div>
+
+</div>
+
+<script>
+const minInput=document.getElementById("min");
+const maxInput=document.getElementById("max");
+const maxCountInput=document.getElementById("maxCount");
+const excludeInput=document.getElementById("exclude");
+const unique=document.getElementById("unique");
+
+const drawBtn=document.getElementById("drawBtn");
+const resetBtn=document.getElementById("resetBtn");
+
+const result=document.getElementById("result");
+const history=document.getElementById("history");
+const countList=document.getElementById("countList");
+
+const remain=document.getElementById("remain");
+const drawCount=document.getElementById("drawCount");
+
+const progressBar=document.getElementById("progressBar");
+const progressText=document.getElementById("progressText");
+
+let counts={};
+let historyData=[];
+let excluded=new Set();
+
+function parseExclude(){
+    excluded.clear();
+
+    excludeInput.value
+        .split(/[\n,、\s]+/)
+        .map(v=>v.trim())
+        .filter(v=>v!=="")
+        .forEach(v=>{
+            const n=Number(v);
+            if(!Number.isNaN(n)){
+                excluded.add(n);
+            }
+        });
+}
+
+function limitCount(){
+    return unique.checked ? 1 : Math.max(1,Number(maxCountInput.value)||1);
+}
+
+function initialize(){
+
+    counts={};
+    historyData=[];
+
+    history.innerHTML="";
+    result.textContent="-";
+    drawCount.textContent="0";
+
+    parseExclude();
+
+    const min=Number(minInput.value);
+    const max=Number(maxInput.value);
+
+    for(let i=min;i<=max;i++){
+        counts[i]=0;
+    }
+
+    updateCountList();
+    updateRemain();
+}
+
+function availableNumbers(){
+
+    const list=[];
+
+    const min=Number(minInput.value);
+    const max=Number(maxInput.value);
+    const maxC=limitCount();
+
+    for(let i=min;i<=max;i++){
+
+        if(excluded.has(i)) continue;
+
+        if((counts[i]||0)>=maxC) continue;
+
+        list.push(i);
+
+    }
+
+    return list;
+
+}
+
+function updateRemain(){
+
+    const list=availableNumbers();
+
+    remain.textContent=list.length;
+
+    const total=
+        Number(maxInput.value)-
+        Number(minInput.value)+1-
+        excluded.size;
+
+    let per=0;
+
+    if(total>0){
+        per=((total-list.length)/total)*100;
+    }
+
+    progressBar.style.width=per+"%";
+    progressText.textContent=per.toFixed(1)+"%";
+
+}
+
+function addHistory(num){
+
+    historyData.push(num);
+
+    drawCount.textContent=historyData.length;
+
+    const div=document.createElement("div");
+
+    div.className="historyItem";
+
+    div.textContent=
+        historyData.length+"回目　→　"+num;
+
+    history.prepend(div);
+
+}
+
+function updateCountList(){
+
+    countList.innerHTML="";
+
+    const min=Number(minInput.value);
+    const max=Number(maxInput.value);
+
+    const maxC=limitCount();
+
+    for(let i=min;i<=max;i++){
+
+        const row=document.createElement("div");
+
+        row.className="countItem";
+
+        if(excluded.has(i)){
+            row.classList.add("gray");
+            row.innerHTML="<span>"+i+"</span><span>除外</span>";
+        }
+        else{
+
+            const c=counts[i]||0;
+
+            if(c>=maxC){
+                row.classList.add("red");
+            }
+            else if(c===maxC-1){
+                row.classList.add("orange");
+            }
+            else{
+                row.classList.add("green");
+            }
+
+            row.innerHTML=
+                "<span>"+i+
+                "</span><span>"+
+                c+" / "+maxC+
+                "</span>";
+
+        }
+
+        countList.appendChild(row);
+
+    }
+
+}
+
+function animateResult(callback){
+
+    const nums=availableNumbers();
+
+    if(nums.length===0){
+        result.textContent="終了";
+        return;
+    }
+
+    let frame=0;
+
+    const timer=setInterval(()=>{
+
+        result.textContent=
+            nums[Math.floor(Math.random()*nums.length)];
+
+        frame++;
+
+        if(frame>0){
+
+            clearInterval(timer);
+
+            callback();
+
+        }
+
+    },40);
+
+}
+
+function draw(){
+
+    const nums=availableNumbers();
+
+    if(nums.length===0){
+
+        result.textContent="終了";
+
+        return;
+
+    }
+
+    animateResult(()=>{
+
+        const nums=availableNumbers();
+
+        const value=
+            nums[Math.floor(Math.random()*nums.length)];
+
+        result.textContent=value;
+
+        counts[value]++;
+
+        addHistory(value);
+
+        updateCountList();
+
+        updateRemain();
+
+    });
+
+}
+
+function resetAll(){
+
+    if(!confirm("抽選結果をリセットしますか？")){
+        return;
+    }
+
+    initialize();
+
+}
+
+drawBtn.addEventListener("click",draw);
+
+resetBtn.addEventListener("click",resetAll);
+
+minInput.addEventListener("change",initialize);
+maxInput.addEventListener("change",initialize);
+maxCountInput.addEventListener("change",initialize);
+excludeInput.addEventListener("input",initialize);
+
+unique.addEventListener("change",()=>{
+
+    updateCountList();
+    updateRemain();
+
+});
+
+initialize();
+
+</script>
+
+</body>
+</html>
