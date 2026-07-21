@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>シリアル番号生成 | AZAtool</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:#0f172a;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+
+    width:420px;
+    background:#1e293b;
+    border-radius:20px;
+    padding:25px;
+
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+h2{
+    margin-top:25px;
+    margin-bottom:10px;
+}
+
+input{
+
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+
+    border-radius:10px;
+    border:none;
+
+    font-size:16px;
+
+}
+
+
+button{
+
+    width:100%;
+    padding:12px;
+
+    margin-top:10px;
+
+    border:none;
+    border-radius:10px;
+
+    background:#06b6d4;
+    color:white;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+}
+
+
+button:hover{
+
+    opacity:.8;
+
+}
+
+
+.box{
+
+    margin-top:15px;
+
+    background:#020617;
+
+    padding:15px;
+
+    border-radius:12px;
+
+}
+
+
+.serial{
+
+    font-size:25px;
+
+    color:#22d3ee;
+
+    letter-spacing:2px;
+
+    word-break:break-all;
+
+}
+
+
+.result{
+
+    line-height:2;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<h1>
+シリアル番号生成ツール
+</h1>
+
+
+<h2>
+発行
+</h2>
+
+
+<input
+id="number"
+type="number"
+placeholder="number1">
+
+
+<input
+id="issue"
+type="number"
+placeholder="number2">
+
+
+<button onclick="generate()">
+生成
+</button>
+
+
+<div class="box">
+
+<div>
+シリアル番号
+</div>
+
+<div
+class="serial"
+id="serial">
+----
+</div>
+
+
+<button onclick="copySerial()">
+コピー
+</button>
+
+</div>
+
+
+
+<h2>
+解析
+</h2>
+
+
+<input
+id="decodeInput"
+placeholder="AAAA-BBBB-CCCC">
+
+
+<button onclick="decode()">
+解析
+</button>
+
+
+
+<div class="box result">
+
+<div>
+number1：
+<span id="outNumber">
+-
+</span>
+</div>
+
+
+<div>
+number2：
+<span id="outIssue">
+-
+</span>
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+<script>
+
+
+//=====================
+// Base36 4桁固定
+//=====================
+
+
+function to36Fixed(num){
+
+    return Number(num)
+    .toString(36)
+    .toUpperCase()
+    .padStart(4,"0");
+
+}
+
+
+
+function from36Fixed(text){
+
+    return parseInt(text,36);
+
+}
+
+
+
+//=====================
+// ランダム4文字
+//=====================
+
+
+function random4(){
+
+
+    const chars =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+
+    let result="";
+
+
+    for(let i=0;i<4;i++){
+
+        result +=
+        chars[
+            Math.floor(
+                Math.random()*chars.length
+            )
+        ];
+
+    }
+
+
+    return result;
+
+
+}
+
+
+
+//=====================
+// 生成
+//=====================
+
+
+function generate(){
+
+
+    const number =
+    document.getElementById("number")
+    .value;
+
+
+    const issue =
+    document.getElementById("issue")
+    .value;
+
+
+
+    if(number==="" || issue===""){
+
+        alert("入力してください");
+
+        return;
+
+    }
+
+
+
+    const numberCode =
+    to36Fixed(number);
+
+
+    const issueCode =
+    to36Fixed(issue);
+
+
+
+    const randomCode =
+    random4();
+
+
+
+    const serial =
+
+    numberCode
+    + "-"
+    + issueCode
+    + "-"
+    + randomCode;
+
+
+
+    document.getElementById("serial")
+    .textContent=serial;
+
+
+}
+
+
+
+//=====================
+// 解析
+//=====================
+
+
+function decode(){
+
+
+    const serial =
+
+    document.getElementById("decodeInput")
+    .value
+    .toUpperCase();
+
+
+
+    const parts =
+    serial.split("-");
+
+
+
+    if(parts.length!==3){
+
+        alert("形式が違います");
+
+        return;
+
+    }
+
+
+
+    const number =
+
+    from36Fixed(parts[0]);
+
+
+
+    const issue =
+
+    from36Fixed(parts[1]);
+
+
+
+    document.getElementById("outNumber")
+    .textContent=number;
+
+
+
+    document.getElementById("outIssue")
+    .textContent=issue;
+
+
+}
+
+
+
+//=====================
+// コピー
+//=====================
+
+
+function copySerial(){
+
+
+    const text =
+
+    document.getElementById("serial")
+    .textContent;
+
+
+
+    navigator.clipboard.writeText(text);
+
+
+    alert("コピーしました");
+
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
