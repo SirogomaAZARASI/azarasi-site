@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Battery Manager</title>
+
+<style>
+*{
+ box-sizing:border-box;
+}
+
+body{
+ margin:0;
+ padding:20px;
+ font-family:Arial,sans-serif;
+ background:#111;
+ color:white;
+}
+
+h1{
+ text-align:center;
+}
+
+.container{
+ max-width:700px;
+ margin:auto;
+}
+
+.card{
+ background:#222;
+ border-radius:15px;
+ padding:15px;
+ margin:15px 0;
+}
+
+input,button,select{
+ padding:10px;
+ border-radius:8px;
+ border:none;
+ margin:5px;
+}
+
+input{
+ width:90%;
+}
+
+button{
+ cursor:pointer;
+}
+
+.add{
+ background:#00c853;
+ color:white;
+}
+
+.delete{
+ background:#e53935;
+ color:white;
+}
+
+.status{
+ font-weight:bold;
+}
+
+.battery{
+ display:flex;
+ flex-direction:column;
+ gap:8px;
+}
+
+.small{
+ color:#aaa;
+ font-size:13px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔋 電池管理</h1>
+
+
+<div class="card">
+
+<h3>電池追加</h3>
+
+<input id="name" placeholder="例: 単3 Eneloop">
+
+<button class="add" onclick="addBattery()">
+追加
+</button>
+
+</div>
+
+
+<div id="list"></div>
+
+
+</div>
+
+
+<script>
+
+let batteries =
+JSON.parse(localStorage.getItem("batteries"))
+|| [];
+
+
+const states=[
+"🟢 充電済み",
+"🔵 充電中",
+"🟡 使用中",
+"🔴 要充電",
+"⚫ 廃棄"
+];
+
+
+
+function save(){
+
+localStorage.setItem(
+"batteries",
+JSON.stringify(batteries)
+);
+
+}
+
+
+
+function addBattery(){
+
+let name=
+document.getElementById("name").value.trim();
+
+
+if(!name)return;
+
+
+let id =
+"NO."+
+String(batteries.length+1).padStart(3,"0");
+
+
+batteries.push({
+
+id:id,
+
+name:name,
+
+state:0,
+
+charge:0,
+
+last:"なし"
+
+});
+
+
+save();
+
+document.getElementById("name").value="";
+
+render();
+
+}
+
+
+
+
+function changeState(index,state){
+
+
+batteries[index].state=state;
+
+
+if(state===0){
+
+batteries[index].last =
+new Date().toLocaleString();
+
+batteries[index].charge++;
+
+}
+
+
+save();
+
+render();
+
+}
+
+
+
+
+function removeBattery(index){
+
+if(confirm("削除しますか？")){
+
+batteries.splice(index,1);
+
+save();
+
+render();
+
+}
+
+}
+
+
+
+
+function render(){
+
+
+let html="";
+
+
+batteries.forEach((b,i)=>{
+
+
+html+=`
+
+<div class="card battery">
+
+
+<h2>
+🔋 ${b.name}
+</h2>
+
+
+<div>
+管理番号:
+${b.id}
+</div>
+
+
+<div class="status">
+状態:
+${states[b.state]}
+</div>
+
+
+<div>
+充電回数:
+${b.charge}回
+</div>
+
+
+<div class="small">
+最終充電:
+${b.last}
+</div>
+
+
+<div>
+
+<button onclick="
+changeState(${i},0)
+">
+充電完了
+</button>
+
+
+<button onclick="
+changeState(${i},1)
+">
+充電開始
+</button>
+
+
+<button onclick="
+changeState(${i},2)
+">
+使用開始
+</button>
+
+
+<button onclick="
+changeState(${i},3)
+">
+要充電
+</button>
+
+
+<button onclick="
+changeState(${i},4)
+">
+廃棄
+</button>
+
+</div>
+
+
+<button class="delete"
+onclick="
+removeBattery(${i})
+">
+削除
+</button>
+
+
+</div>
+
+`;
+
+});
+
+
+document.getElementById("list").innerHTML=html;
+
+
+}
+
+
+render();
+
+
+</script>
+
+</body>
+</html>
