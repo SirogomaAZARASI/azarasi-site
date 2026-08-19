@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#000">
+<title>USB Music</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    min-height:100vh;
+    padding-bottom:130px;
+}
+
+button,
+input{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+    position:sticky;
+    top:0;
+    z-index:100;
+
+    background:rgba(0,0,0,.86);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+
+    border-bottom:1px solid #222;
+}
+
+.header{
+    max-width:1100px;
+    margin:auto;
+
+    min-height:64px;
+    padding:10px 16px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:800;
+    white-space:nowrap;
+}
+
+.header-buttons{
+    display:flex;
+    gap:7px;
+}
+
+.btn{
+    border:0;
+    border-radius:10px;
+    padding:10px 14px;
+
+    background:#fff;
+    color:#000;
+
+    font-weight:700;
+    font-size:13px;
+}
+
+.btn.secondary{
+    background:#282828;
+    color:#fff;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+main{
+    max-width:1100px;
+    margin:auto;
+    padding:20px 16px 170px;
+}
+
+/* =========================
+   DROP ZONE
+========================= */
+
+.home{
+    min-height:72vh;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+}
+
+.drop-zone{
+    width:min(650px,100%);
+    min-height:300px;
+
+    border:2px dashed #444;
+    border-radius:28px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    padding:35px 20px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #181818,
+            #080808
+        );
+
+    transition:.2s;
+}
+
+.drop-zone.dragover{
+    border-color:#fff;
+    background:#202020;
+    transform:scale(1.015);
+}
+
+.drop-icon{
+    width:95px;
+    height:95px;
+
+    border-radius:24px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:48px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #444,
+            #111
+        );
+
+    margin-bottom:22px;
+}
+
+.drop-zone h1{
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+.drop-zone p{
+    color:#888;
+    line-height:1.7;
+}
+
+.drop-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:9px;
+    margin-top:22px;
+}
+
+.drop-buttons button{
+    border:0;
+    border-radius:11px;
+    padding:12px 17px;
+
+    background:#fff;
+    color:#000;
+
+    font-weight:700;
+}
+
+.drop-buttons button.secondary{
+    background:#292929;
+    color:#fff;
+}
+
+.note{
+    margin-top:22px;
+
+    padding:13px 17px;
+
+    border:1px solid #292929;
+    border-radius:13px;
+
+    background:#111;
+
+    color:#777;
+    font-size:12px;
+    line-height:1.7;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.breadcrumb{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:7px;
+
+    color:#777;
+    font-size:13px;
+
+    margin-bottom:12px;
+}
+
+.breadcrumb button{
+    border:0;
+    background:none;
+    color:#aaa;
+    padding:0;
+}
+
+.section-title{
+    font-size:28px;
+    margin:8px 0 22px;
+}
+
+.stats{
+    color:#777;
+    font-size:13px;
+    margin-top:-15px;
+    margin-bottom:20px;
+}
+
+/* =========================
+   ARTISTS
+========================= */
+
+.artist-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fill,minmax(210px,1fr));
+    gap:14px;
+}
+
+.artist{
+    background:#151515;
+    border:1px solid #252525;
+    border-radius:17px;
+
+    padding:19px;
+
+    transition:.15s;
+}
+
+.artist:active{
+    transform:scale(.98);
+}
+
+.artist-icon{
+    width:65px;
+    height:65px;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #555,
+            #111
+        );
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:30px;
+
+    margin-bottom:14px;
+}
+
+.artist-name{
+    font-size:17px;
+    font-weight:700;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.artist-sub{
+    color:#777;
+    font-size:12px;
+    margin-top:5px;
+}
+
+/* =========================
+   ALBUM
+========================= */
+
+.album-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fill,minmax(180px,1fr));
+    gap:15px;
+}
+
+.album{
+    background:#151515;
+    border:1px solid #252525;
+    border-radius:16px;
+
+    padding:9px;
+
+    transition:.15s;
+}
+
+.album:active{
+    transform:scale(.98);
+}
+
+.album-art{
+    position:relative;
+
+    aspect-ratio:1;
+
+    border-radius:11px;
+    overflow:hidden;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #444,
+            #111
+        );
+
+    font-size:52px;
+}
+
+.album-art img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.album-name{
+    font-size:15px;
+    font-weight:700;
+
+    margin:11px 3px 0;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.album-sub{
+    color:#777;
+    font-size:12px;
+
+    margin:5px 3px 2px;
+}
+
+/* =========================
+   SONGS
+========================= */
+
+.songs{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.song{
+    min-height:63px;
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:9px 13px;
+
+    border-radius:12px;
+
+    background:#151515;
+    border:1px solid #252525;
+}
+
+.song.playing{
+    background:#292929;
+}
+
+.song-number{
+    width:27px;
+    text-align:center;
+
+    color:#777;
+    font-size:12px;
+}
+
+.song-info{
+    flex:1;
+    min-width:0;
+}
+
+.song-title{
+    font-size:15px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.song-sub{
+    color:#777;
+    font-size:11px;
+
+    margin-top:3px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.song-icon{
+    width:30px;
+    text-align:center;
+}
+
+/* =========================
+   PLAYER
+========================= */
+
+.player{
+    position:fixed;
+    z-index:200;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    background:rgba(20,20,20,.96);
+
+    backdrop-filter:blur(25px);
+    -webkit-backdrop-filter:blur(25px);
+
+    border-top:1px solid #303030;
+
+    padding:
+        10px 14px
+        calc(10px + env(safe-area-inset-bottom));
+}
+
+.player-inner{
+    max-width:1100px;
+    margin:auto;
+}
+
+.player-main{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.cover{
+    width:50px;
+    height:50px;
+
+    flex-shrink:0;
+
+    border-radius:9px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #444,
+            #111
+        );
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:23px;
+
+    overflow:hidden;
+}
+
+.cover img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.current{
+    flex:1;
+    min-width:0;
+}
+
+.current-title{
+    font-size:14px;
+    font-weight:700;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.current-artist{
+    color:#777;
+    font-size:11px;
+
+    margin-top:3px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.controls{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.control{
+    width:37px;
+    height:37px;
+
+    border:0;
+    border-radius:50%;
+
+    background:#303030;
+    color:#fff;
+
+    font-size:15px;
+}
+
+.control.main{
+    width:44px;
+    height:44px;
+
+    background:#fff;
+    color:#000;
+
+    font-size:18px;
+}
+
+.progress{
+    display:block;
+
+    width:100%;
+    height:4px;
+
+    margin-top:9px;
+
+    appearance:none;
+    -webkit-appearance:none;
+
+    background:#444;
+    border-radius:10px;
+}
+
+.progress::-webkit-slider-thumb{
+    appearance:none;
+    -webkit-appearance:none;
+
+    width:13px;
+    height:13px;
+
+    border-radius:50%;
+
+    background:#fff;
+}
+
+.times{
+    display:flex;
+    justify-content:space-between;
+
+    color:#777;
+    font-size:9px;
+
+    margin-top:4px;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+.message{
+    position:fixed;
+    z-index:500;
+
+    left:50%;
+    bottom:145px;
+
+    transform:translateX(-50%);
+
+    width:max-content;
+    max-width:90%;
+
+    padding:12px 16px;
+
+    border-radius:12px;
+
+    background:#222;
+    border:1px solid #444;
+
+    color:#fff;
+
+    font-size:13px;
+    text-align:center;
+
+    display:none;
+}
+
+.message.show{
+    display:block;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+    .header{
+        min-height:58px;
+        padding:8px 11px;
+    }
+
+    .logo{
+        font-size:17px;
+    }
+
+    .btn{
+        padding:9px 10px;
+        font-size:11px;
+    }
+
+    main{
+        padding:15px 11px 170px;
+    }
+
+    .drop-zone{
+        min-height:330px;
+        border-radius:22px;
+    }
+
+    .drop-zone h1{
+        font-size:24px;
+    }
+
+    .artist-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:9px;
+    }
+
+    .artist{
+        padding:14px;
+    }
+
+    .album-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:9px;
+    }
+
+    .album{
+        padding:8px;
+    }
+
+    .section-title{
+        font-size:24px;
+    }
+
+    .cover{
+        width:43px;
+        height:43px;
+    }
+
+    .control{
+        width:33px;
+        height:33px;
+    }
+
+    .control.main{
+        width:40px;
+        height:40px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="header">
+
+    <div class="logo">
+        🎵 USB Music
+    </div>
+
+    <div class="header-buttons">
+
+        <button
+            class="btn secondary"
+            id="folderButton"
+        >
+            フォルダ
+        </button>
+
+        <button
+            class="btn"
+            id="fileButton"
+        >
+            曲
+        </button>
+
+    </div>
+
+</div>
+
+<!-- フォルダ選択 -->
+<input
+    id="folderInput"
+    type="file"
+    webkitdirectory
+    directory
+    multiple
+    hidden
+>
+
+<!-- 複数ファイル選択 -->
+<input
+    id="fileInput"
+    type="file"
+    multiple
+    accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.flac,.aiff"
+    hidden
+>
+
+</header>
+
+
+<main>
+
+<!-- =========================
+     HOME / DROP
+========================= -->
+
+<div
+    id="home"
+    class="home"
+>
+
+    <div
+        id="dropZone"
+        class="drop-zone"
+    >
+
+        <div class="drop-icon">
+            📁
+        </div>
+
+        <h1>
+            音楽フォルダを追加
+        </h1>
+
+        <p>
+            USBメモリの「音楽」フォルダを<br>
+            ここへドラッグ＆ドロップ
+        </p>
+
+        <div class="drop-buttons">
+
+            <button
+                id="dropFolderButton"
+            >
+                フォルダを選択
+            </button>
+
+            <button
+                id="dropFileButton"
+                class="secondary"
+            >
+                曲を選択
+            </button>
+
+        </div>
+
+        <div class="note">
+
+            PCではフォルダをそのまま
+            ドラッグ＆ドロップできます。<br>
+
+            iPadでは「ファイル」から
+            ドラッグできる環境で使用できます。<br>
+
+            フォルダ選択が利用できない場合は
+            「曲を選択」を使用してください。
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     CONTENT
+========================= -->
+
+<div
+    id="content"
+    class="hidden"
+></div>
+
+</main>
+
+
+<!-- =========================
+     MESSAGE
+========================= -->
+
+<div
+    id="message"
+    class="message"
+></div>
+
+
+<!-- =========================
+     PLAYER
+========================= -->
+
+<div class="player">
+
+<div class="player-inner">
+
+<div class="player-main">
+
+    <div
+        id="cover"
+        class="cover"
+    >
+        🎵
+    </div>
+
+    <div class="current">
+
+        <div
+            id="currentTitle"
+            class="current-title"
+        >
+            再生していません
+        </div>
+
+        <div
+            id="currentArtist"
+            class="current-artist"
+        >
+            USB Music
+        </div>
+
+    </div>
+
+    <div class="controls">
+
+        <button
+            id="prev"
+            class="control"
+        >
+            ⏮
+        </button>
+
+        <button
+            id="play"
+            class="control main"
+        >
+            ▶
+        </button>
+
+        <button
+            id="next"
+            class="control"
+        >
+            ⏭
+        </button>
+
+    </div>
+
+</div>
+
+<input
+    id="progress"
+    class="progress"
+    type="range"
+    min="0"
+    max="100"
+    value="0"
+>
+
+<div class="times">
+
+    <span id="currentTime">
+        0:00
+    </span>
+
+    <span id="duration">
+        0:00
+    </span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<audio
+    id="audio"
+    preload="metadata"
+></audio>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const folderButton =
+    document.getElementById(
+        "folderButton"
+    );
+
+const fileButton =
+    document.getElementById(
+        "fileButton"
+    );
+
+const dropFolderButton =
+    document.getElementById(
+        "dropFolderButton"
+    );
+
+const dropFileButton =
+    document.getElementById(
+        "dropFileButton"
+    );
+
+const folderInput =
+    document.getElementById(
+        "folderInput"
+    );
+
+const fileInput =
+    document.getElementById(
+        "fileInput"
+    );
+
+const dropZone =
+    document.getElementById(
+        "dropZone"
+    );
+
+const home =
+    document.getElementById(
+        "home"
+    );
+
+const content =
+    document.getElementById(
+        "content"
+    );
+
+const audio =
+    document.getElementById(
+        "audio"
+    );
+
+const playButton =
+    document.getElementById(
+        "play"
+    );
+
+const prevButton =
+    document.getElementById(
+        "prev"
+    );
+
+const nextButton =
+    document.getElementById(
+        "next"
+    );
+
+const progress =
+    document.getElementById(
+        "progress"
+    );
+
+const currentTitle =
+    document.getElementById(
+        "currentTitle"
+    );
+
+const currentArtist =
+    document.getElementById(
+        "currentArtist"
+    );
+
+const currentTime =
+    document.getElementById(
+        "currentTime"
+    );
+
+const duration =
+    document.getElementById(
+        "duration"
+    );
+
+const cover =
+    document.getElementById(
+        "cover"
+    );
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let library = {};
+
+let artistNow = "";
+let albumNow = "";
+
+let songsNow = [];
+let indexNow = -1;
+
+let objectURL = null;
+
+let messageTimer = null;
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+folderButton.onclick = () => {
+    folderInput.click();
+};
+
+dropFolderButton.onclick = () => {
+    folderInput.click();
+};
+
+fileButton.onclick = () => {
+    fileInput.click();
+};
+
+dropFileButton.onclick = () => {
+    fileInput.click();
+};
+
+
+/* =========================================================
+   FOLDER INPUT
+========================================================= */
+
+folderInput.addEventListener(
+    "change",
+    () => {
+
+        const files =
+            Array.from(
+                folderInput.files
+            );
+
+        if(!files.length){
+            return;
+        }
+
+        buildLibrary(files);
+
+    }
+);
+
+
+/* =========================================================
+   FILE INPUT
+========================================================= */
+
+fileInput.addEventListener(
+    "change",
+    () => {
+
+        const files =
+            Array.from(
+                fileInput.files
+            );
+
+        if(!files.length){
+            return;
+        }
+
+        buildLibrary(files);
+
+    }
+);
+
+
+/* =========================================================
+   DRAG ENTER
+========================================================= */
+
+[
+    "dragenter",
+    "dragover"
+].forEach(eventName => {
+
+    dropZone.addEventListener(
+        eventName,
+        event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            dropZone.classList.add(
+                "dragover"
+            );
+
+        }
+    );
+
+});
+
+
+/* =========================================================
+   DRAG LEAVE
+========================================================= */
+
+[
+    "dragleave",
+    "dragend"
+].forEach(eventName => {
+
+    dropZone.addEventListener(
+        eventName,
+        event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            dropZone.classList.remove(
+                "dragover"
+            );
+
+        }
+    );
+
+});
+
+
+/* =========================================================
+   DROP
+========================================================= */
+
+dropZone.addEventListener(
+    "drop",
+    async event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+
+        const items =
+            Array.from(
+                event.dataTransfer.items || []
+            );
+
+
+        /*
+            Chrome / Edgeなどで
+            フォルダを再帰的に取得
+        */
+
+        if(items.length){
+
+            const files =
+                await getDroppedFiles(
+                    items
+                );
+
+            if(files.length){
+
+                buildLibrary(files);
+
+                return;
+            }
+        }
+
+
+        /*
+            通常のファイルDrop
+        */
+
+        const files =
+            Array.from(
+                event.dataTransfer.files || []
+            );
+
+
+        if(files.length){
+
+            buildLibrary(files);
+
+        }else{
+
+            showMessage(
+                "このブラウザではドロップされたフォルダを読み込めませんでした。"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   DROP FILES
+========================================================= */
+
+async function getDroppedFiles(items){
+
+    const result = [];
+
+
+    for(const item of items){
+
+        if(
+            item.kind !== "file"
+        ){
+            continue;
+        }
+
+
+        /*
+            webkitGetAsEntry が使える
+            ブラウザではフォルダを再帰取得
+        */
+
+        if(
+            typeof item.webkitGetAsEntry ===
+            "function"
+        ){
+
+            const entry =
+                item.webkitGetAsEntry();
+
+
+            if(!entry){
+                continue;
+            }
+
+
+            const files =
+                await readEntry(
+                    entry
+                );
+
+
+            result.push(
+                ...files
+            );
+
+        }else{
+
+            const file =
+                item.getAsFile();
+
+
+            if(file){
+                result.push(file);
+            }
+
+        }
+
+    }
+
+
+    return result;
+}
+
+
+/* =========================================================
+   READ ENTRY
+========================================================= */
+
+function readEntry(entry){
+
+    return new Promise(
+        resolve => {
+
+            if(entry.isFile){
+
+                entry.file(
+                    file => {
+
+                        /*
+                            ドラッグされた
+                            相対パスを保存
+                        */
+
+                        if(
+                            entry.fullPath
+                        ){
+
+                            try{
+
+                                Object.defineProperty(
+                                    file,
+                                    "webkitRelativePath",
+                                    {
+                                        value:
+                                            entry.fullPath
+                                                .replace(
+                                                    /^\//,
+                                                    ""
+                                                ),
+                                        configurable:true
+                                    }
+                                );
+
+                            }catch(e){}
+
+                        }
+
+
+                        resolve(
+                            [file]
+                        );
+
+                    },
+
+                    () => resolve([])
+                );
+
+                return;
+            }
+
+
+            if(entry.isDirectory){
+
+                const reader =
+                    entry.createReader();
+
+                const entries = [];
+
+
+                function readBatch(){
+
+                    reader.readEntries(
+                        async batch => {
+
+                            if(!batch.length){
+
+                                const files =
+                                    [];
+
+                                for(
+                                    const child
+                                    of entries
+                                ){
+
+                                    const childFiles =
+                                        await readEntry(
+                                            child
+                                        );
+
+                                    files.push(
+                                        ...childFiles
+                                    );
+
+                                }
+
+                                resolve(files);
+
+                                return;
+                            }
+
+
+                            entries.push(
+                                ...batch
+                            );
+
+                            readBatch();
+
+                        },
+
+                        () => resolve([])
+                    );
+
+                }
+
+
+                readBatch();
+
+                return;
+            }
+
+
+            resolve([]);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   BUILD LIBRARY
+========================================================= */
+
+function buildLibrary(files){
+
+    library = {};
+
+
+    const musicFiles =
+        files.filter(
+            isMusic
+        );
+
+
+    if(!musicFiles.length){
+
+        showMessage(
+            "音楽ファイルが見つかりませんでした。"
+        );
+
+        return;
+    }
+
+
+    musicFiles.forEach(
+        file => {
+
+            const path =
+                file.webkitRelativePath ||
+                file.name;
+
+
+            const parts =
+                path
+                    .split("/")
+                    .filter(Boolean);
+
+
+            let artist =
+                "アーティスト未分類";
+
+            let album =
+                "アルバム未分類";
+
+
+            /*
+                音楽 / アーティスト /
+                アルバム / 曲
+            */
+
+            if(parts.length >= 4){
+
+                artist =
+                    parts[
+                        parts.length - 3
+                    ];
+
+                album =
+                    parts[
+                        parts.length - 2
+                    ];
+
+            }
+
+            /*
+                アーティスト /
+                アルバム / 曲
+            */
+
+            else if(parts.length === 3){
+
+                artist =
+                    parts[0];
+
+                album =
+                    parts[1];
+
+            }
+
+            /*
+                アルバム / 曲
+            */
+
+            else if(parts.length === 2){
+
+                artist =
+                    "アーティスト未分類";
+
+                album =
+                    parts[0];
+
+            }
+
+
+            addSong(
+                artist,
+                album,
+                file
+            );
+
+        }
+    );
+
+
+    sortLibrary();
+
+    showArtists();
+
+
+    const count =
+        musicFiles.length;
+
+
+    showMessage(
+        `${count}曲を読み込みました`
+    );
+
+}
+
+
+/* =========================================================
+   ADD SONG
+========================================================= */
+
+function addSong(
+    artist,
+    album,
+    file
+){
+
+    if(!library[artist]){
+        library[artist] = {};
+    }
+
+
+    if(!library[artist][album]){
+        library[artist][album] = [];
+    }
+
+
+    library[artist][album].push({
+
+        name:
+            removeExtension(
+                file.name
+            ),
+
+        file:file
+
+    });
+
+}
+
+
+/* =========================================================
+   SORT
+========================================================= */
+
+function sortLibrary(){
+
+    Object.keys(
+        library
+    ).forEach(
+        artist => {
+
+            Object.keys(
+                library[artist]
+            ).forEach(
+                album => {
+
+                    library[artist][album]
+                        .sort(
+                            (a,b) =>
+                                naturalCompare(
+                                    a.name,
+                                    b.name
+                                )
+                        );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ARTISTS
+========================================================= */
+
+function showArtists(){
+
+    home.classList.add(
+        "hidden"
+    );
+
+    content.classList.remove(
+        "hidden"
+    );
+
+
+    const artists =
+        Object.keys(
+            library
+        )
+        .sort(
+            naturalCompare
+        );
+
+
+    let totalSongs = 0;
+
+
+    artists.forEach(
+        artist => {
+
+            Object.keys(
+                library[artist]
+            ).forEach(
+                album => {
+
+                    totalSongs +=
+                        library[artist][album]
+                            .length;
+
+                }
+            );
+
+        }
+    );
+
+
+    content.innerHTML = `
+
+        <div class="breadcrumb">
+            <span>USB</span>
+            <span>›</span>
+            <strong>音楽</strong>
+        </div>
+
+        <h1 class="section-title">
+            アーティスト
+        </h1>
+
+        <div class="stats">
+            ${artists.length}アーティスト
+            ・
+            ${totalSongs}曲
+        </div>
+
+        <div
+            id="artistGrid"
+            class="artist-grid"
+        ></div>
+    `;
+
+
+    const grid =
+        document.getElementById(
+            "artistGrid"
+        );
+
+
+    artists.forEach(
+        artist => {
+
+            const albums =
+                Object.keys(
+                    library[artist]
+                );
+
+
+            let count = 0;
+
+
+            albums.forEach(
+                album => {
+
+                    count +=
+                        library[artist][album]
+                            .length;
+
+                }
+            );
+
+
+            const el =
+                document.createElement(
+                    "div"
+                );
+
+
+            el.className =
+                "artist";
+
+
+            el.innerHTML = `
+
+                <div class="artist-icon">
+                    ♪
+                </div>
+
+                <div class="artist-name">
+                    ${escapeHTML(artist)}
+                </div>
+
+                <div class="artist-sub">
+                    ${albums.length}アルバム
+                    ・
+                    ${count}曲
+                </div>
+
+            `;
+
+
+            el.onclick = () => {
+
+                showAlbums(
+                    artist
+                );
+
+            };
+
+
+            grid.appendChild(
+                el
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ALBUMS
+========================================================= */
+
+function showAlbums(
+    artist
+){
+
+    artistNow =
+        artist;
+
+
+    const albums =
+        Object.keys(
+            library[artist]
+        )
+        .sort(
+            naturalCompare
+        );
+
+
+    content.innerHTML = `
+
+        <div class="breadcrumb">
+
+            <button
+                id="backArtists"
+            >
+                音楽
+            </button>
+
+            <span>›</span>
+
+            <strong>
+                ${escapeHTML(artist)}
+            </strong>
+
+        </div>
+
+        <h1 class="section-title">
+            ${escapeHTML(artist)}
+        </h1>
+
+        <div
+            id="albumGrid"
+            class="album-grid"
+        ></div>
+
+    `;
+
+
+    document
+        .getElementById(
+            "backArtists"
+        )
+        .onclick =
+            showArtists;
+
+
+    const grid =
+        document.getElementById(
+            "albumGrid"
+        );
+
+
+    albums.forEach(
+        album => {
+
+            const songs =
+                library[artist][album];
+
+
+            const el =
+                document.createElement(
+                    "div"
+                );
+
+
+            el.className =
+                "album";
+
+
+            el.innerHTML = `
+
+                <div class="album-art">
+                    💿
+                </div>
+
+                <div class="album-name">
+                    ${escapeHTML(album)}
+                </div>
+
+                <div class="album-sub">
+                    ${songs.length}曲
+                </div>
+
+            `;
+
+
+            el.onclick = () => {
+
+                showSongs(
+                    artist,
+                    album
+                );
+
+            };
+
+
+            grid.appendChild(
+                el
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SONGS
+========================================================= */
+
+function showSongs(
+    artist,
+    album
+){
+
+    artistNow =
+        artist;
+
+    albumNow =
+        album;
+
+
+    songsNow =
+        library[artist][album];
+
+
+    content.innerHTML = `
+
+        <div class="breadcrumb">
+
+            <button
+                id="backArtists"
+            >
+                音楽
+            </button>
+
+            <span>›</span>
+
+            <button
+                id="backAlbums"
+            >
+                ${escapeHTML(artist)}
+            </button>
+
+            <span>›</span>
+
+            <strong>
+                ${escapeHTML(album)}
+            </strong>
+
+        </div>
+
+        <h1 class="section-title">
+            ${escapeHTML(album)}
+        </h1>
+
+        <div class="stats">
+            ${songsNow.length}曲
+        </div>
+
+        <div
+            id="songList"
+            class="songs"
+        ></div>
+
+    `;
+
+
+    document
+        .getElementById(
+            "backArtists"
+        )
+        .onclick =
+            showArtists;
+
+
+    document
+        .getElementById(
+            "backAlbums"
+        )
+        .onclick =
+            () =>
+                showAlbums(
+                    artist
+                );
+
+
+    const list =
+        document.getElementById(
+            "songList"
+        );
+
+
+    songsNow.forEach(
+        (song,index) => {
+
+            const el =
+                document.createElement(
+                    "div"
+                );
+
+
+            el.className =
+                "song";
+
+
+            el.dataset.index =
+                index;
+
+
+            el.innerHTML = `
+
+                <div class="song-number">
+                    ${index + 1}
+                </div>
+
+                <div class="song-info">
+
+                    <div class="song-title">
+                        ${escapeHTML(song.name)}
+                    </div>
+
+                    <div class="song-sub">
+                        ${escapeHTML(artist)}
+                    </div>
+
+                </div>
+
+                <div class="song-icon">
+                    ▶
+                </div>
+
+            `;
+
+
+            el.onclick = () => {
+
+                playSong(
+                    index
+                );
+
+            };
+
+
+            list.appendChild(
+                el
+            );
+
+        }
+    );
+
+
+    updatePlaying();
+
+}
+
+
+/* =========================================================
+   PLAY SONG
+========================================================= */
+
+function playSong(
+    index
+){
+
+    if(
+        index < 0 ||
+        index >= songsNow.length
+    ){
+        return;
+    }
+
+
+    indexNow =
+        index;
+
+
+    const song =
+        songsNow[index];
+
+
+    if(objectURL){
+
+        URL.revokeObjectURL(
+            objectURL
+        );
+
+        objectURL =
+            null;
+
+    }
+
+
+    objectURL =
+        URL.createObjectURL(
+            song.file
+        );
+
+
+    audio.src =
+        objectURL;
+
+
+    currentTitle.textContent =
+        song.name;
+
+
+    currentArtist.textContent =
+        artistNow +
+        " • " +
+        albumNow;
+
+
+    cover.textContent =
+        "💿";
+
+
+    audio.load();
+
+
+    audio.play()
+        .then(
+            () => {
+
+                playButton.textContent =
+                    "⏸";
+
+            }
+        )
+        .catch(
+            error => {
+
+                console.error(
+                    error
+                );
+
+                playButton.textContent =
+                    "▶";
+
+                showMessage(
+                    "この音声形式をSafariが再生できない可能性があります。"
+                );
+
+            }
+        );
+
+
+    updatePlaying();
+
+}
+
+
+/* =========================================================
+   PLAY / PAUSE
+========================================================= */
+
+playButton.onclick =
+    () => {
+
+        if(!audio.src){
+
+            if(songsNow.length){
+
+                playSong(0);
+
+            }
+
+            return;
+        }
+
+
+        if(audio.paused){
+
+            audio.play();
+
+            playButton.textContent =
+                "⏸";
+
+        }else{
+
+            audio.pause();
+
+            playButton.textContent =
+                "▶";
+
+        }
+
+    };
+
+
+/* =========================================================
+   PREVIOUS
+========================================================= */
+
+prevButton.onclick =
+    () => {
+
+        if(!songsNow.length){
+            return;
+        }
+
+
+        let nextIndex =
+            indexNow - 1;
+
+
+        if(nextIndex < 0){
+
+            nextIndex =
+                songsNow.length - 1;
+
+        }
+
+
+        playSong(
+            nextIndex
+        );
+
+    };
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+nextButton.onclick =
+    () => {
+
+        if(!songsNow.length){
+            return;
+        }
+
+
+        let nextIndex =
+            indexNow + 1;
+
+
+        if(
+            nextIndex >=
+            songsNow.length
+        ){
+
+            nextIndex = 0;
+
+        }
+
+
+        playSong(
+            nextIndex
+        );
+
+    };
+
+
+/* =========================================================
+   AUTO NEXT
+========================================================= */
+
+audio.addEventListener(
+    "ended",
+    () => {
+
+        if(!songsNow.length){
+            return;
+        }
+
+
+        let nextIndex =
+            indexNow + 1;
+
+
+        if(
+            nextIndex >=
+            songsNow.length
+        ){
+
+            nextIndex = 0;
+
+        }
+
+
+        playSong(
+            nextIndex
+        );
+
+    }
+);
+
+
+/* =========================================================
+   TIME
+========================================================= */
+
+audio.addEventListener(
+    "timeupdate",
+    () => {
+
+        if(
+            !isFinite(
+                audio.duration
+            )
+        ){
+            return;
+        }
+
+
+        progress.value =
+            (
+                audio.currentTime /
+                audio.duration
+            ) * 100;
+
+
+        currentTime.textContent =
+            formatTime(
+                audio.currentTime
+            );
+
+    }
+);
+
+
+audio.addEventListener(
+    "loadedmetadata",
+    () => {
+
+        duration.textContent =
+            formatTime(
+                audio.duration
+            );
+
+    }
+);
+
+
+/* =========================================================
+   SEEK
+========================================================= */
+
+progress.addEventListener(
+    "input",
+    () => {
+
+        if(
+            !isFinite(
+                audio.duration
+            )
+        ){
+            return;
+        }
+
+
+        audio.currentTime =
+            (
+                Number(
+                    progress.value
+                ) / 100
+            ) *
+            audio.duration;
+
+    }
+);
+
+
+/* =========================================================
+   UPDATE PLAYING
+========================================================= */
+
+function updatePlaying(){
+
+    document
+        .querySelectorAll(
+            ".song"
+        )
+        .forEach(
+            el => {
+
+                el.classList.remove(
+                    "playing"
+                );
+
+            }
+        );
+
+
+    const current =
+        document.querySelector(
+            `.song[data-index="${indexNow}"]`
+        );
+
+
+    if(current){
+
+        current.classList.add(
+            "playing"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MUSIC FILE
+========================================================= */
+
+function isMusic(
+    file
+){
+
+    if(
+        file.type &&
+        file.type.startsWith(
+            "audio/"
+        )
+    ){
+
+        return true;
+
+    }
+
+
+    return /\.(mp3|m4a|aac|wav|ogg|oga|flac|aiff)$/i
+        .test(
+            file.name
+        );
+
+}
+
+
+/* =========================================================
+   EXTENSION
+========================================================= */
+
+function removeExtension(
+    name
+){
+
+    return name.replace(
+        /\.(mp3|m4a|aac|wav|ogg|oga|flac|aiff)$/i,
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   NATURAL SORT
+========================================================= */
+
+function naturalCompare(
+    a,
+    b
+){
+
+    return a.localeCompare(
+        b,
+        undefined,
+        {
+            numeric:true,
+            sensitivity:"base"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   TIME FORMAT
+========================================================= */
+
+function formatTime(
+    seconds
+){
+
+    if(
+        !isFinite(seconds)
+    ){
+
+        return "0:00";
+
+    }
+
+
+    const minutes =
+        Math.floor(
+            seconds / 60
+        );
+
+
+    const secondsPart =
+        Math.floor(
+            seconds % 60
+        )
+        .toString()
+        .padStart(
+            2,
+            "0"
+        );
+
+
+    return (
+        minutes +
+        ":" +
+        secondsPart
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+function escapeHTML(
+    text
+){
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(
+    text
+){
+
+    message.textContent =
+        text;
+
+    message.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        messageTimer
+    );
+
+
+    messageTimer =
+        setTimeout(
+            () => {
+
+                message.classList.remove(
+                    "show"
+                );
+
+            },
+            4000
+        );
+
+}
+
+</script>
+
+</body>
+</html>
