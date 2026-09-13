@@ -1,7 +1,5 @@
-# あざらしサイト
-↓メモ
 
-##indexページバッチ付け方
+indexページバッチ付け方
 <!-- 顔文字一覧ツール -->
 
 <a href="kaomoji" class="card">
@@ -30,7 +28,8 @@
 
 </a>
 
-##警告付け方
+
+警告付け方
 
 <!-- unicode一覧ツール -->
 <a href="block" class="card" onclick="return confirm('◤◢◤◢◤◢◤◢◤◢◤◢\n警告 Warning\n◤◢◤◢◤◢◤◢◤◢◤◢\nこのサイトはBETA版(開発中)です。\n開いてもよろしいですか？')">
