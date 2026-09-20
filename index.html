@@ -185,6 +185,15 @@ body{
 </head>
 
 <body>
+  
+<div class="loading-container" id="loadingScreen">
+    <div class="outer-ring-1"></div>
+    <div class="outer-ring-2"></div>
+    <div class="loader">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+</div>
 
 <h1>あざらしサイト</h1>
 <p class="subtitle">ブラウザで使える無料サイト集</p>
@@ -247,6 +256,18 @@ body{
     Copyright © 2026 SirogomaAZARASI All Rights Reserved.
   </div>
 </div>
+
+<script>
+    window.addEventListener('load', function() {
+        const loadingScreen = document.getElementById('loadingScreen');
+        loadingScreen.style.transition = 'opacity 0.5s ease';
+        loadingScreen.style.opacity = '0';
+        
+        setTimeout(function() {
+            loadingScreen.style.display = 'none';
+        }, 500);
+    });
+</script>
 
 </body>
 </html>
