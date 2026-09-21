@@ -20,7 +20,6 @@
 
 <title>あざらしサイト｜無料サイト集</title>
 <meta name="description" content="あざらしサイトはドット絵変換、カラーパレット生成、などブラウザで使えるツールとあざらし叩きのようなミニゲームができるサイトです。">
-<link rel="stylesheet" href="https://sirogomaazarasi.github.io/azarasi-site/loading.css">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DK3VQGQTWC"></script>
 <script>
@@ -185,14 +184,6 @@ body{
 </head>
 
 <body>
-  
-<div class="loading-container" id="loadingScreen">
-    <!-- リングのdivを削除し、ドットのloaderだけにします -->
-    <div class="loader">
-        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-    </div>
-</div>
 
 <h1>あざらしサイト</h1>
 <p class="subtitle">ブラウザで使える無料サイト集</p>
@@ -255,18 +246,6 @@ body{
     Copyright © 2026 SirogomaAZARASI All Rights Reserved.
   </div>
 </div>
-
-<script>
-    window.addEventListener('load', function() {
-        const loadingScreen = document.getElementById('loadingScreen');
-        loadingScreen.style.transition = 'opacity 0.5s ease';
-        loadingScreen.style.opacity = '0';
-        
-        setTimeout(function() {
-            loadingScreen.style.display = 'none';
-        }, 500);
-    });
-</script>
 
 </body>
 </html>
