@@ -255,6 +255,16 @@ async function requestWakeLock(){
     }
 }
 
+document.addEventListener("visibilitychange", async ()=>{
+
+    if(document.visibilityState === "visible"){
+
+        await requestWakeLock();
+
+    }
+
+});
+
 let db;
 
 let watchId=null;
@@ -801,6 +811,7 @@ async function initialize(){
         .textContent=
         last.alt;
     }
+    await requestWakeLock();
 }
 
 document
