@@ -225,6 +225,36 @@ KML保存
 
 <script>
 
+// スリープ防止
+let wakeLock = null;
+
+async function requestWakeLock(){
+
+    try{
+
+        if("wakeLock" in navigator){
+
+            wakeLock = await navigator.wakeLock.request("screen");
+
+            addLog("スリープ防止：有効");
+
+            wakeLock.addEventListener("release",()=>{
+                addLog("スリープ防止：解除");
+            });
+
+        }else{
+
+            addLog("Wake Lock非対応");
+
+        }
+
+    }catch(error){
+
+        addLog("Wake Lockエラー："+error.message);
+
+    }
+}
+
 let db;
 
 let watchId=null;
